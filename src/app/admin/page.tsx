@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { LayoutDashboard, Package, Store } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { LayoutDashboard, Package, Store, Wrench } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import DashboardView from "./components/DashboardView";
 import ProductsView from "./components/ProductsView";
 import ShopDetailsView from "./components/ShopDetailsView";
+import MenuToolsView from "./components/MenuToolsView";
 import { Product, MenuItem } from "./types";
 
 export default function AdminDashboard() {
@@ -30,10 +31,12 @@ export default function AdminDashboard() {
 
   const categories = ["All", ...Array.from(new Set(products.map(p => p.category)))];
 
+
   const menuItems: MenuItem[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, active: activeMenu === "dashboard" },
     { id: "products", label: "Products", icon: Package, active: activeMenu === "products" },
     { id: "shop", label: "Shop Details", icon: Store, active: activeMenu === "shop" },
+    { id: "tools", label: "Menu Tools", icon: Wrench, active: activeMenu === "tools" },
   ];
 
   const handleSaveShopDetails = () => {
@@ -67,7 +70,7 @@ export default function AdminDashboard() {
         mobileSidebarOpen={mobileSidebarOpen}
         menuItems={menuItems}
         activeMenu={activeMenu}
-        onMenuClick={setActiveMenu}
+        onMenuClick={(id) => setActiveMenu(id)}
         onCloseMobile={() => setMobileSidebarOpen(false)}
       />
 
@@ -109,6 +112,10 @@ export default function AdminDashboard() {
               onContactNumberChange={setContactNumber}
               onSave={handleSaveShopDetails}
             />
+          )}
+
+          {activeMenu === "tools" && (
+            <MenuToolsView shopName={shopName || "Your Shop"} menuUrl={typeof window !== 'undefined' ? window.location.origin + "/menu/shop-123" : "/menu/shop-123"} />
           )}
       </main>
           </div>

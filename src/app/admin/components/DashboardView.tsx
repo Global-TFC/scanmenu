@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Store, LayoutDashboard, Plus } from "lucide-react";
+import { Package, Store, LayoutDashboard, Plus, QrCode, Eye, Palette } from "lucide-react";
 import { Product } from "../types";
 
 interface DashboardViewProps {
@@ -80,6 +80,8 @@ export default function DashboardView({ products, categories, onMenuChange }: Da
           </button>
         </div>
       </div>
+
+      {/* Menu Tools moved to its own section/view */}
     </div>
   );
 }
