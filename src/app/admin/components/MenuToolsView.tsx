@@ -1,6 +1,7 @@
 "use client";
 
-import { QrCode, Eye, Palette, ImageDown, FileDown } from "lucide-react";
+import { useState } from "react";
+import { QrCode, Eye, Palette, ImageDown, FileDown, X, Copy, Check } from "lucide-react";
 
 interface MenuToolsViewProps {
   shopName: string;
@@ -8,6 +9,10 @@ interface MenuToolsViewProps {
 }
 
 export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps) {
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
   const createPosterCanvas = async () => {
     const width = 1080;
     const height = 1350; // portrait
@@ -119,12 +124,19 @@ export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps)
     link.href = canvas.toDataURL("image/png");
     link.click();
   };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(menuUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-4">Menu Tools</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <button
-          onClick={() => alert("QR Code generation would be implemented here")}
+          onClick={() => setIsQrModalOpen(true)}
           className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
         >
           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -138,6 +150,8 @@ export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps)
 
         <a
           href="/menu/shop-123"
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
         >
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -150,7 +164,7 @@ export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps)
         </a>
 
         <button
-          onClick={() => alert("Theme customization panel would open here")}
+          onClick={() => setIsThemeModalOpen(true)}
           className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
         >
           <div className="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center">
@@ -188,6 +202,136 @@ export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps)
           </div>
         </button>
       </div>
+
+      {/* QR Code Modal */}
+      {isQrModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">QR Code Generator</h3>
+              <button 
+                onClick={() => setIsQrModalOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-gray-600 mb-4">Scan this QR code to access your digital menu</p>
+              
+              {/* QR Code Placeholder */}
+              <div className="flex justify-center mb-4">
+                <div className="border-2 border-dashed border-gray-300 rounded-xl w-48 h-48 flex items-center justify-center">
+                  <QrCode className="text-gray-400" size={64} />
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600 truncate mr-2">{menuUrl}</span>
+                  <button 
+                    onClick={copyToClipboard}
+                    className="p-2 text-gray-500 hover:text-gray-700"
+                  >
+                    {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsQrModalOpen(false)}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => alert("QR Code downloaded!")}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              >
+                Download QR Code
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Theme Customization Modal */}
+      {isThemeModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Customize Menu Theme</h3>
+              <button 
+                onClick={() => setIsThemeModalOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-gray-600 mb-4">Choose a color scheme for your menu</p>
+              
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[
+                  { name: "Default", colors: "bg-gradient-to-r from-indigo-500 to-purple-600" },
+                  { name: "Ocean", colors: "bg-gradient-to-r from-teal-500 to-blue-600" },
+                  { name: "Sunset", colors: "bg-gradient-to-r from-orange-500 to-pink-600" },
+                  { name: "Forest", colors: "bg-gradient-to-r from-green-500 to-emerald-600" },
+                  { name: "Berry", colors: "bg-gradient-to-r from-purple-500 to-fuchsia-600" },
+                  { name: "Candy", colors: "bg-gradient-to-r from-pink-500 to-rose-600" }
+                ].map((theme, index) => (
+                  <div key={index} className="cursor-pointer">
+                    <div className={`${theme.colors} h-16 rounded-lg mb-1`}></div>
+                    <p className="text-xs text-center text-gray-600">{theme.name}</p>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
+                  <input 
+                    type="color" 
+                    defaultValue="#4f46e5" 
+                    className="w-full h-10 rounded-lg border border-gray-300 cursor-pointer"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Font Style</label>
+                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    <option>Sans Serif</option>
+                    <option>Serif</option>
+                    <option>Monospace</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsThemeModalOpen(false)}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setIsThemeModalOpen(false);
+                  alert("Theme customized successfully!");
+                }}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              >
+                Apply Theme
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
