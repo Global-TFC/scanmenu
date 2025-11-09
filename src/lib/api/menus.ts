@@ -1,0 +1,93 @@
+import { MenuTemplateType } from "@/generated/prisma/enums";
+
+export async function createMenu(data: {
+  userId: string;
+  slug: string;
+  title: string;
+  summary?: string;
+  template?: MenuTemplateType;
+}) {
+  const res = await fetch('/api/menu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    // Try to parse JSON error body, otherwise return status + text
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const error = await res.json();
+      throw new Error(error.error || 'Failed to create menu');
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+  return res.json();
+}
+
+export async function isMenuFormAlreadyFilled(userId: string) {
+  // If no userId is provided, treat it as "no menu" rather than throwing.
+  // This makes client calls simpler (they can pass an empty string safely).
+  if (!userId) return { exists: false };
+
+  const res = await fetch(`/api/menu/check?userId=${encodeURIComponent(userId)}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  if (!res.ok) {
+    if (res.status === 404) {
+      return { exists: false };
+    }
+    // Try to extract server-provided error message when available
+    try {
+      const body = await res.json();
+      throw new Error(body.error || 'Failed to check menu form status');
+    } catch {
+      throw new Error(`Failed to check menu form status: ${res.status} ${res.statusText}`);
+    }
+  }
+
+  return res.json();
+}
+
+
+export async function fetchMenuBySlug(slug: string) {
+  if (!slug) throw new Error('Missing slug');
+
+  const url = `/api/menu/${encodeURIComponent(slug)}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    // try to parse JSON error body for better messages
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await res.json();
+      throw new Error(body.error || `Failed to fetch menu (status ${res.status})`);
+    }
+    throw new Error(`Failed to fetch menu: ${res.status} ${res.statusText}`);
+  }
+
+  return res.json();
+}
+
+export async function fetchMenuItems(slug: string) {
+  if (!slug) throw new Error('Missing slug');
+  const url = `/api/menu/${encodeURIComponent(slug)}/items`;
+  const res = await fetch(url);
+  const text = await res.text();
+  let parsed: Record<string, unknown> | null = null;
+  try {
+    parsed = text ? JSON.parse(text) as Record<string, unknown> : null;
+  } catch {
+    parsed = null;
+  }
+
+  if (!res.ok) {
+    const raw = parsed?.error ?? parsed?.details ?? text ?? `${res.status} ${res.statusText}`;
+    const msg = typeof raw === 'string' ? raw : JSON.stringify(raw);
+    console.error('fetchMenuItems error', { url, status: res.status, body: parsed ?? text });
+    throw new Error(msg);
+  }
+
+  return (parsed && parsed.items) ? parsed.items as unknown[] : [];
+}
