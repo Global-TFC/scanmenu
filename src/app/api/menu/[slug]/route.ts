@@ -2,16 +2,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { MenuTemplateType } from '@/generated/prisma/enums';
-
-type RouteContext = {
-  params: { slug: string };
-};
 
 // GET /api/menus/[slug] - Fetch menu by slug
-export async function GET(request: NextRequest, { params }: RouteContext) {
+export async function GET(request: NextRequest) {
   try {
-    let { slug } = params;
+    const url = request.url;
+    const splitUrl = url.split("/");
+    let slug = splitUrl[splitUrl.length - 1];
 
     // Fallback: try to extract slug from the request URL path if params.slug is undefined
     if (!slug) {
@@ -29,9 +26,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
 
     // Debugging: if slug is still missing, return a clear error and log request details
     if (!slug) {
-      console.error('Missing slug in route params or URL', { url: request.url, params });
+      console.error('Missing slug in route params or URL', { url: request.url });
       return NextResponse.json(
-        { error: 'Missing slug parameter', url: request.url, params },
+        { error: 'Missing slug parameter', url: request.url },
         { status: 400 }
       );
     }
@@ -64,84 +61,84 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   }
 }
 
-// PUT /api/menus/[slug] - Update menu by slug
-export async function PUT(request: NextRequest, { params }: RouteContext) {
-  try {
-    const { slug } = params;
-    const body = await request.json();
-    const { title, summary, template } = body as {
-      title?: string;
-      summary?: string;
-      template?: MenuTemplateType;
-    };
+// // PUT /api/menus/[slug] - Update menu by slug
+// export async function PUT(request: NextRequest, { params }: RouteContext) {
+//   try {
+//     const { slug } = params;
+//     const body = await request.json();
+//     const { title, summary, template } = body as {
+//       title?: string;
+//       summary?: string;
+//       template?: MenuTemplateType;
+//     };
 
-    // Check if menu exists
-    const existingMenu = await prisma.menu.findUnique({
-      where: { slug },
-    });
+//     // Check if menu exists
+//     const existingMenu = await prisma.menu.findUnique({
+//       where: { slug },
+//     });
 
-    if (!existingMenu) {
-      return NextResponse.json(
-        { error: 'Menu not found' },
-        { status: 404 }
-      );
-    }
+//     if (!existingMenu) {
+//       return NextResponse.json(
+//         { error: 'Menu not found' },
+//         { status: 404 }
+//       );
+//     }
 
-    const updatedMenu = await prisma.menu.update({
-      where: { slug },
-      data: {
-        ...(title && { title }),
-        ...(summary !== undefined && { summary }),
-        ...(template && { template }),
-      },
-      include: {
-        user: {
-          select: { id: true, name: true, email: true },
-        },
-        items: true,
-      },
-    });
+//     const updatedMenu = await prisma.menu.update({
+//       where: { slug },
+//       data: {
+//         ...(title && { title }),
+//         ...(summary !== undefined && { summary }),
+//         ...(template && { template }),
+//       },
+//       include: {
+//         user: {
+//           select: { id: true, name: true, email: true },
+//         },
+//         items: true,
+//       },
+//     });
 
-    return NextResponse.json(updatedMenu, { status: 200 });
-  } catch (error) {
-    console.error('Error updating menu:', error);
-    return NextResponse.json(
-      { error: 'Failed to update menu' },
-      { status: 500 }
-    );
-  }
-}
+//     return NextResponse.json(updatedMenu, { status: 200 });
+//   } catch (error) {
+//     console.error('Error updating menu:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to update menu' },
+//       { status: 500 }
+//     );
+//   }
+// }
 
-// DELETE /api/menus/[slug] - Delete menu by slug
-export async function DELETE(request: NextRequest, { params }: RouteContext) {
-  try {
-    const { slug } = params;
+// // DELETE /api/menus/[slug] - Delete menu by slug
+// export async function DELETE(request: NextRequest, { params }: RouteContext) {
+//   try {
+//     const { slug } = params;
 
-    // Check if menu exists
-    const existingMenu = await prisma.menu.findUnique({
-      where: { slug },
-    });
+//     // Check if menu exists
+//     const existingMenu = await prisma.menu.findUnique({
+//       where: { slug },
+//     });
 
-    if (!existingMenu) {
-      return NextResponse.json(
-        { error: 'Menu not found' },
-        { status: 404 }
-      );
-    }
+//     if (!existingMenu) {
+//       return NextResponse.json(
+//         { error: 'Menu not found' },
+//         { status: 404 }
+//       );
+//     }
 
-    await prisma.menu.delete({
-      where: { slug },
-    });
+//     await prisma.menu.delete({
+//       where: { slug },
+//     });
 
-    return NextResponse.json(
-      { message: 'Menu deleted successfully' },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Error deleting menu:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete menu' },
-      { status: 500 }
-    );
-  }
-}
+//     return NextResponse.json(
+//       { message: 'Menu deleted successfully' },
+//       { status: 200 }
+//     );
+//   } catch (error) {
+//     console.error('Error deleting menu:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to delete menu' },
+//       { status: 500 }
+//     );
+//   }
+// }
