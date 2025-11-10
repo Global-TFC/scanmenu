@@ -10,8 +10,12 @@ import ShopDetailsView from "@/components/ShopDetailsView";
 import MenuToolsView from "@/components/MenuToolsView";
 import { Product, MenuItem } from "../types";
 import { useParams, useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
-import { fetchMenuBySlug, fetchMenuItems, createMenuItem } from "@/lib/api/menus";
+import { useSession, signOut } from "@/lib/auth-client";
+import {
+  fetchMenuBySlug,
+  fetchMenuItems,
+  createMenuItem,
+} from "@/lib/api/menus";
 import { Menu } from "@/generated/prisma/client";
 
 export default function AdminDashboard() {
@@ -32,7 +36,6 @@ export default function AdminDashboard() {
 
   // Products state
   const [products, setProducts] = useState<Product[]>([]);
-
 
   const categories = [
     "All",
@@ -69,7 +72,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const { slug } = useParams();
-  
 
   // Fetch menu data by slug
   useEffect(() => {
@@ -146,7 +148,6 @@ export default function AdminDashboard() {
     setMobileSidebarOpen(false);
   };
 
-
   const handleAddProduct = async (productData: Omit<Product, "id">) => {
     try {
       await createMenuItem({
@@ -164,7 +165,11 @@ export default function AdminDashboard() {
       setProducts([...products, newProduct]);
     } catch (error) {
       console.error("Failed to add product:", error);
-      alert(`Failed to add product: ${error instanceof Error ? error.message : "Unknown error"}`);
+      alert(
+        `Failed to add product: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   };
 
@@ -217,7 +222,9 @@ export default function AdminDashboard() {
     );
   }
 
-  // session available via useSession
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -227,6 +234,7 @@ export default function AdminDashboard() {
         menuItems={menuItems}
         onMenuClick={(id) => setActiveMenu(id)}
         onCloseMobile={() => setMobileSidebarOpen(false)}
+        signOut={handleSignOut}
       />
 
       {/* Main Content Area */}

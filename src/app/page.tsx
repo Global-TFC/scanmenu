@@ -1,10 +1,22 @@
+"use client";
 import Link from "next/link";
 import { Store, ShoppingCart, Users } from "lucide-react";
 import GoogleAuth from "@/components/auth/GoogleAuth";
+import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if (session) {
+      router.push("/admin/menu-form");
+    }
+  }, [session, router]);  
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md sm:max-w-lg mx-auto">
         {/* Header */}
         <div className="text-center mb-10">

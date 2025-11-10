@@ -1,6 +1,6 @@
 "use client";
 
-import { Store, ShoppingBag, ChevronRight, X } from "lucide-react";
+import { Store, ShoppingBag, ChevronRight, X, LogOut } from "lucide-react";
 import Link from "next/link";
 
 interface MenuItem {
@@ -16,6 +16,7 @@ interface SidebarProps {
   menuItems: MenuItem[];
   onMenuClick: (menuId: string) => void;
   onCloseMobile: () => void;
+  signOut?: () => void;
 }
 
 export default function Sidebar({
@@ -24,11 +25,17 @@ export default function Sidebar({
   menuItems,
   onMenuClick,
   onCloseMobile,
+  signOut,
 }: SidebarProps) {
+  
   return (
     <>
       {/* Sidebar - Desktop */}
-      <aside className={`hidden lg:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
+      <aside
+        className={`hidden lg:flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ${
+          sidebarOpen ? "w-64" : "w-20"
+        }`}
+      >
         {/* Logo Section */}
         <div className="h-16 flex items-center px-4 border-b border-gray-200">
           {sidebarOpen ? (
@@ -56,12 +63,14 @@ export default function Sidebar({
                     onClick={() => onMenuClick(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                       item.active
-                        ? 'bg-indigo-50 text-indigo-600 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? "bg-indigo-50 text-indigo-600 font-medium"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <Icon size={20} />
-                    {sidebarOpen && <span className="flex-1 text-left">{item.label}</span>}
+                    {sidebarOpen && (
+                      <span className="flex-1 text-left">{item.label}</span>
+                    )}
                     {sidebarOpen && item.active && <ChevronRight size={16} />}
                   </button>
                 </li>
@@ -71,20 +80,34 @@ export default function Sidebar({
         </nav>
 
         {/* Bottom Section */}
-        <div className="border-t border-gray-200 p-4">
+        <div className="border-t border-gray-200 p-4 space-y-2">
           <Link href="/menu/shop-123">
             <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
               <ShoppingBag size={20} />
-              {sidebarOpen && <span className="flex-1 text-left">View Menu</span>}
+              {sidebarOpen && (
+                <span className="flex-1 text-left">View Menu</span>
+              )}
             </button>
           </Link>
+          {signOut && (
+            <button
+              onClick={signOut}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+              title="Sign Out"
+            >
+              <LogOut size={20} />
+              {sidebarOpen && (
+                <span className="flex-1 text-left">Sign Out</span>
+              )}
+            </button>
+          )}
         </div>
       </aside>
 
       {/* Mobile Sidebar Overlay */}
       {mobileSidebarOpen && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
             onClick={onCloseMobile}
           />
@@ -94,7 +117,9 @@ export default function Sidebar({
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                   <Store className="text-white" size={20} />
                 </div>
-                <span className="font-bold text-lg text-gray-900">ScanMenu</span>
+                <span className="font-bold text-lg text-gray-900">
+                  ScanMenu
+                </span>
               </div>
               <button
                 onClick={onCloseMobile}
@@ -116,8 +141,8 @@ export default function Sidebar({
                         }}
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                           item.active
-                            ? 'bg-indigo-50 text-indigo-600 font-medium'
-                            : 'text-gray-700 hover:bg-gray-50'
+                            ? "bg-indigo-50 text-indigo-600 font-medium"
+                            : "text-gray-700 hover:bg-gray-50"
                         }`}
                       >
                         <Icon size={20} />
@@ -129,13 +154,22 @@ export default function Sidebar({
                 })}
               </ul>
             </nav>
-            <div className="border-t border-gray-200 p-4">
-              <Link href="/menu/shop-123">
+            <div className="border-t border-gray-200 p-4 space-y-2">
+              <Link href="/admin/menu">
                 <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                   <ShoppingBag size={20} />
                   <span className="flex-1 text-left">View Menu</span>
                 </button>
               </Link>
+              {signOut && (
+                <button
+                  onClick={() => signOut()}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <LogOut size={20} />
+                  <span className="flex-1 text-left">Logout</span>
+                </button>
+              )}
             </div>
           </aside>
         </>
@@ -143,4 +177,3 @@ export default function Sidebar({
     </>
   );
 }
-
