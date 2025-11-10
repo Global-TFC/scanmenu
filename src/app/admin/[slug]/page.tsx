@@ -11,7 +11,7 @@ import MenuToolsView from "@/components/MenuToolsView";
 import { Product, MenuItem } from "../types";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
-import { fetchMenuBySlug, fetchMenuItems } from "@/lib/api/menus";
+import { fetchMenuBySlug, fetchMenuItems, createMenuItem } from "@/lib/api/menus";
 import { Menu } from "@/generated/prisma/client";
 
 export default function AdminDashboard() {
@@ -31,40 +31,7 @@ export default function AdminDashboard() {
   const [contactNumber, setContactNumber] = useState("");
 
   // Products state
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: "1",
-      name: "Burger",
-      category: "Fast Food",
-      price: 8.99,
-      image:
-        "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop",
-    },
-    {
-      id: "2",
-      name: "Pizza",
-      category: "Italian",
-      price: 12.99,
-      image:
-        "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop",
-    },
-    {
-      id: "3",
-      name: "Pasta Carbonara",
-      category: "Italian",
-      price: 14.5,
-      image:
-        "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=200&h=200&fit=crop",
-    },
-    {
-      id: "4",
-      name: "Caesar Salad",
-      category: "Salads",
-      price: 9.99,
-      image:
-        "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=200&h=200&fit=crop",
-    },
-  ]);
+  const [products, setProducts] = useState<Product[]>([]);
 
 
   const categories = [
@@ -135,23 +102,23 @@ export default function AdminDashboard() {
     loadMenu();
   }, [slug]);
 
-  // Fetch menu items from API and merge with dummy products (do not remove dummy data)
+  // Fetch menu items from API
   useEffect(() => {
-    if (!menuData?.slug) return;
+    if (!slug) return;
 
     const loadItems = async () => {
       try {
-        const items = await fetchMenuItems(menuData.slug);
+        const items = await fetchMenuItems(slug as string);
         if (Array.isArray(items) && items.length) {
           const itemsArr = items as unknown as Array<Record<string, unknown>>;
           const mapped = itemsArr.map((it) => ({
             id: (it.id as string) ?? Date.now().toString(),
             name: String(it.name ?? "Menu Item"),
-            category: String(it.category ?? "Menu Item"),
+            category: String(it.description ?? "Menu Item"),
             price: it.price ? Number(it.price) : 0,
             image: String(it.image ?? ""),
           }));
-          setProducts((prev) => [...prev, ...mapped]);
+          setProducts(mapped);
         }
       } catch (err) {
         console.error("Failed to load menu items:", err);
@@ -159,7 +126,7 @@ export default function AdminDashboard() {
     };
 
     loadItems();
-  }, [menuData?.slug]);
+  }, [slug]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -179,13 +146,26 @@ export default function AdminDashboard() {
     setMobileSidebarOpen(false);
   };
 
-  const handleAddProduct = (productData: Omit<Product, "id">) => {
-    const newProduct: Product = {
-      id: Date.now().toString(),
-      ...productData,
-    };
-    setProducts([...products, newProduct]);
-    alert("Product added successfully!");
+
+  const handleAddProduct = async (productData: Omit<Product, "id">) => {
+    try {
+      await createMenuItem({
+        slug: slug as string,
+        name: productData.name,
+        image: productData.image,
+        price: productData.price,
+        description: productData.category,
+      });
+
+      const newProduct: Product = {
+        id: Date.now().toString(),
+        ...productData,
+      };
+      setProducts([...products, newProduct]);
+    } catch (error) {
+      console.error("Failed to add product:", error);
+      alert(`Failed to add product: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
   };
 
   const handleDeleteProduct = (id: string) => {

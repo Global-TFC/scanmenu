@@ -7,17 +7,17 @@ export async function createMenu(data: {
   summary?: string;
   template?: MenuTemplateType;
 }) {
-  const res = await fetch('/api/menu', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const res = await fetch("/api/menu", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
   if (!res.ok) {
     // Try to parse JSON error body, otherwise return status + text
-    const contentType = res.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
       const error = await res.json();
-      throw new Error(error.error || 'Failed to create menu');
+      throw new Error(error.error || "Failed to create menu");
     }
     const text = await res.text();
     throw new Error(`Request failed ${res.status}: ${text}`);
@@ -30,10 +30,13 @@ export async function isMenuFormAlreadyFilled(userId: string) {
   // This makes client calls simpler (they can pass an empty string safely).
   if (!userId) return { exists: false };
 
-  const res = await fetch(`/api/menu/check?userId=${encodeURIComponent(userId)}`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' }
-  });
+  const res = await fetch(
+    `/api/menu/check?userId=${encodeURIComponent(userId)}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 
   if (!res.ok) {
     if (res.status === 404) {
@@ -42,27 +45,30 @@ export async function isMenuFormAlreadyFilled(userId: string) {
     // Try to extract server-provided error message when available
     try {
       const body = await res.json();
-      throw new Error(body.error || 'Failed to check menu form status');
+      throw new Error(body.error || "Failed to check menu form status");
     } catch {
-      throw new Error(`Failed to check menu form status: ${res.status} ${res.statusText}`);
+      throw new Error(
+        `Failed to check menu form status: ${res.status} ${res.statusText}`
+      );
     }
   }
 
   return res.json();
 }
 
-
 export async function fetchMenuBySlug(slug: string) {
-  if (!slug) throw new Error('Missing slug');
+  if (!slug) throw new Error("Missing slug");
 
   const url = `/api/menu/${encodeURIComponent(slug)}`;
   const res = await fetch(url);
   if (!res.ok) {
     // try to parse JSON error body for better messages
-    const contentType = res.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
       const body = await res.json();
-      throw new Error(body.error || `Failed to fetch menu (status ${res.status})`);
+      throw new Error(
+        body.error || `Failed to fetch menu (status ${res.status})`
+      );
     }
     throw new Error(`Failed to fetch menu: ${res.status} ${res.statusText}`);
   }
@@ -71,23 +77,59 @@ export async function fetchMenuBySlug(slug: string) {
 }
 
 export async function fetchMenuItems(slug: string) {
-  if (!slug) throw new Error('Missing slug');
+  if (!slug) throw new Error("Missing slug");
   const url = `/api/menu/${encodeURIComponent(slug)}/items`;
   const res = await fetch(url);
   const text = await res.text();
   let parsed: Record<string, unknown> | null = null;
   try {
-    parsed = text ? JSON.parse(text) as Record<string, unknown> : null;
+    parsed = text ? (JSON.parse(text) as Record<string, unknown>) : null;
   } catch {
     parsed = null;
   }
 
   if (!res.ok) {
-    const raw = parsed?.error ?? parsed?.details ?? text ?? `${res.status} ${res.statusText}`;
-    const msg = typeof raw === 'string' ? raw : JSON.stringify(raw);
-    console.error('fetchMenuItems error', { url, status: res.status, body: parsed ?? text });
+    const raw =
+      parsed?.error ??
+      parsed?.details ??
+      text ??
+      `${res.status} ${res.statusText}`;
+    const msg = typeof raw === "string" ? raw : JSON.stringify(raw);
+    console.error("fetchMenuItems error", {
+      url,
+      status: res.status,
+      body: parsed ?? text,
+    });
     throw new Error(msg);
   }
 
-  return (parsed && parsed.items) ? parsed.items as unknown[] : [];
+  return parsed && parsed.items ? (parsed.items as unknown[]) : [];
+}
+
+export async function createMenuItem(data: {
+  slug :string
+  name: string;
+  image?: string;
+  description?: string;
+  price?: number;
+  categoryId?: string;
+  isFeatured?: boolean;
+  isAvailable?: boolean;
+}) {
+  const res = await fetch(`/api/menu/${encodeURIComponent(data.slug)}/items`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    // Try to parse JSON error body, otherwise return status + text
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to create menu");
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+  return res.json();
 }
