@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Store, ShoppingCart, Users } from "lucide-react";
+import GoogleAuth from "@/components/auth/GoogleAuth";
 
 export default function Home() {
   return (
@@ -21,32 +22,21 @@ export default function Home() {
             <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 mb-6">
               Digital Menu Creator
             </h2>
-            
+
             <div className="space-y-4">
-              <Link 
-                href="/admin"
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-              >
-                <Store size={20} />
-                Shop Owner Login
-              </Link>
-              
+              <GoogleAuth />
               <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white text-gray-500">
-                    Or
-                  </span>
+                  <span className="px-3 bg-white text-gray-500">Or</span>
                 </div>
               </div>
-              
+
               <div className="text-center">
-                <p className="text-sm text-gray-600 mb-4">
-                  View a sample menu
-                </p>
-                <Link 
+                <p className="text-sm text-gray-600 mb-4">View a sample menu</p>
+                <Link
                   href="/menu/shop-123"
                   className="inline-flex items-center justify-center gap-2 w-full sm:w-auto py-3 px-4 border border-gray-300 rounded-xl shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                 >
@@ -70,7 +60,9 @@ export default function Home() {
           </div>
           <div className="bg-white rounded-xl p-4 text-center shadow-sm">
             <Users className="mx-auto text-indigo-600 mb-2" size={24} />
-            <h3 className="font-medium text-gray-900 text-sm">Customer Access</h3>
+            <h3 className="font-medium text-gray-900 text-sm">
+              Customer Access
+            </h3>
           </div>
         </div>
 
