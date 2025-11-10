@@ -1,6 +1,6 @@
 "use client";
 
-import { Package, Store, LayoutDashboard, Plus, QrCode, Eye, Palette } from "lucide-react";
+import { Package, Store, LayoutDashboard, Plus } from "lucide-react";
 import { Product } from "../app/admin/types";
 
 interface DashboardViewProps {

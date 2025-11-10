@@ -2,13 +2,18 @@
 
 import { Store, ShoppingBag, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
-import { Product } from "../app/admin/types";
+
+interface MenuItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  active: boolean;
+}
 
 interface SidebarProps {
   sidebarOpen: boolean;
   mobileSidebarOpen: boolean;
   menuItems: MenuItem[];
-  activeMenu: string;
   onMenuClick: (menuId: string) => void;
   onCloseMobile: () => void;
 }
@@ -17,7 +22,6 @@ export default function Sidebar({
   sidebarOpen,
   mobileSidebarOpen,
   menuItems,
-  activeMenu,
   onMenuClick,
   onCloseMobile,
 }: SidebarProps) {

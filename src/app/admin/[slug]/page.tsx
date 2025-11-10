@@ -225,7 +225,6 @@ export default function AdminDashboard() {
         sidebarOpen={sidebarOpen}
         mobileSidebarOpen={mobileSidebarOpen}
         menuItems={menuItems}
-        activeMenu={activeMenu}
         onMenuClick={(id) => setActiveMenu(id)}
         onCloseMobile={() => setMobileSidebarOpen(false)}
       />
