@@ -107,7 +107,7 @@ export async function fetchMenuItems(slug: string) {
 }
 
 export async function createMenuItem(data: {
-  slug :string
+  slug: string;
   name: string;
   image?: string;
   description?: string;
@@ -126,10 +126,32 @@ export async function createMenuItem(data: {
     const contentType = res.headers.get("content-type") || "";
     if (contentType.includes("application/json")) {
       const error = await res.json();
-      throw new Error(error.error || "Failed to create menu");
+      throw new Error(error.error || "Failed to create menu item");
     }
     const text = await res.text();
     throw new Error(`Request failed ${res.status}: ${text}`);
   }
+  return res.json();
+}
+
+export async function extractMenuFromImage(image: string) {
+  if (!image) throw new Error("Missing image data");
+
+  const res = await fetch("/api/extract-menu", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image }),
+  });
+
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to extract menu");
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+
   return res.json();
 }
