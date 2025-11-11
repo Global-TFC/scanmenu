@@ -107,7 +107,38 @@ export default function ProductsView({
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImage(reader.result as string);
+      const img = new Image();
+      img.onload = () => {
+        // Compress and resize image
+        const canvas = document.createElement('canvas');
+        const maxWidth = 1024;
+        const maxHeight = 1024;
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Convert to base64 with compression (0.7 quality)
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        setImage(compressedBase64);
+      };
+      img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
   };
