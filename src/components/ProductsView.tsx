@@ -56,6 +56,22 @@ export default function ProductsView({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editImage, setEditImage] = useState("");
+  const [editNewCategoryMode, setEditNewCategoryMode] = useState(false);
+  const [editNewCategoryName, setEditNewCategoryName] = useState("");
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const availableCategories = Array.from(new Set(products.map((p) => p.category))).filter(Boolean);
+  const [newCategoryMode, setNewCategoryMode] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
   const categories = [
     "All",
     ...Array.from(new Set(products.map((p) => p.category))),
@@ -75,9 +91,10 @@ export default function ProductsView({
       alert("Please fill in all required fields");
       return;
     }
+    const finalCategory = newCategoryMode ? newCategoryName || "Uncategorized" : category || "Uncategorized";
     onAddProduct({
       name: productName,
-      category: category || "Uncategorized",
+      category: finalCategory,
       price: parseFloat(price),
       image:
         productImage ||
@@ -87,18 +104,59 @@ export default function ProductsView({
     setCategory("");
     setPrice("");
     setProductImage("");
+    setNewCategoryMode(false);
+    setNewCategoryName("");
     setShowAddProduct(false);
   };
 
   const handleEdit = (product: Product) => {
-    alert("Edit functionality would open a modal to edit this product");
-    onEditProduct(product);
+    setEditingProduct(product);
+    setEditName(product.name);
+    setEditCategory(product.category);
+    setEditPrice(String(product.price));
+    setEditImage(product.image);
+    setShowEditModal(true);
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      onDeleteProduct(id);
-    }
+    setDeletingId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmEdit = () => {
+    if (!editingProduct) return;
+    const finalEditCategory = editNewCategoryMode
+      ? editNewCategoryName || editingProduct.category
+      : editCategory || editingProduct.category;
+    const updated: Product = {
+      id: editingProduct.id,
+      name: editName || editingProduct.name,
+      category: finalEditCategory,
+      price: parseFloat(editPrice || String(editingProduct.price)),
+      image: editImage || editingProduct.image,
+    };
+    onEditProduct(updated);
+    setShowEditModal(false);
+    setEditingProduct(null);
+    setEditNewCategoryMode(false);
+    setEditNewCategoryName("");
+  };
+
+  const cancelEdit = () => {
+    setShowEditModal(false);
+    setEditingProduct(null);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    onDeleteProduct(deletingId);
+    setShowDeleteModal(false);
+    setDeletingId(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeletingId(null);
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,13 +338,48 @@ export default function ProductsView({
                 onChange={(e) => setProductName(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
               />
-              <input
-                type="text"
-                placeholder="Category *"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-              />
+              <div className="space-y-2">
+                <select
+                  value={newCategoryMode ? "__new__" : category}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v === "__new__") {
+                      setNewCategoryMode(true);
+                      setCategory("");
+                    } else {
+                      setNewCategoryMode(false);
+                      setCategory(v);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                >
+                  <option value="">Select Category</option>
+                  {availableCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  <option value="__new__">Create New Category</option>
+                </select>
+                {newCategoryMode && (
+                  <input
+                    type="text"
+                    placeholder="New Category Name *"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  />
+                )}
+                {availableCategories.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {availableCategories.map((cat) => (
+                      <span key={cat} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
               <input
                 type="number"
                 placeholder="Price *"
@@ -364,7 +457,7 @@ export default function ProductsView({
 
       {/* Scan Menu Modal */}
       {showScanModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -493,6 +586,112 @@ export default function ProductsView({
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && (
+        <div className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Edit Product</h3>
+              <button onClick={cancelEdit} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-3">
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                placeholder="Name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+              />
+              <div className="space-y-2">
+                <select
+                  value={editNewCategoryMode ? "__new__" : editCategory}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v === "__new__") {
+                      setEditNewCategoryMode(true);
+                      setEditCategory("");
+                    } else {
+                      setEditNewCategoryMode(false);
+                      setEditCategory(v);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+                >
+                  <option value="">Select Category</option>
+                  {availableCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  <option value="__new__">Create New Category</option>
+                </select>
+                {editNewCategoryMode && (
+                  <input
+                    type="text"
+                    placeholder="New Category Name *"
+                    value={editNewCategoryName}
+                    onChange={(e) => setEditNewCategoryName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+                  />
+                )}
+                {availableCategories.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {availableCategories.map((cat) => (
+                      <span key={cat} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <input
+                type="number"
+                value={editPrice}
+                onChange={(e) => setEditPrice(e.target.value)}
+                step="0.01"
+                placeholder="Price"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+              />
+              <input
+                type="text"
+                value={editImage}
+                onChange={(e) => setEditImage(e.target.value)}
+                placeholder="Image URL"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+              />
+            </div>
+            <div className="p-6 flex gap-3 border-t border-gray-200">
+              <button onClick={confirmEdit} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm">
+                Save Changes
+              </button>
+              <button onClick={cancelEdit} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Delete Product</h3>
+              <p className="mt-2 text-sm text-gray-600">Are you sure you want to delete this product?</p>
+            </div>
+            <div className="p-6 flex gap-3">
+              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm">
+                Delete
+              </button>
+              <button onClick={cancelDelete} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">
+                Cancel
+              </button>
             </div>
           </div>
         </div>

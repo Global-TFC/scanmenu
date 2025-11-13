@@ -15,6 +15,8 @@ import {
   fetchMenuBySlug,
   fetchMenuItems,
   createMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
 } from "@/lib/api/menus";
 import { Menu } from "@/generated/prisma/client";
 
@@ -150,21 +152,19 @@ export default function AdminDashboard() {
 
   const handleAddProduct = async (productData: Omit<Product, "id">) => {
     try {
-      await createMenuItem({
+      const created = await createMenuItem({
         slug: slug as string,
         name: productData.name,
         image: productData.image,
         price: productData.price,
         description: productData.category,
       });
-
       const newProduct: Product = {
-        id: Date.now().toString(),
+        id: String(created.id),
         ...productData,
       };
       setProducts([...products, newProduct]);
     } catch (error) {
-      console.error("Failed to add product:", error);
       alert(
         `Failed to add product: ${
           error instanceof Error ? error.message : "Unknown error"
@@ -173,12 +173,49 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteProduct = (id: string) => {
-    setProducts(products.filter((product) => product.id !== id));
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      await deleteMenuItem(slug as string, id);
+      setProducts(products.filter((product) => product.id !== id));
+    } catch (error) {
+      alert(
+        `Failed to delete product: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   };
 
-  const handleEditProduct = (product: Product) => {
-    console.log("Edit product:", product);
+  const handleEditProduct = async (product: Product) => {
+    try {
+      const updated = await updateMenuItem({
+        slug: slug as string,
+        id: product.id,
+        name: product.name,
+        description: product.category,
+        price: product.price,
+        image: product.image,
+      });
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === product.id
+            ? {
+                ...p,
+                name: String(updated.name ?? product.name),
+                category: String(updated.description ?? product.category),
+                price: Number(updated.price ?? product.price),
+                image: String(updated.image ?? product.image),
+              }
+            : p
+        )
+      );
+    } catch (error) {
+      alert(
+        `Failed to edit product: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   };
 
   // Loading states

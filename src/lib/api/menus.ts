@@ -155,3 +155,49 @@ export async function extractMenuFromImage(image: string) {
 
   return res.json();
 }
+
+export async function updateMenuItem(data: {
+  slug: string;
+  id: string;
+  name?: string;
+  image?: string;
+  description?: string;
+  price?: number;
+  categoryId?: string;
+  isFeatured?: boolean;
+  isAvailable?: boolean;
+}) {
+  const res = await fetch(`/api/menu/${encodeURIComponent(data.slug)}/items`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to update menu item");
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+  return res.json();
+}
+
+export async function deleteMenuItem(slug: string, id: string) {
+  const res = await fetch(`/api/menu/${encodeURIComponent(slug)}/items`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug, id }),
+  });
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to delete menu item");
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+  return res.json();
+}
