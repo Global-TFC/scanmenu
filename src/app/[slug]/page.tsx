@@ -1,7 +1,9 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Normal from "@/components/templates/normal/Normal";
+import Pro from "@/components/templates/pro/Pro";
+import { MenuTemplateType } from "@/generated/prisma/enums";
 import { fetchMenuBySlug, fetchMenuItems } from "@/lib/api/menus";
 
 interface Product {
@@ -24,6 +26,7 @@ export default function SlugMenuPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [template, setTemplate] = useState<MenuTemplateType | null>(null);
 
   useEffect(() => {
     const s = String(slug ?? "");
@@ -39,6 +42,7 @@ export default function SlugMenuPage() {
         if (!active) return;
         setShopName(String(menu?.title ?? ""));
         setShopPlace(String(menu?.summary ?? ""));
+        setTemplate((menu?.template as MenuTemplateType) ?? null);
         const list = (items as Array<Record<string, unknown>>).map((it) => ({
           id: String(it.id ?? ""),
           name: String(it.name ?? "Item"),
@@ -88,5 +92,8 @@ export default function SlugMenuPage() {
     );
   }
 
+  if (template === MenuTemplateType.PRO) {
+    return <Pro shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
+  }
   return <Normal shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
 }
