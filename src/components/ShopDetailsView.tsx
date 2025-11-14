@@ -1,16 +1,19 @@
 "use client";
 
-import { User, Store, MapPin, Phone } from "lucide-react";
+import { User, Store, MapPin, Phone, Layout } from "lucide-react";
+import { MenuTemplateType } from "@/generated/prisma/enums";
 
 interface ShopDetailsViewProps {
   userId: string;
   shopName: string;
   place: string;
   contactNumber: string;
+  template: string;
   onUserIdChange: (value: string) => void;
   onShopNameChange: (value: string) => void;
   onPlaceChange: (value: string) => void;
   onContactNumberChange: (value: string) => void;
+  onTemplateChange: (value: string) => void;
   onSave: () => void;
 }
 
@@ -19,10 +22,12 @@ export default function ShopDetailsView({
   shopName,
   place,
   contactNumber,
+  template,
   onUserIdChange,
   onShopNameChange,
   onPlaceChange,
   onContactNumberChange,
+  onTemplateChange,
   onSave,
 }: ShopDetailsViewProps) {
   return (
@@ -87,6 +92,21 @@ export default function ShopDetailsView({
               placeholder="Enter contact number"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
             />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <Layout size={16} />
+              Template
+            </label>
+            <select
+              value={template}
+              onChange={(e) => onTemplateChange(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white"
+            >
+              <option value={MenuTemplateType.NORMAL}>Normal</option>
+              <option value={MenuTemplateType.PRO}>Pro</option>
+            </select>
           </div>
         </div>
         <div className="mt-6">

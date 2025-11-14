@@ -17,8 +17,10 @@ import {
   createMenuItem,
   updateMenuItem,
   deleteMenuItem,
+  updateMenu,
 } from "@/lib/api/menus";
 import { Menu } from "@/generated/prisma/client";
+import { MenuTemplateType } from "@/generated/prisma/enums";
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -35,6 +37,7 @@ export default function AdminDashboard() {
   const [shopName, setShopName] = useState("");
   const [place, setPlace] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [template, setTemplate] = useState("PRO");
 
   // Products state
   const [products, setProducts] = useState<Product[]>([]);
@@ -92,6 +95,7 @@ export default function AdminDashboard() {
         setUserId(menu.userId);
         setShopName(menu.title);
         setPlace(menu.summary || "");
+        setTemplate(menu.template || "PRO");
         // setContactNumber can be added if it exists in your Menu model
       } catch (error) {
         const errorMessage =
@@ -139,15 +143,30 @@ export default function AdminDashboard() {
     }
   }, [isPending, session, router]);
 
-  const handleSaveShopDetails = () => {
-    console.log("Shop details saved:", {
-      userId,
-      shopName,
-      place,
-      contactNumber,
-    });
-    alert("Shop details saved successfully!");
-    setMobileSidebarOpen(false);
+  const handleSaveShopDetails = async () => {
+    if (!menuData?.id) {
+      alert("Menu data not loaded");
+      return;
+    }
+
+    try {
+      const updated = await updateMenu({
+        id: menuData.id,
+        title: shopName,
+        summary: place,
+        template: template as MenuTemplateType,
+      });
+      
+      setMenuData(updated);
+      alert("Shop details saved successfully!");
+      setMobileSidebarOpen(false);
+    } catch (error) {
+      alert(
+        `Failed to save shop details: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
   };
 
   const handleAddProduct = async (productData: Omit<Product, "id">) => {
@@ -317,10 +336,12 @@ export default function AdminDashboard() {
               shopName={shopName}
               place={place}
               contactNumber={contactNumber}
+              template={template}
               onUserIdChange={setUserId}
               onShopNameChange={setShopName}
               onPlaceChange={setPlace}
               onContactNumberChange={setContactNumber}
+              onTemplateChange={setTemplate}
               onSave={handleSaveShopDetails}
             />
           )}

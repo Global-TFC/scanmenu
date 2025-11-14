@@ -156,6 +156,33 @@ export async function extractMenuFromImage(image: string) {
   return res.json();
 }
 
+export async function updateMenu(data: {
+  id: string;
+  title?: string;
+  summary?: string;
+  template?: MenuTemplateType;
+}) {
+  if (!data.id) throw new Error("Menu id is required");
+
+  const res = await fetch("/api/menu", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to update menu");
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+
+  return res.json();
+}
+
 export async function updateMenuItem(data: {
   slug: string;
   id: string;
