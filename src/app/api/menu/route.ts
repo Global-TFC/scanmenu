@@ -71,6 +71,54 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, title, summary, template } = body as {
+      id: string;
+      title?: string;
+      summary?: string | null;
+      template?: MenuTemplateType;
+    };
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Menu id is required" },
+        { status: 400 }
+      );
+    }
+
+    const existingMenu = await prisma.menu.findUnique({ where: { id } });
+    if (!existingMenu) {
+      return NextResponse.json(
+        { error: "Menu not found" },
+        { status: 404 }
+      );
+    }
+
+    const updatedMenu = await prisma.menu.update({
+      where: { id },
+      data: {
+        ...(title !== undefined && { title }),
+        ...(summary !== undefined && { summary }),
+        ...(template !== undefined && { template }),
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        items: true,
+      },
+    });
+
+    return NextResponse.json(updatedMenu, { status: 200 });
+  } catch (error) {
+    console.error("Error updating menu:", error);
+    return NextResponse.json(
+      { error: "Failed to update menu" },
+      { status: 500 }
+    );
+  }
+}
+
 // check menu form already filled
 export async function GET(request: NextRequest) {
   try {
@@ -92,63 +140,6 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching menu:", error);
     return NextResponse.json(
       { error: "Failed to fetch menu" },
-      { status: 500 }
-    );
-  }
-}
-
-// Update menu
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { id, title, summary, template } = body as {
-      id: string;
-      title?: string;
-      summary?: string;
-      template?: MenuTemplateType;
-    };
-
-    // Validation
-    if (!id) {
-      return NextResponse.json(
-        { error: "Menu id is required" },
-        { status: 400 }
-      );
-    }
-
-    // Check if menu exists
-    const existingMenu = await prisma.menu.findUnique({
-      where: { id },
-    });
-
-    if (!existingMenu) {
-      return NextResponse.json(
-        { error: "Menu not found" },
-        { status: 404 }
-      );
-    }
-
-    // Update menu
-    const updatedMenu = await prisma.menu.update({
-      where: { id },
-      data: {
-        ...(title !== undefined && { title }),
-        ...(summary !== undefined && { summary }),
-        ...(template !== undefined && { template }),
-      },
-      include: {
-        user: {
-          select: { id: true, name: true, email: true },
-        },
-        items: true,
-      },
-    });
-
-    return NextResponse.json(updatedMenu, { status: 200 });
-  } catch (error) {
-    console.error("Error updating menu:", error);
-    return NextResponse.json(
-      { error: "Failed to update menu" },
       { status: 500 }
     );
   }

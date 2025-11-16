@@ -64,6 +64,7 @@ export default function ProductsView({
   const [editImage, setEditImage] = useState("");
   const [editNewCategoryMode, setEditNewCategoryMode] = useState(false);
   const [editNewCategoryName, setEditNewCategoryName] = useState("");
+  const [editIsFeatured, setEditIsFeatured] = useState(false);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -115,6 +116,7 @@ export default function ProductsView({
     setEditCategory(product.category);
     setEditPrice(String(product.price));
     setEditImage(product.image);
+    setEditIsFeatured(Boolean(product.isFeatured));
     setShowEditModal(true);
   };
 
@@ -134,6 +136,7 @@ export default function ProductsView({
       category: finalEditCategory,
       price: parseFloat(editPrice || String(editingProduct.price)),
       image: editImage || editingProduct.image,
+      isFeatured: editIsFeatured,
     };
     onEditProduct(updated);
     setShowEditModal(false);
@@ -665,6 +668,15 @@ export default function ProductsView({
                 placeholder="Image URL"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
               />
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={editIsFeatured}
+                  onChange={(e) => setEditIsFeatured(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                Featured (show in Flash Deals)
+              </label>
             </div>
             <div className="p-6 flex gap-3 border-t border-gray-200">
               <button onClick={confirmEdit} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm">

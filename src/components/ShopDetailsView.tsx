@@ -106,6 +106,7 @@ export default function ShopDetailsView({
             >
               <option value={MenuTemplateType.NORMAL}>Normal</option>
               <option value={MenuTemplateType.PRO}>Pro</option>
+              <option value={MenuTemplateType.E_COM}>E‑Com</option>
             </select>
           </div>
         </div>

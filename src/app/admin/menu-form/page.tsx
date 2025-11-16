@@ -217,6 +217,7 @@ export default function CreateMenuForm() {
           >
             <option value="NORMAL">NORMAL</option>
             <option value="PRO">PRO</option>
+            <option value="E_COM">E_COM</option>
           </select>
         </div>
 

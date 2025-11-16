@@ -11,7 +11,8 @@
 
 export const MenuTemplateType = {
   NORMAL: 'NORMAL',
-  PRO: 'PRO'
+  PRO: 'PRO',
+  E_COM: 'E_COM'
 } as const
 
 export type MenuTemplateType = (typeof MenuTemplateType)[keyof typeof MenuTemplateType]

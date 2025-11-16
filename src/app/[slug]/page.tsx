@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import Normal from "@/components/templates/normal/Normal";
 import Pro from "@/components/templates/pro/Pro";
 import { MenuTemplateType } from "@/generated/prisma/enums";
+import Ecommerce from "@/components/templates/ecommerce/Ecommerce";
 import { fetchMenuBySlug, fetchMenuItems } from "@/lib/api/menus";
 
 interface Product {
@@ -15,6 +16,7 @@ interface Product {
   image: string;
   rating?: number;
   reviews?: number;
+  isFeatured?: boolean;
 }
 
 export default function SlugMenuPage() {
@@ -55,6 +57,7 @@ export default function SlugMenuPage() {
           ),
           rating: 4.6,
           reviews: 0,
+          isFeatured: Boolean((it as any).isFeatured ?? false),
         }));
         setProducts(list);
       } catch (e) {
@@ -94,6 +97,9 @@ export default function SlugMenuPage() {
 
   if (template === MenuTemplateType.PRO) {
     return <Pro shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
+  }
+  if (template === MenuTemplateType.E_COM) {
+    return <Ecommerce shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
   }
   return <Normal shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
 }

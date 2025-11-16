@@ -33,6 +33,7 @@ model User {
 enum MenuTemplateType {
   NORMAL
   PRO
+  E_COM
 }
 
 model Menu {

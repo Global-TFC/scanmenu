@@ -125,6 +125,9 @@ export default function AdminDashboard() {
             category: String(it.description ?? "Menu Item"),
             price: it.price ? Number(it.price) : 0,
             image: String(it.image ?? ""),
+            isFeatured: Boolean(
+              typeof it.isFeatured === "boolean" ? it.isFeatured : false
+            ),
           }));
           setProducts(mapped);
         }
@@ -214,16 +217,23 @@ export default function AdminDashboard() {
         description: product.category,
         price: product.price,
         image: product.image,
+        isFeatured: product.isFeatured,
       });
+      const updatedItem = updated as Record<string, unknown>;
       setProducts((prev) =>
         prev.map((p) =>
           p.id === product.id
             ? {
                 ...p,
-                name: String(updated.name ?? product.name),
-                category: String(updated.description ?? product.category),
-                price: Number(updated.price ?? product.price),
-                image: String(updated.image ?? product.image),
+                name: String(updatedItem.name ?? product.name),
+                category: String(updatedItem.description ?? product.category),
+                price: Number(updatedItem.price ?? product.price),
+                image: String(updatedItem.image ?? product.image),
+                isFeatured: Boolean(
+                  typeof updatedItem.isFeatured === "boolean"
+                    ? updatedItem.isFeatured
+                    : product.isFeatured
+                ),
               }
             : p
         )
