@@ -46,14 +46,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { slug, name, description, price, image, categoryId } = body as {
-      slug: string;
-      name: string;
-      description?: string;
-      price?: number;
-      image?: string;
-      categoryId?: string;
-    };
+  const { slug, name, category, price, offerPrice, image } = body as {
+    slug: string;
+    name: string;
+    category?: string;
+    price?: number;
+    offerPrice?: number;
+    image?: string;
+  };
 
     if (!slug)
       return NextResponse.json({ error: "Missing slug" }, { status: 400 });
@@ -72,10 +72,10 @@ export async function POST(request: NextRequest) {
       data: {
         menuId: menu.id,
         name,
-        description: description || null,
+        category: category || null,
         price: price ?? null,
+        offerPrice: offerPrice ?? null,
         image: image || null,
-        categoryId: categoryId || null,
       },
     });
 
@@ -95,27 +95,27 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
-      slug,
-      id,
-      name,
-      description,
-      price,
-      image,
-      categoryId,
-      isFeatured,
-      isAvailable,
-    } = body as {
-      slug: string;
-      id: string;
-      name?: string;
-      description?: string;
-      price?: number;
-      image?: string;
-      categoryId?: string;
-      isFeatured?: boolean;
-      isAvailable?: boolean;
-    };
+  const {
+    slug,
+    id,
+    name,
+    category,
+    price,
+    offerPrice,
+    image,
+    isFeatured,
+    isAvailable,
+  } = body as {
+    slug: string;
+    id: string;
+    name?: string;
+    category?: string;
+    price?: number;
+    offerPrice?: number;
+    image?: string;
+    isFeatured?: boolean;
+    isAvailable?: boolean;
+  };
 
     if (!slug)
       return NextResponse.json({ error: "Missing slug" }, { status: 400 });
@@ -146,12 +146,12 @@ export async function PUT(request: NextRequest) {
 
     const data: Record<string, unknown> = {};
     if (name !== undefined) data.name = name;
-    if (description !== undefined) data.description = description || null;
-    if (price !== undefined) data.price = price ?? null;
-    if (image !== undefined) data.image = image || null;
-    if (categoryId !== undefined) data.categoryId = categoryId || null;
-    if (isFeatured !== undefined) data.isFeatured = !!isFeatured;
-    if (isAvailable !== undefined) data.isAvailable = !!isAvailable;
+  if (category !== undefined) data.category = category || null;
+  if (price !== undefined) data.price = price ?? null;
+  if (offerPrice !== undefined) data.offerPrice = offerPrice ?? null;
+  if (image !== undefined) data.image = image || null;
+  if (isFeatured !== undefined) data.isFeatured = !!isFeatured;
+  if (isAvailable !== undefined) data.isAvailable = !!isAvailable;
 
     const updated = await prisma.menuItem.update({
       where: { id },

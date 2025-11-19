@@ -18,6 +18,7 @@ interface Product {
   category: string;
   description: string;
   price: number;
+  offerPrice?: number;
   image: string;
   rating?: number;
   reviews?: number;
@@ -291,7 +292,7 @@ export default function Pro({
                 >
                   <div className="relative overflow-hidden h-72">
                     <img
-                      src={product.image}
+                      src={product.image || "/default-product.png"}
                       alt={product.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -304,12 +305,24 @@ export default function Pro({
                       {product.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-3xl font-bold text-[#3a3a3a]">
-                          ₹{product.price.toFixed(2)}
-                        </span>
-                        <span className="text-lg text-[#8a8a8a] ml-2">INR</span>
-                      </div>
+                        <div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-[#3a3a3a]">
+                              ₹{(product.offerPrice ?? product.price).toFixed(2)}
+                            </span>
+                            {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+                              <>
+                                <span className="text-lg text-[#8a8a8a] line-through">
+                                  ₹{product.price.toFixed(2)}
+                                </span>
+                                <span className="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                  {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <span className="text-lg text-[#8a8a8a]">INR</span>
+                        </div>
                       <div className="flex items-center gap-2">
                         {canWhatsApp && (
                           <button
@@ -491,7 +504,7 @@ export default function Pro({
                     >
                       <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#e0e0e0] shrink-0">
                         <img
-                          src={it.image}
+                          src={it.image || "/default-product.png"}
                           alt={it.name}
                           className="w-full h-full object-cover"
                         />

@@ -5,18 +5,19 @@ import { MenuTemplateType } from "@/generated/prisma/enums";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, slug, title, summary, template } = body as {
+    const { userId, slug, shopName, place, contactNumber, template } = body as {
       userId: string;
       slug: string;
-      title: string;
-      summary?: string;
+      shopName: string;
+      place?: string;
+      contactNumber?: string;
       template?: MenuTemplateType;
     };
 
     // Validation
-    if (!userId || !slug || !title) {
+    if (!userId || !slug || !shopName) {
       return NextResponse.json(
-        { error: "userId, slug, and title are required" },
+        { error: "userId, slug, and shopName are required" },
         { status: 400 }
       );
     }
@@ -49,8 +50,9 @@ export async function POST(request: NextRequest) {
       data: {
         userId,
         slug,
-        title,
-        summary: summary || null,
+        shopName,
+        place: place || null,
+        contactNumber: contactNumber || null,
         template: template || MenuTemplateType.PRO,
       },
       include: {
@@ -74,11 +76,13 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, title, summary, template } = body as {
+    const { id, shopName, place, contactNumber, template, slug } = body as {
       id: string;
-      title?: string;
-      summary?: string | null;
+      shopName?: string;
+      place?: string | null;
+      contactNumber?: string | null;
       template?: MenuTemplateType;
+      slug?: string;
     };
 
     if (!id) {
@@ -96,12 +100,25 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // If slug is being updated, check uniqueness
+    if (slug && slug !== existingMenu.slug) {
+      const slugExists = await prisma.menu.findUnique({ where: { slug } });
+      if (slugExists) {
+        return NextResponse.json(
+          { error: "Menu with this slug already exists" },
+          { status: 409 }
+        );
+      }
+    }
+
     const updatedMenu = await prisma.menu.update({
       where: { id },
       data: {
-        ...(title !== undefined && { title }),
-        ...(summary !== undefined && { summary }),
+        ...(shopName !== undefined && { shopName }),
+        ...(place !== undefined && { place }),
+        ...(contactNumber !== undefined && { contactNumber }),
         ...(template !== undefined && { template }),
+        ...(slug !== undefined && { slug }),
       },
       include: {
         user: { select: { id: true, name: true, email: true } },

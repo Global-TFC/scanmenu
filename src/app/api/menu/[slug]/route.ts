@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
       where: { slug },
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { id: true, name: true, email: true, isSubscribed: true },
         },
         // include items as-is and sort in code to avoid nested orderBy inside include
         items: true,

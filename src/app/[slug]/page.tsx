@@ -13,6 +13,7 @@ interface Product {
   category: string;
   description: string;
   price: number;
+  offerPrice?: number;
   image: string;
   rating?: number;
   reviews?: number;
@@ -45,20 +46,43 @@ export default function SlugMenuPage() {
         setShopName(String(menu?.title ?? ""));
         setShopPlace(String(menu?.summary ?? ""));
         setTemplate((menu?.template as MenuTemplateType) ?? null);
-        const list = (items as Array<Record<string, unknown>>).map((it) => ({
-          id: String(it.id ?? ""),
-          name: String(it.name ?? "Item"),
-          category: String(it.description ?? ""),
-          description: String(it.description ?? ""),
-          price: typeof it.price === "number" ? Number(it.price) : 0,
-          image: String(
-            (it.image as string) ??
-              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=400&fit=crop"
-          ),
-          rating: 4.6,
-          reviews: 0,
-          isFeatured: Boolean((it as any).isFeatured ?? false),
-        }));
+        const arr = items as Array<Record<string, unknown>>;
+        const list = arr.map((it) => {
+          const getStr = (k: string, fallback = "") => {
+            const v = it[k];
+            return typeof v === "string" ? v : fallback;
+          };
+          const getNum = (k: string, fallback = 0) => {
+            const v = it[k];
+            return typeof v === "number" ? v : fallback;
+          };
+          const getBool = (k: string, fallback = false) => {
+            const v = it[k];
+            return typeof v === "boolean" ? v : fallback;
+          };
+          const id = getStr("id");
+          const name = getStr("name", "Item");
+          const category = getStr("category");
+          const price = getNum("price", 0);
+          const offerPrice = getNum("offerPrice", 0) || undefined;
+          const image = getStr(
+            "image",
+            "/default-product.png"
+          );
+          const isFeatured = getBool("isFeatured", false);
+          return {
+            id,
+            name,
+            category,
+            description: category,
+            price,
+            offerPrice,
+            image,
+            rating: 4.6,
+            reviews: 0,
+            isFeatured,
+          };
+        });
         setProducts(list);
       } catch (e) {
         if (!active) return;

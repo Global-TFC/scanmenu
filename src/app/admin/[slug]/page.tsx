@@ -22,18 +22,26 @@ import {
 import { Menu } from "@/generated/prisma/client";
 import { MenuTemplateType } from "@/generated/prisma/enums";
 
+type MenuWithUser = Menu & {
+  user: {
+    isSubscribed: boolean;
+  };
+};
+
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("products");
 
   // Menu data state
-  const [menuData, setMenuData] = useState<Menu | null>(null);
+  // Menu data state
+  const [menuData, setMenuData] = useState<MenuWithUser | null>(null);
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
   const [menuError, setMenuError] = useState<string | null>(null);
 
   // Shop details state
-  const [userId, setUserId] = useState("");
+  // Shop details state
+  const [menuSlug, setMenuSlug] = useState("");
   const [shopName, setShopName] = useState("");
   const [place, setPlace] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -89,14 +97,20 @@ export default function AdminDashboard() {
 
         const s = slug as string;
         const menu = await fetchMenuBySlug(s);
+
+        if (!menu.user?.isSubscribed) {
+          router.push(`/${s}/thank-you`);
+          return;
+        }
+
         setMenuData(menu);
 
         // Populate shop details from fetched menu
-        setUserId(menu.userId);
-        setShopName(menu.title);
-        setPlace(menu.summary || "");
+        setMenuSlug(menu.slug);
+        setShopName(menu.shopName);
+        setPlace(menu.place || "");
+        setContactNumber(menu.contactNumber || "");
         setTemplate(menu.template || "PRO");
-        // setContactNumber can be added if it exists in your Menu model
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Failed to fetch menu";
@@ -118,17 +132,33 @@ export default function AdminDashboard() {
       try {
         const items = await fetchMenuItems(slug as string);
         if (Array.isArray(items) && items.length) {
-          const itemsArr = items as unknown as Array<Record<string, unknown>>;
-          const mapped = itemsArr.map((it) => ({
-            id: (it.id as string) ?? Date.now().toString(),
-            name: String(it.name ?? "Menu Item"),
-            category: String(it.description ?? "Menu Item"),
-            price: it.price ? Number(it.price) : 0,
-            image: String(it.image ?? ""),
-            isFeatured: Boolean(
-              typeof it.isFeatured === "boolean" ? it.isFeatured : false
-            ),
-          }));
+          const itemsArr = items as Array<Record<string, unknown>>;
+          const mapped = itemsArr.map((it) => {
+            const getStr = (k: string, fallback = "") => {
+              const v = it[k];
+              return typeof v === "string" ? v : fallback;
+            };
+            const getNum = (k: string, fallback = 0) => {
+              const v = it[k];
+              return typeof v === "number" ? v : fallback;
+            };
+            const getBool = (k: string, fallback = false) => {
+              const v = it[k];
+              return typeof v === "boolean" ? v : fallback;
+            };
+            return {
+              id: getStr("id", Date.now().toString()),
+              name: getStr("name", "Menu Item"),
+              category: getStr("category", "Menu Item"),
+              price: getNum("price", 0),
+              image: getStr("image", ""),
+              isFeatured: getBool("isFeatured", false),
+              offerPrice: (() => {
+                const v = it["offerPrice"];
+                return typeof v === "number" ? (v as number) : undefined;
+              })(),
+            };
+          });
           setProducts(mapped);
         }
       } catch (err) {
@@ -155,14 +185,22 @@ export default function AdminDashboard() {
     try {
       const updated = await updateMenu({
         id: menuData.id,
-        title: shopName,
-        summary: place,
+        shopName,
+        place,
+        contactNumber,
         template: template as MenuTemplateType,
+        slug: menuSlug !== slug ? menuSlug : undefined,
       });
       
       setMenuData(updated);
       alert("Shop details saved successfully!");
-      setMobileSidebarOpen(false);
+      
+      // If slug changed, redirect to new admin page
+      if (menuSlug !== slug) {
+        window.location.href = `/admin/${menuSlug}`;
+      } else {
+        setMobileSidebarOpen(false);
+      }
     } catch (error) {
       alert(
         `Failed to save shop details: ${
@@ -179,7 +217,7 @@ export default function AdminDashboard() {
         name: productData.name,
         image: productData.image,
         price: productData.price,
-        description: productData.category,
+        category: productData.category,
       });
       const newProduct: Product = {
         id: String(created.id),
@@ -214,10 +252,11 @@ export default function AdminDashboard() {
         slug: slug as string,
         id: product.id,
         name: product.name,
-        description: product.category,
+        category: product.category,
         price: product.price,
         image: product.image,
         isFeatured: product.isFeatured,
+        offerPrice: product.offerPrice,
       });
       const updatedItem = updated as Record<string, unknown>;
       setProducts((prev) =>
@@ -225,15 +264,12 @@ export default function AdminDashboard() {
           p.id === product.id
             ? {
                 ...p,
-                name: String(updatedItem.name ?? product.name),
-                category: String(updatedItem.description ?? product.category),
-                price: Number(updatedItem.price ?? product.price),
-                image: String(updatedItem.image ?? product.image),
-                isFeatured: Boolean(
-                  typeof updatedItem.isFeatured === "boolean"
-                    ? updatedItem.isFeatured
-                    : product.isFeatured
-                ),
+                name: typeof updatedItem.name === "string" ? (updatedItem.name as string) : product.name,
+                category: typeof updatedItem.category === "string" ? (updatedItem.category as string) : product.category,
+                price: typeof updatedItem.price === "number" ? (updatedItem.price as number) : product.price,
+                offerPrice: typeof updatedItem.offerPrice === "number" ? (updatedItem.offerPrice as number) : product.offerPrice,
+                image: typeof updatedItem.image === "string" ? (updatedItem.image as string) : product.image,
+                isFeatured: typeof updatedItem.isFeatured === "boolean" ? (updatedItem.isFeatured as boolean) : product.isFeatured,
               }
             : p
         )
@@ -317,7 +353,7 @@ export default function AdminDashboard() {
             <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
               <h3 className="font-semibold text-blue-900">Menu Info:</h3>
               <p className="text-sm text-blue-700">
-                {menuData.title} • Slug: {menuData.slug} • Template:{" "}
+                {menuData.shopName} • Slug: {menuData.slug} • Template:{" "}
                 {menuData.template}
               </p>
             </div>
@@ -342,12 +378,12 @@ export default function AdminDashboard() {
 
           {activeMenu === "shop" && (
             <ShopDetailsView
-              userId={userId}
+              slug={menuSlug} // Pass menuSlug
               shopName={shopName}
               place={place}
               contactNumber={contactNumber}
               template={template}
-              onUserIdChange={setUserId}
+              onSlugChange={setMenuSlug} // New handler for slug change
               onShopNameChange={setShopName}
               onPlaceChange={setPlace}
               onContactNumberChange={setContactNumber}
@@ -358,7 +394,7 @@ export default function AdminDashboard() {
 
           {activeMenu === "tools" && (
             <MenuToolsView
-              shopName={shopName || menuData?.title || "Your Shop"}
+              shopName={shopName || menuData?.shopName || "Your Shop"}
               menuUrl={
                 typeof window !== "undefined"
                   ? `${window.location.origin}/menu/${

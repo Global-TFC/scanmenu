@@ -24,6 +24,7 @@ interface Product {
   rating?: number;
   reviews?: number;
   isFeatured?: boolean;
+  offerPrice?: number;
 }
 
 export default function Ecommerce({
@@ -211,13 +212,25 @@ export default function Ecommerce({
                   {/* Image Container */}
                   <div className="relative aspect-square border-[3px] border-black overflow-hidden mb-3">
                     <img
-                      src={product.image}
+                      src={product.image || "/default-product.png"}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-2 left-2 bg-red-600 text-white font-black text-xs px-2 py-1 uppercase border-[2px] border-black shadow-[2px_2px_0_#000] rotate-[-3deg]">
-                      -25%
-                    </div>
+                    {(() => {
+                      const d =
+                        typeof product.offerPrice === "number" &&
+                        product.offerPrice < product.price
+                          ? Math.round(
+                              ((product.price - product.offerPrice) /
+                                product.price) * 100
+                            )
+                          : 0;
+                      return d > 0 ? (
+                        <div className="absolute top-2 left-2 bg-red-600 text-white font-black text-xs px-2 py-1 uppercase border-[2px] border-black shadow-[2px_2px_0_#000] rotate-[-3deg]">
+                          -{d}%
+                        </div>
+                      ) : null;
+                    })()}
                   </div>
 
                   {/* Product Info */}
@@ -234,11 +247,13 @@ export default function Ecommerce({
                       <div>
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="font-black text-lg">
-                            ₹{product.price.toFixed(0)}
+                            ₹{(product.offerPrice ?? product.price).toFixed(0)}
                           </span>
-                          <span className="text-xs font-bold text-gray-500 line-through">
-                            ₹{Math.round(product.price * 1.25)}
-                          </span>
+                          {typeof product.offerPrice === "number" ? (
+                            <span className="text-xs font-bold text-gray-500 line-through">
+                              ₹{product.price.toFixed(0)}
+                            </span>
+                          ) : null}
                         </div>
                       </div>
                       <button
@@ -316,7 +331,7 @@ export default function Ecommerce({
                     >
                       <div className="relative w-16 h-16 border-[3px] border-black overflow-hidden">
                         <img
-                          src={it.image}
+                          src={it.image || "/default-product.png"}
                           alt={it.name}
                           className="w-full h-full object-cover"
                         />

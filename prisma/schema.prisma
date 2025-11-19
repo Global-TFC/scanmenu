@@ -19,13 +19,13 @@ model User {
   email         String    @unique
   emailVerified Boolean   @default(false)
   name          String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
   image         String?
   menu          Menu?
+  isSubscribed   Boolean   @default(false)
   sessions      Session[]
   accounts      Account[]
-
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   @@map("user")
 }
 
@@ -41,25 +41,16 @@ model Menu {
   userId    String           @unique
   user      User             @relation(fields: [userId], references: [id])
   slug      String           @unique
-  title     String
-  summary   String?
+  shopName     String
+  place      String?
+  contactNumber   String?
   template  MenuTemplateType @default(PRO)
   items     MenuItem[]
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 }
 
-model Category {
-  id        String     @id @default(cuid())
-  userId    String
-  name      String
-  items     MenuItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  @@unique([userId, name])
-  @@index([name])
-}
+ 
 
 model MenuItem {
   id          String    @id @default(cuid())
@@ -67,10 +58,9 @@ model MenuItem {
   menu        Menu      @relation(fields: [menuId], references: [id])
   name        String
   image       String?
-  description String?
+  category    String?
+  offerPrice  Int?
   price       Int?
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id])
   isFeatured  Boolean   @default(false)
   isAvailable Boolean   @default(true)
   createdAt   DateTime  @default(now())

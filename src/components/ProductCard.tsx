@@ -16,7 +16,7 @@ export default function ProductCard({ product, viewMode, onEdit, onDelete }: Pro
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group">
         <div className="aspect-square overflow-hidden bg-gray-100">
           <img 
-            src={product.image} 
+            src={product.image || "/default-product.png"} 
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -24,9 +24,16 @@ export default function ProductCard({ product, viewMode, onEdit, onDelete }: Pro
         <div className="p-3 sm:p-4">
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-semibold text-gray-900 text-base sm:text-lg">{product.name}</h3>
-            <span className="text-indigo-600 font-bold text-base sm:text-lg">₹{product.price.toFixed(2)}</span>
+            <span className="text-indigo-600 font-bold text-base sm:text-lg">
+              ₹{(typeof product.offerPrice === "number" && product.offerPrice < product.price ? product.offerPrice : product.price).toFixed(2)}
+            </span>
           </div>
           <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">{product.category}</p>
+          {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+            <p className="text-xs text-gray-500">
+              <span className="line-through">₹{product.price.toFixed(2)}</span>
+            </p>
+          )}
           <div className="flex gap-2">
             <button
               onClick={() => onEdit(product)}
@@ -53,7 +60,7 @@ export default function ProductCard({ product, viewMode, onEdit, onDelete }: Pro
       <div className="flex items-center p-3 sm:p-4 gap-3 sm:gap-4">
         <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
           <img 
-            src={product.image} 
+            src={product.image || "/default-product.png"} 
             alt={product.name}
             className="w-full h-full object-cover"
           />
@@ -63,7 +70,12 @@ export default function ProductCard({ product, viewMode, onEdit, onDelete }: Pro
           <p className="text-xs sm:text-sm text-gray-500">{product.category}</p>
         </div>
         <div className="flex items-center gap-3 sm:gap-4">
-          <span className="text-indigo-600 font-bold text-base sm:text-xl whitespace-nowrap">₹{product.price.toFixed(2)}</span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-indigo-600 font-bold text-base sm:text-xl whitespace-nowrap">₹{(typeof product.offerPrice === "number" && product.offerPrice < product.price ? product.offerPrice : product.price).toFixed(2)}</span>
+            {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+              <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.price.toFixed(2)}</span>
+            )}
+          </div>
           <div className="flex gap-1 sm:gap-2">
             <button
               onClick={() => onEdit(product)}

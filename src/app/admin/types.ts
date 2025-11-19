@@ -5,6 +5,7 @@ export interface Product {
   price: number;
   image: string;
   isFeatured?: boolean;
+  offerPrice?: number;
 }
 
 export interface MenuItem {

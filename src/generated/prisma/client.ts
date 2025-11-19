@@ -52,11 +52,6 @@ export type User = Prisma.UserModel
  */
 export type Menu = Prisma.MenuModel
 /**
- * Model Category
- * 
- */
-export type Category = Prisma.CategoryModel
-/**
  * Model MenuItem
  * 
  */

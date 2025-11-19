@@ -8,6 +8,7 @@ interface Product {
   category: string;
   description: string;
   price: number;
+  offerPrice?: number;
   image: string;
   rating?: number;
   reviews?: number;
@@ -120,13 +121,25 @@ export default function Normal({
             {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100">
                 <div className="relative aspect-[4/3] overflow-hidden">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <button onClick={() => toggleFavorite(product.id)} className="absolute top-3 right-3 p-2.5 bg-white/90 backdrop-blur rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95">
                     <Heart size={18} className={favorites.has(product.id) ? "text-red-500 fill-red-500" : "text-gray-400"} />
                   </button>
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">{product.category}</div>
+                  {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+                    <div className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                      {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
+                    </div>
+                  )}
+                  {!product.offerPrice && (
+                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">{product.category}</div>
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <div className="text-white font-bold text-2xl">₹{product.price.toFixed(2)}</div>
+                    <div className="flex items-baseline gap-2">
+                      <div className="text-white font-bold text-2xl">₹{(product.offerPrice ?? product.price).toFixed(2)}</div>
+                      {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+                        <div className="text-white/70 text-sm line-through">₹{product.price.toFixed(2)}</div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="p-4">
@@ -149,10 +162,15 @@ export default function Normal({
               <div key={product.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-100">
                 <div className="flex flex-col sm:flex-row">
                   <div className="relative w-full sm:w-40 h-40 flex-shrink-0 overflow-hidden">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover" />
                     <button onClick={() => toggleFavorite(product.id)} className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95">
                       <Heart size={16} className={favorites.has(product.id) ? "text-red-500 fill-red-500" : "text-gray-400"} />
                     </button>
+                    {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+                      <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md">
+                        {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1 p-4 flex flex-col justify-between">
                     <div>
@@ -161,7 +179,12 @@ export default function Normal({
                           <h3 className="font-bold text-gray-900 text-lg mb-1">{product.name}</h3>
                           <span className="inline-block bg-gray-100 text-gray-700 px-2.5 py-0.5 rounded-full text-xs font-medium">{product.category}</span>
                         </div>
-                        <div className="text-orange-600 font-bold text-xl whitespace-nowrap">₹{product.price.toFixed(2)}</div>
+                        <div className="text-right">
+                          <div className="text-orange-600 font-bold text-xl whitespace-nowrap">₹{(product.offerPrice ?? product.price).toFixed(2)}</div>
+                          {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+                            <div className="text-gray-400 text-sm line-through">₹{product.price.toFixed(2)}</div>
+                          )}
+                        </div>
                       </div>
                       <p className="text-gray-600 text-sm mb-3">{product.description}</p>
                       <div className="flex items-center gap-2">

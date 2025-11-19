@@ -28,8 +28,9 @@ export type MenuMinAggregateOutputType = {
   id: string | null
   userId: string | null
   slug: string | null
-  title: string | null
-  summary: string | null
+  shopName: string | null
+  place: string | null
+  contactNumber: string | null
   template: $Enums.MenuTemplateType | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,8 +40,9 @@ export type MenuMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   slug: string | null
-  title: string | null
-  summary: string | null
+  shopName: string | null
+  place: string | null
+  contactNumber: string | null
   template: $Enums.MenuTemplateType | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -50,8 +52,9 @@ export type MenuCountAggregateOutputType = {
   id: number
   userId: number
   slug: number
-  title: number
-  summary: number
+  shopName: number
+  place: number
+  contactNumber: number
   template: number
   createdAt: number
   updatedAt: number
@@ -63,8 +66,9 @@ export type MenuMinAggregateInputType = {
   id?: true
   userId?: true
   slug?: true
-  title?: true
-  summary?: true
+  shopName?: true
+  place?: true
+  contactNumber?: true
   template?: true
   createdAt?: true
   updatedAt?: true
@@ -74,8 +78,9 @@ export type MenuMaxAggregateInputType = {
   id?: true
   userId?: true
   slug?: true
-  title?: true
-  summary?: true
+  shopName?: true
+  place?: true
+  contactNumber?: true
   template?: true
   createdAt?: true
   updatedAt?: true
@@ -85,8 +90,9 @@ export type MenuCountAggregateInputType = {
   id?: true
   userId?: true
   slug?: true
-  title?: true
-  summary?: true
+  shopName?: true
+  place?: true
+  contactNumber?: true
   template?: true
   createdAt?: true
   updatedAt?: true
@@ -169,8 +175,9 @@ export type MenuGroupByOutputType = {
   id: string
   userId: string
   slug: string
-  title: string
-  summary: string | null
+  shopName: string
+  place: string | null
+  contactNumber: string | null
   template: $Enums.MenuTemplateType
   createdAt: Date
   updatedAt: Date
@@ -201,8 +208,9 @@ export type MenuWhereInput = {
   id?: Prisma.StringFilter<"Menu"> | string
   userId?: Prisma.StringFilter<"Menu"> | string
   slug?: Prisma.StringFilter<"Menu"> | string
-  title?: Prisma.StringFilter<"Menu"> | string
-  summary?: Prisma.StringNullableFilter<"Menu"> | string | null
+  shopName?: Prisma.StringFilter<"Menu"> | string
+  place?: Prisma.StringNullableFilter<"Menu"> | string | null
+  contactNumber?: Prisma.StringNullableFilter<"Menu"> | string | null
   template?: Prisma.EnumMenuTemplateTypeFilter<"Menu"> | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
@@ -214,8 +222,9 @@ export type MenuOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  summary?: Prisma.SortOrderInput | Prisma.SortOrder
+  shopName?: Prisma.SortOrder
+  place?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   template?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -230,8 +239,9 @@ export type MenuWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.MenuWhereInput | Prisma.MenuWhereInput[]
   OR?: Prisma.MenuWhereInput[]
   NOT?: Prisma.MenuWhereInput | Prisma.MenuWhereInput[]
-  title?: Prisma.StringFilter<"Menu"> | string
-  summary?: Prisma.StringNullableFilter<"Menu"> | string | null
+  shopName?: Prisma.StringFilter<"Menu"> | string
+  place?: Prisma.StringNullableFilter<"Menu"> | string | null
+  contactNumber?: Prisma.StringNullableFilter<"Menu"> | string | null
   template?: Prisma.EnumMenuTemplateTypeFilter<"Menu"> | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
@@ -243,8 +253,9 @@ export type MenuOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  summary?: Prisma.SortOrderInput | Prisma.SortOrder
+  shopName?: Prisma.SortOrder
+  place?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   template?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -260,8 +271,9 @@ export type MenuScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Menu"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Menu"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Menu"> | string
-  title?: Prisma.StringWithAggregatesFilter<"Menu"> | string
-  summary?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
+  shopName?: Prisma.StringWithAggregatesFilter<"Menu"> | string
+  place?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
+  contactNumber?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
   template?: Prisma.EnumMenuTemplateTypeWithAggregatesFilter<"Menu"> | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Menu"> | Date | string
@@ -270,8 +282,9 @@ export type MenuScalarWhereWithAggregatesInput = {
 export type MenuCreateInput = {
   id?: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -283,8 +296,9 @@ export type MenuUncheckedCreateInput = {
   id?: string
   userId: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -294,8 +308,9 @@ export type MenuUncheckedCreateInput = {
 export type MenuUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -307,8 +322,9 @@ export type MenuUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -319,8 +335,9 @@ export type MenuCreateManyInput = {
   id?: string
   userId: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -329,8 +346,9 @@ export type MenuCreateManyInput = {
 export type MenuUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -340,8 +358,9 @@ export type MenuUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -356,8 +375,9 @@ export type MenuCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  summary?: Prisma.SortOrder
+  shopName?: Prisma.SortOrder
+  place?: Prisma.SortOrder
+  contactNumber?: Prisma.SortOrder
   template?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -367,8 +387,9 @@ export type MenuMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  summary?: Prisma.SortOrder
+  shopName?: Prisma.SortOrder
+  place?: Prisma.SortOrder
+  contactNumber?: Prisma.SortOrder
   template?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -378,8 +399,9 @@ export type MenuMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  title?: Prisma.SortOrder
-  summary?: Prisma.SortOrder
+  shopName?: Prisma.SortOrder
+  place?: Prisma.SortOrder
+  contactNumber?: Prisma.SortOrder
   template?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -443,8 +465,9 @@ export type MenuUpdateOneRequiredWithoutItemsNestedInput = {
 export type MenuCreateWithoutUserInput = {
   id?: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -454,8 +477,9 @@ export type MenuCreateWithoutUserInput = {
 export type MenuUncheckedCreateWithoutUserInput = {
   id?: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -481,8 +505,9 @@ export type MenuUpdateToOneWithWhereWithoutUserInput = {
 export type MenuUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -492,8 +517,9 @@ export type MenuUpdateWithoutUserInput = {
 export type MenuUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -503,8 +529,9 @@ export type MenuUncheckedUpdateWithoutUserInput = {
 export type MenuCreateWithoutItemsInput = {
   id?: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -515,8 +542,9 @@ export type MenuUncheckedCreateWithoutItemsInput = {
   id?: string
   userId: string
   slug: string
-  title: string
-  summary?: string | null
+  shopName: string
+  place?: string | null
+  contactNumber?: string | null
   template?: $Enums.MenuTemplateType
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -541,8 +569,9 @@ export type MenuUpdateToOneWithWhereWithoutItemsInput = {
 export type MenuUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -553,8 +582,9 @@ export type MenuUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  shopName?: Prisma.StringFieldUpdateOperationsInput | string
+  place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -595,8 +625,9 @@ export type MenuSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   userId?: boolean
   slug?: boolean
-  title?: boolean
-  summary?: boolean
+  shopName?: boolean
+  place?: boolean
+  contactNumber?: boolean
   template?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -609,8 +640,9 @@ export type MenuSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   userId?: boolean
   slug?: boolean
-  title?: boolean
-  summary?: boolean
+  shopName?: boolean
+  place?: boolean
+  contactNumber?: boolean
   template?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -621,8 +653,9 @@ export type MenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   userId?: boolean
   slug?: boolean
-  title?: boolean
-  summary?: boolean
+  shopName?: boolean
+  place?: boolean
+  contactNumber?: boolean
   template?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -633,14 +666,15 @@ export type MenuSelectScalar = {
   id?: boolean
   userId?: boolean
   slug?: boolean
-  title?: boolean
-  summary?: boolean
+  shopName?: boolean
+  place?: boolean
+  contactNumber?: boolean
   template?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "slug" | "title" | "summary" | "template" | "createdAt" | "updatedAt", ExtArgs["result"]["menu"]>
+export type MenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "slug" | "shopName" | "place" | "contactNumber" | "template" | "createdAt" | "updatedAt", ExtArgs["result"]["menu"]>
 export type MenuInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Menu$itemsArgs<ExtArgs>
@@ -663,8 +697,9 @@ export type $MenuPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     userId: string
     slug: string
-    title: string
-    summary: string | null
+    shopName: string
+    place: string | null
+    contactNumber: string | null
     template: $Enums.MenuTemplateType
     createdAt: Date
     updatedAt: Date
@@ -1096,8 +1131,9 @@ export interface MenuFieldRefs {
   readonly id: Prisma.FieldRef<"Menu", 'String'>
   readonly userId: Prisma.FieldRef<"Menu", 'String'>
   readonly slug: Prisma.FieldRef<"Menu", 'String'>
-  readonly title: Prisma.FieldRef<"Menu", 'String'>
-  readonly summary: Prisma.FieldRef<"Menu", 'String'>
+  readonly shopName: Prisma.FieldRef<"Menu", 'String'>
+  readonly place: Prisma.FieldRef<"Menu", 'String'>
+  readonly contactNumber: Prisma.FieldRef<"Menu", 'String'>
   readonly template: Prisma.FieldRef<"Menu", 'MenuTemplateType'>
   readonly createdAt: Prisma.FieldRef<"Menu", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Menu", 'DateTime'>

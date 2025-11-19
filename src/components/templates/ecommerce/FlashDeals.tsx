@@ -8,6 +8,7 @@ interface Product {
   category: string;
   description: string;
   price: number;
+  offerPrice?: number;
   image: string;
   rating?: number;
   reviews?: number;
@@ -51,14 +52,17 @@ export default function FlashDeals({
   const allFeatured = featured; // For desktop - show all in one row
 
   const renderProductCard = (product: Product) => {
-    const discount = 25;
+    const discount =
+      typeof product.offerPrice === "number" && product.offerPrice < product.price
+        ? Math.round(((product.price - product.offerPrice) / product.price) * 100)
+        : 0;
     return (
       <div key={product.id} className="flex-none w-[160px]">
         <div className="bg-white border-[3px] border-black p-3 shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all transform rotate-[-0.5deg] hover:rotate-[0deg]">
           {/* Image Container */}
           <div className="relative aspect-square border-[3px] border-black overflow-hidden mb-3">
             <img
-              src={product.image}
+              src={product.image || "/default-product.png"}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -83,11 +87,13 @@ export default function FlashDeals({
               <div>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="font-black text-lg">
-                    ₹{product.price.toFixed(0)}
+                    ₹{(product.offerPrice ?? product.price).toFixed(0)}
                   </span>
-                  <span className="text-xs font-bold text-gray-500 line-through">
-                    ₹{Math.round(product.price * 1.25)}
-                  </span>
+                  {typeof product.offerPrice === "number" && (
+                    <span className="text-xs font-bold text-gray-500 line-through">
+                      ₹{product.price.toFixed(0)}
+                    </span>
+                  )}
                 </div>
               </div>
               <button

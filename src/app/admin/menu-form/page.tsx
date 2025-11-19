@@ -1,30 +1,69 @@
-// components/CreateMenuForm.tsx
-
- 'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { MenuTemplateType } from '@/generated/prisma/enums';
 import { createMenu, isMenuFormAlreadyFilled } from '@/lib/api/menus';
 import { useRouter } from 'next/navigation';
+import { 
+  LayoutTemplate, 
+  ShoppingBag, 
+  Utensils, 
+  Check, 
+  Store, 
+  MapPin, 
+  Phone, 
+  Link as LinkIcon, 
+  ArrowRight,
+  Eye
+} from 'lucide-react';
 
 interface FormData {
   slug: string;
-  title: string;
-  summary: string;
+  shopName: string;
+  place: string;
+  contactNumber: string;
   template: MenuTemplateType;
 }
 
 interface FormErrors {
   slug?: string;
-  title?: string;
-  summary?: string;
+  shopName?: string;
+  place?: string;
+  contactNumber?: string;
   general?: string;
 }
 
+const TEMPLATES = [
+  {
+    id: 'NORMAL',
+    name: 'Normal Menu',
+    description: 'Classic list view perfect for simple menus.',
+    icon: Utensils,
+    color: 'bg-orange-100 text-orange-600',
+    previewUrl: '/showrt',
+  },
+  {
+    id: 'PRO',
+    name: 'Pro Menu',
+    description: 'Rich visual experience with categories and featured items.',
+    icon: LayoutTemplate,
+    color: 'bg-purple-100 text-purple-600',
+    previewUrl: '/myshop',
+  },
+  {
+    id: 'E_COM',
+    name: 'E-Commerce',
+    description: 'Full shopping experience with cart and checkout.',
+    icon: ShoppingBag,
+    color: 'bg-blue-100 text-blue-600',
+    previewUrl: '/myshop',
+  },
+] as const;
+
 export default function CreateMenuForm() {
   const { data: session } = useSession();
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     const checkForm = async () => {
@@ -34,12 +73,13 @@ export default function CreateMenuForm() {
       }
     };
     checkForm();
-  }, [session, router])
+  }, [session, router]);
 
   const [formData, setFormData] = useState<FormData>({
     slug: '',
-    title: '',
-    summary: '',
+    shopName: '',
+    place: '',
+    contactNumber: '',
     template: 'PRO' as MenuTemplateType,
   });
 
@@ -53,17 +93,18 @@ export default function CreateMenuForm() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user types
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
+  const handleTemplateSelect = (templateId: MenuTemplateType) => {
+    setFormData((prev) => ({ ...prev, template: templateId }));
+  };
+
   // Client-side validation
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
-
-    // userId is taken from the logged-in session on submit
 
     if (!formData.slug.trim()) {
       newErrors.slug = 'Slug is required';
@@ -71,10 +112,10 @@ export default function CreateMenuForm() {
       newErrors.slug = 'Slug can only contain lowercase letters, numbers, and hyphens';
     }
 
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    } else if (formData.title.length < 3) {
-      newErrors.title = 'Title must be at least 3 characters';
+    if (!formData.shopName.trim()) {
+      newErrors.shopName = 'Shop Name is required';
+    } else if (formData.shopName.length < 3) {
+      newErrors.shopName = 'Shop Name must be at least 3 characters';
     }
 
     setErrors(newErrors);
@@ -87,7 +128,6 @@ export default function CreateMenuForm() {
     setSuccessMessage('');
     setErrors({});
 
-    // Validate form
     if (!validate()) return;
 
     setIsSubmitting(true);
@@ -99,23 +139,22 @@ export default function CreateMenuForm() {
       const menuData = {
         userId,
         slug: formData.slug,
-        title: formData.title,
-        summary: formData.summary || undefined,
+        shopName: formData.shopName,
+        place: formData.place || undefined,
+        contactNumber: formData.contactNumber || undefined,
         template: formData.template,
       };
 
       const newMenu = await createMenu(menuData);
       
-      setSuccessMessage(`Menu "${newMenu.title}" created successfully!`);
-      
-      // Navigate to admin page with the new slug
+      setSuccessMessage(`Menu "${newMenu.shopName}" created successfully!`);
       router.push(`/admin/${formData.slug}`);
       
-      // Reset form
       setFormData({
         slug: '',
-        title: '',
-        summary: '',
+        shopName: '',
+        place: '',
+        contactNumber: '',
         template: 'PRO' as MenuTemplateType,
       });
     } catch (error) {
@@ -127,127 +166,249 @@ export default function CreateMenuForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6">Create New Menu</h2>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl mb-2">
+            Create Your Digital Menu
+          </h1>
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Logged-in user info */}
-        {session?.user && (
-          <div className="text-sm text-gray-700">
-            Creating menu as: <strong>{session.user.name || session.user.email}</strong>
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+          {/* Progress Indicator (Visual only for now) */}
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span className="text-sm font-medium text-gray-600">
+                {session?.user ? `Logged in as ${session.user.name || session.user.email}` : 'Guest'}
+              </span>
+            </div>
+            <div className="text-sm text-gray-400">Step 1 of 1</div>
           </div>
-        )}
 
-        {/* Slug */}
-        <div>
-          <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
-            Slug <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="slug"
-            name="slug"
-            value={formData.slug}
-            onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.slug ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="my-menu-slug"
-            disabled={isSubmitting}
-          />
-          {errors.slug && (
-            <p className="mt-1 text-sm text-red-600">{errors.slug}</p>
-          )}
-          <p className="mt-1 text-xs text-gray-500">
-            Only lowercase letters, numbers, and hyphens
-          </p>
+          <form onSubmit={handleSubmit} className="p-8 space-y-8">
+            {/* Shop Details Section */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Store className="text-indigo-600" size={24} />
+                Shop Details
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Shop Name */}
+                <div className="col-span-2 md:col-span-1">
+                  <label htmlFor="shopName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Shop Name <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="shopName"
+                      name="shopName"
+                      value={formData.shopName}
+                      onChange={handleChange}
+                      className={`block w-full px-4 py-3 rounded-lg border ${
+                        errors.shopName ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-indigo-500 focus:border-indigo-500'
+                      } transition-colors bg-gray-50 focus:bg-white`}
+                      placeholder="e.g. Joe's Coffee Shop"
+                      disabled={isSubmitting}
+                    />
+                    {errors.shopName && (
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-red-500 text-sm">!</span>
+                      </div>
+                    )}
+                  </div>
+                  {errors.shopName && <p className="mt-1 text-sm text-red-600">{errors.shopName}</p>}
+                </div>
+
+                {/* Slug */}
+                <div className="col-span-2 md:col-span-1">
+                  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
+                    Shop URL Slug <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative rounded-lg shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <LinkIcon className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      id="slug"
+                      name="slug"
+                      value={formData.slug}
+                      onChange={handleChange}
+                      className={`block w-full pl-10 pr-4 py-3 rounded-lg border ${
+                        errors.slug ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-200 focus:ring-indigo-500 focus:border-indigo-500'
+                      } transition-colors bg-gray-50 focus:bg-white`}
+                      placeholder="joes-coffee"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  {errors.slug ? (
+                    <p className="mt-1 text-sm text-red-600">{errors.slug}</p>
+                  ) : (
+                    <p className="mt-1 text-xs text-gray-500">scanmenu.com/menu/<strong>{formData.slug || 'your-slug'}</strong></p>
+                  )}
+                </div>
+
+                {/* Place */}
+                <div className="col-span-2 md:col-span-1">
+                  <label htmlFor="place" className="block text-sm font-medium text-gray-700 mb-1">
+                    Location
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      id="place"
+                      name="place"
+                      value={formData.place}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                      placeholder="e.g. Malappuram"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+
+                {/* Contact Number */}
+                <div className="col-span-2 md:col-span-1">
+                  <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                    Contact Number
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <input
+                      type="tel"
+                      id="contactNumber"
+                      name="contactNumber"
+                      value={formData.contactNumber}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
+                      placeholder="e.g. +91 9876543210"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className="border-t border-gray-100"></div>
+
+            {/* Template Selection Section */}
+            <section>
+              <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <LayoutTemplate className="text-indigo-600" size={24} />
+                Choose a Template
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {TEMPLATES.map((template) => {
+                  const Icon = template.icon;
+                  const isSelected = formData.template === template.id;
+                  
+                  return (
+                    <div 
+                      key={template.id}
+                      className={`relative group rounded-xl border-2 transition-all duration-300 cursor-pointer overflow-hidden ${
+                        isSelected 
+                          ? 'border-indigo-600 bg-indigo-50 shadow-lg scale-105 ring-1 ring-indigo-600' 
+                          : 'border-gray-200 hover:border-indigo-300 hover:shadow-md bg-white'
+                      }`}
+                      onClick={() => handleTemplateSelect(template.id as MenuTemplateType)}
+                    >
+                      {isSelected && (
+                        <div className="absolute top-3 right-3 bg-indigo-600 text-white p-1 rounded-full shadow-sm z-10">
+                          <Check size={14} strokeWidth={3} />
+                        </div>
+                      )}
+                      
+                      <div className="p-6 flex flex-col h-full">
+                        <div className={`w-12 h-12 rounded-lg ${template.color} flex items-center justify-center mb-4`}>
+                          <Icon size={24} />
+                        </div>
+                        
+                        <h4 className={`font-bold text-lg mb-2 ${isSelected ? 'text-indigo-900' : 'text-gray-900'}`}>
+                          {template.name}
+                        </h4>
+                        
+                        <p className="text-sm text-gray-500 mb-6 flex-grow">
+                          {template.description}
+                        </p>
+                        
+                        <div className="flex items-center justify-between mt-auto">
+                          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                            isSelected ? 'bg-indigo-200 text-indigo-800' : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {isSelected ? 'Selected' : 'Select'}
+                          </span>
+                          
+                          <a 
+                            href={template.previewUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1 hover:underline z-20"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Eye size={14} />
+                            Preview
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Error & Success Messages */}
+            {errors.general && (
+              <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3">
+                <div className="text-red-500 mt-0.5">!</div>
+                <p className="text-sm text-red-600">{errors.general}</p>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="p-4 bg-green-50 border border-green-100 rounded-xl flex items-start gap-3">
+                <div className="text-green-500 mt-0.5"><Check size={16} /></div>
+                <p className="text-sm text-green-600 font-medium">{successMessage}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all transform hover:-translate-y-1 ${
+                  isSubmitting
+                    ? 'bg-gray-400 cursor-not-allowed shadow-none transform-none'
+                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-indigo-200'
+                } flex items-center justify-center gap-2`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    Creating Your Menu...
+                  </>
+                ) : (
+                  <>
+                    Create Menu <ArrowRight size={20} />
+                  </>
+                )}
+              </button>
+              <p className="text-center text-xs text-gray-400 mt-4">
+                By creating a menu, you agree to our Terms of Service and Privacy Policy.
+              </p>
+            </div>
+          </form>
         </div>
-
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.title ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="My Awesome Menu"
-            disabled={isSubmitting}
-          />
-          {errors.title && (
-            <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-          )}
-        </div>
-
-        {/* Summary */}
-        <div>
-          <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
-            Summary (Optional)
-          </label>
-          <textarea
-            id="summary"
-            name="summary"
-            value={formData.summary}
-            onChange={handleChange}
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Brief description of your menu..."
-            disabled={isSubmitting}
-          />
-        </div>
-
-        {/* Template */}
-        <div>
-          <label htmlFor="template" className="block text-sm font-medium text-gray-700 mb-1">
-            Template Type
-          </label>
-          <select
-            id="template"
-            name="template"
-            value={formData.template}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={isSubmitting}
-          >
-            <option value="NORMAL">NORMAL</option>
-            <option value="PRO">PRO</option>
-            <option value="E_COM">E_COM</option>
-          </select>
-        </div>
-
-        {/* Error Message */}
-        {errors.general && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-sm text-red-600">{errors.general}</p>
-          </div>
-        )}
-
-        {/* Success Message */}
-        {successMessage && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-sm text-green-600">{successMessage}</p>
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`w-full py-2 px-4 rounded-md font-medium text-white transition-colors ${
-            isSubmitting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-          }`}
-        >
-          {isSubmitting ? 'Creating Menu...' : 'Create Menu'}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

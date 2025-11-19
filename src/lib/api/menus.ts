@@ -3,8 +3,9 @@ import { MenuTemplateType } from "@/generated/prisma/enums";
 export async function createMenu(data: {
   userId: string;
   slug: string;
-  title: string;
-  summary?: string;
+  shopName: string;
+  place?: string;
+  contactNumber?: string;
   template?: MenuTemplateType;
 }) {
   const res = await fetch("/api/menu", {
@@ -100,7 +101,7 @@ export async function fetchMenuItems(slug: string) {
       status: res.status,
       body: parsed ?? text,
     });
-    throw new Error(msg);
+    return [];
   }
 
   return parsed && parsed.items ? (parsed.items as unknown[]) : [];
@@ -110,9 +111,9 @@ export async function createMenuItem(data: {
   slug: string;
   name: string;
   image?: string;
-  description?: string;
+  category?: string;
   price?: number;
-  categoryId?: string;
+  offerPrice?: number;
   isFeatured?: boolean;
   isAvailable?: boolean;
 }) {
@@ -158,9 +159,11 @@ export async function extractMenuFromImage(image: string) {
 
 export async function updateMenu(data: {
   id: string;
-  title?: string;
-  summary?: string;
+  shopName?: string;
+  place?: string;
+  contactNumber?: string;
   template?: MenuTemplateType;
+  slug?: string;
 }) {
   if (!data.id) throw new Error("Menu id is required");
 
@@ -188,9 +191,9 @@ export async function updateMenuItem(data: {
   id: string;
   name?: string;
   image?: string;
-  description?: string;
+  category?: string;
   price?: number;
-  categoryId?: string;
+  offerPrice?: number;
   isFeatured?: boolean;
   isAvailable?: boolean;
 }) {

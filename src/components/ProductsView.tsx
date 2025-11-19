@@ -46,6 +46,7 @@ export default function ProductsView({
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [productImage, setProductImage] = useState("");
+  const [offerPrice, setOfferPrice] = useState("");
 
   // Menu scanning states
   const [showScanModal, setShowScanModal] = useState(false);
@@ -65,6 +66,7 @@ export default function ProductsView({
   const [editNewCategoryMode, setEditNewCategoryMode] = useState(false);
   const [editNewCategoryName, setEditNewCategoryName] = useState("");
   const [editIsFeatured, setEditIsFeatured] = useState(false);
+  const [editOfferPrice, setEditOfferPrice] = useState("");
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -98,8 +100,8 @@ export default function ProductsView({
       category: finalCategory,
       price: parseFloat(price),
       image:
-        productImage ||
-        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop",
+        productImage || "/default-product.png",
+      offerPrice: offerPrice ? parseFloat(offerPrice) : undefined,
     });
     setProductName("");
     setCategory("");
@@ -117,6 +119,7 @@ export default function ProductsView({
     setEditPrice(String(product.price));
     setEditImage(product.image);
     setEditIsFeatured(Boolean(product.isFeatured));
+    setEditOfferPrice(product.offerPrice ? String(product.offerPrice) : "");
     setShowEditModal(true);
   };
 
@@ -137,6 +140,7 @@ export default function ProductsView({
       price: parseFloat(editPrice || String(editingProduct.price)),
       image: editImage || editingProduct.image,
       isFeatured: editIsFeatured,
+      offerPrice: editOfferPrice ? parseFloat(editOfferPrice) : undefined,
     };
     onEditProduct(updated);
     setShowEditModal(false);
@@ -230,7 +234,7 @@ export default function ProductsView({
           category: "Scanned Menu",
           price: item.price,
           image:
-            "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop",
+            "/default-product.png",
         });
       }
 
@@ -388,6 +392,14 @@ export default function ProductsView({
                 placeholder="Price *"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                step="0.01"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+              />
+              <input
+                type="number"
+                placeholder="Offer Price (optional)"
+                value={offerPrice}
+                onChange={(e) => setOfferPrice(e.target.value)}
                 step="0.01"
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
               />
@@ -659,6 +671,14 @@ export default function ProductsView({
                 onChange={(e) => setEditPrice(e.target.value)}
                 step="0.01"
                 placeholder="Price"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
+              />
+              <input
+                type="number"
+                value={editOfferPrice}
+                onChange={(e) => setEditOfferPrice(e.target.value)}
+                step="0.01"
+                placeholder="Offer Price (optional)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
               />
               <input

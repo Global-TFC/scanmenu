@@ -51,7 +51,6 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 export const ModelName = {
   User: 'User',
   Menu: 'Menu',
-  Category: 'Category',
   MenuItem: 'MenuItem',
   Session: 'Session',
   Account: 'Account',
@@ -79,9 +78,10 @@ export const UserScalarFieldEnum = {
   email: 'email',
   emailVerified: 'emailVerified',
   name: 'name',
+  image: 'image',
+  isSubscribed: 'isSubscribed',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  image: 'image'
+  updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -91,8 +91,9 @@ export const MenuScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   slug: 'slug',
-  title: 'title',
-  summary: 'summary',
+  shopName: 'shopName',
+  place: 'place',
+  contactNumber: 'contactNumber',
   template: 'template',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -101,25 +102,14 @@ export const MenuScalarFieldEnum = {
 export type MenuScalarFieldEnum = (typeof MenuScalarFieldEnum)[keyof typeof MenuScalarFieldEnum]
 
 
-export const CategoryScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
-
-
 export const MenuItemScalarFieldEnum = {
   id: 'id',
   menuId: 'menuId',
   name: 'name',
   image: 'image',
-  description: 'description',
+  category: 'category',
+  offerPrice: 'offerPrice',
   price: 'price',
-  categoryId: 'categoryId',
   isFeatured: 'isFeatured',
   isAvailable: 'isAvailable',
   createdAt: 'createdAt',
