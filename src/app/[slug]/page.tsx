@@ -25,7 +25,7 @@ export default function SlugMenuPage() {
   const slug = params?.slug;
   const [shopName, setShopName] = useState("");
   const [shopPlace, setShopPlace] = useState("");
-  const [shopContact] = useState("+");
+  const [shopContact, setShopContact] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +43,9 @@ export default function SlugMenuPage() {
       try {
         const [menu, items] = await Promise.all([fetchMenuBySlug(s), fetchMenuItems(s)]);
         if (!active) return;
-        setShopName(String(menu?.title ?? ""));
-        setShopPlace(String(menu?.summary ?? ""));
+        setShopName(String(menu?.shopName ?? ""));
+        setShopPlace(String(menu?.place ?? ""));
+        setShopContact(String(menu?.contactNumber ?? ""));
         setTemplate((menu?.template as MenuTemplateType) ?? null);
         const arr = items as Array<Record<string, unknown>>;
         const list = arr.map((it) => {

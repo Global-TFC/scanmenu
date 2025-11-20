@@ -10,6 +10,8 @@ import {
   Minus,
   Trash2,
   X,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 
 interface Product {
@@ -40,6 +42,7 @@ export default function Pro({
   const [showWhatsAppFloat, setShowWhatsAppFloat] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [items, setItems] = useState<(Product & { quantity: number })[]>([]);
+  const [isGlass, setIsGlass] = useState(false);
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(products.map((p) => p.category)))],
@@ -125,79 +128,131 @@ export default function Pro({
   };
 
   return (
-    <div className="min-h-screen bg-[#e0e0e0]">
+    <div
+      className={`min-h-screen transition-colors duration-500 ${
+        isGlass
+          ? "bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]"
+          : "bg-[#e0e0e0]"
+      }`}
+    >
       <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-2">
         <div
-          className="max-w-7xl mx-auto rounded-full bg-[#e0e0e0] flex items-center justify-between gap-4 px-4 sm:px-6 py-2"
-          style={{ border: "1px solid rgba(0,0,0,0.06)" }}
+          className={`max-w-7xl mx-auto rounded-full flex items-center justify-between gap-4 px-4 sm:px-6 py-2 transition-all duration-300 ${
+            isGlass
+              ? "bg-white/30 backdrop-blur-md border border-white/20 shadow-lg"
+              : "bg-[#e0e0e0]"
+          }`}
+          style={
+            isGlass
+              ? {}
+              : { border: "1px solid rgba(0,0,0,0.06)" }
+          }
         >
           <Link href="#top" className="flex items-center gap-2 shrink-0">
             <span
-              className="inline-block w-7 h-7 rounded-full bg-[#e0e0e0]"
-              style={{
-                boxShadow:
-                  "inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff",
-              }}
+              className={`inline-block w-7 h-7 rounded-full ${
+                isGlass ? "bg-white/50" : "bg-[#e0e0e0]"
+              }`}
+              style={
+                isGlass
+                  ? {}
+                  : {
+                      boxShadow:
+                        "inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff",
+                    }
+              }
               aria-hidden
             />
-            <span className="text-[#3a3a3a] font-semibold tracking-tight">
+            <span
+              className={`font-semibold tracking-tight ${
+                isGlass ? "text-white" : "text-[#3a3a3a]"
+              }`}
+            >
               {shopName || "Shop"}
             </span>
           </Link>
-          <div className="hidden md:flex items-center gap-8 text-[#6a6a6a] mx-auto">
+          <div
+            className={`hidden md:flex items-center gap-8 mx-auto ${
+              isGlass ? "text-white/80" : "text-[#6a6a6a]"
+            }`}
+          >
             <a
               href="#best-sellers"
-              className="hover:text-[#3a3a3a] transition-colors"
+              className={`transition-colors ${
+                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
+              }`}
             >
               Best Sellers
             </a>
             <a
               href="#products"
-              className="hover:text-[#3a3a3a] transition-colors"
+              className={`transition-colors ${
+                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
+              }`}
             >
               Collection
             </a>
             <a
               href="#features"
-              className="hover:text-[#3a3a3a] transition-colors"
+              className={`transition-colors ${
+                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
+              }`}
             >
               Features
             </a>
-            <a href="#about" className="hover:text-[#3a3a3a] transition-colors">
+            <a
+              href="#about"
+              className={`transition-colors ${
+                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
+              }`}
+            >
               About
             </a>
             <a
               href="#contact"
-              className="hover:text-[#3a3a3a] transition-colors"
+              className={`transition-colors ${
+                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
+              }`}
             >
               Contact
             </a>
           </div>
           <div className="flex items-center gap-2">
-            {canWhatsApp && (
-              <button
-                onClick={() =>
-                  openWhatsApp("Hello! I'd like to place an order")
-                }
-                className="relative px-4 py-2 rounded-full bg-[#e0e0e0] text-[#3a3a3a] font-semibold"
-                style={{
-                  boxShadow:
-                    "inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff",
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-[#25D366]" />
-                  <span>Order</span>
-                </div>
-              </button>
-            )}
+            <button
+              onClick={() => setIsGlass(!isGlass)}
+              className={`p-2 rounded-full transition-all duration-300 ${
+                isGlass
+                  ? "bg-white/30 text-white hover:bg-white/40"
+                  : "bg-[#e0e0e0] text-[#3a3a3a]"
+              }`}
+              style={
+                isGlass
+                  ? {}
+                  : {
+                      boxShadow:
+                        "5px 5px 10px #bebebe, -5px -5px 10px #ffffff",
+                    }
+              }
+              title="Toggle Glassmorphism"
+            >
+              {isGlass ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}
+            </button>
+
             <button
               onClick={() => setCartOpen(true)}
-              className="relative px-4 py-2 rounded-full bg-[#e0e0e0] text-[#3a3a3a] font-semibold"
-              style={{
-                boxShadow:
-                  "inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff",
-              }}
+              className={`relative px-4 py-2 rounded-full font-semibold transition-all duration-300 ${
+                isGlass
+                  ? "bg-white/30 backdrop-blur-md border border-white/20 shadow-lg text-white hover:bg-white/40"
+                  : "bg-[#e0e0e0] text-[#3a3a3a]"
+              }`}
+              style={
+                isGlass
+                  ? {}
+                  : {
+                      boxShadow:
+                        "inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff",
+                    }
+              }
             >
               <div className="flex items-center gap-2">
                 <ShoppingCart className="w-4 h-4" />
@@ -220,25 +275,36 @@ export default function Pro({
 
       <main className="max-w-7xl mx-auto px-4 py-6">
         <section id="products" className="py-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#3a3a3a] mb-4">
-              {shopName}
-            </h2>
-            <p className="text-lg text-[#6a6a6a] mb-8">
-              Discover premium items for every occasion
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
+
+          <div className="text-center mt-8 mb-10">
+            <div className="flex flex-wrap justify-center gap-4 mb-6">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className="px-8 py-4 rounded-2xl bg-[#e0e0e0] transition-all duration-300 font-medium"
-                  style={{
-                    boxShadow:
-                      selectedCategory === category
-                        ? "inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff"
-                        : "6px 6px 12px #bebebe, -6px -6px 12px #ffffff",
-                  }}
+                  className={`px-4 py-2 md:px-8 md:py-4 rounded-2xl transition-all duration-300 font-medium ${
+                    isGlass
+                      ? `backdrop-blur-md border border-white/20 shadow-lg ${
+                          selectedCategory === category
+                            ? "bg-white/40 text-white"
+                            : "bg-white/20 text-white/80 hover:bg-white/30"
+                        }`
+                      : `bg-[#e0e0e0] ${
+                          selectedCategory === category
+                            ? "text-[#3a3a3a]"
+                            : "text-[#6a6a6a]"
+                        }`
+                  }`}
+                  style={
+                    isGlass
+                      ? {}
+                      : {
+                          boxShadow:
+                            selectedCategory === category
+                              ? "inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff"
+                              : "6px 6px 12px #bebebe, -6px -6px 12px #ffffff",
+                        }
+                  }
                 >
                   {category}
                 </button>
@@ -255,7 +321,11 @@ export default function Pro({
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#eaeaea] border border-[#dcdcdc] rounded-2xl focus:ring-2 focus:ring-[#8b7355] focus:border-transparent shadow-sm text-[#3a3a3a]"
+                  className={`w-full pl-12 pr-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-[#8b7355] focus:border-transparent shadow-sm transition-all duration-300 ${
+                    isGlass
+                      ? "bg-white/20 backdrop-blur-md border border-white/20 text-white placeholder-white/60"
+                      : "bg-[#eaeaea] border border-[#dcdcdc] text-[#3a3a3a]"
+                  }`}
                 />
               </div>
             </div>
@@ -264,11 +334,19 @@ export default function Pro({
           {filteredProducts.length === 0 ? (
             <div className="text-center py-16">
               <div
-                className="inline-flex items-center justify-center w-16 h-16 bg-[#e0e0e0] rounded-full mb-4"
-                style={{
-                  boxShadow:
-                    "inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff",
-                }}
+                className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
+                  isGlass
+                    ? "bg-white/20 backdrop-blur-md border border-white/20 shadow-lg"
+                    : "bg-[#e0e0e0]"
+                }`}
+                style={
+                  isGlass
+                    ? {}
+                    : {
+                        boxShadow:
+                          "inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff",
+                      }
+                }
               >
                 <Search className="text-[#6a6a6a]" size={32} />
               </div>
@@ -284,11 +362,19 @@ export default function Pro({
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="group rounded-3xl bg-[#e0e0e0] overflow-hidden transition-all duration-500 hover:scale-[1.02]"
-                  style={{
-                    boxShadow:
-                      "16px 16px 32px #bebebe, -16px -16px 32px #ffffff",
-                  }}
+                  className={`group rounded-3xl overflow-hidden transition-all duration-500 hover:scale-[1.02] ${
+                    isGlass
+                      ? "bg-white/20 backdrop-blur-md border border-white/20 shadow-lg"
+                      : "bg-[#e0e0e0]"
+                  }`}
+                  style={
+                    isGlass
+                      ? {}
+                      : {
+                          boxShadow:
+                            "16px 16px 32px #bebebe, -16px -16px 32px #ffffff",
+                        }
+                  }
                 >
                   <div className="relative overflow-hidden h-72">
                     <img
@@ -298,16 +384,28 @@ export default function Pro({
                     />
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-[#3a3a3a] mb-2">
+                    <h3
+                      className={`text-xl font-semibold mb-2 ${
+                        isGlass ? "text-white" : "text-[#3a3a3a]"
+                      }`}
+                    >
                       {product.name}
                     </h3>
-                    <p className="text-[#6a6a6a] mb-4 leading-relaxed">
+                    <p
+                      className={`mb-4 leading-relaxed ${
+                        isGlass ? "text-white/80" : "text-[#6a6a6a]"
+                      }`}
+                    >
                       {product.description}
                     </p>
                     <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-[#3a3a3a]">
+                            <span
+                              className={`text-3xl font-bold ${
+                                isGlass ? "text-white" : "text-[#3a3a3a]"
+                              }`}
+                            >
                               ₹{(product.offerPrice ?? product.price).toFixed(2)}
                             </span>
                             {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
@@ -321,34 +419,23 @@ export default function Pro({
                               </>
                             )}
                           </div>
-                          <span className="text-lg text-[#8a8a8a]">INR</span>
                         </div>
                       <div className="flex items-center gap-2">
-                        {canWhatsApp && (
-                          <button
-                            onClick={() =>
-                              openWhatsApp(
-                                `Hello! I'd like to order: ${
-                                  product.name
-                                } (₹${product.price.toFixed(2)})`
-                              )
-                            }
-                            className="p-4 rounded-2xl bg-[#e0e0e0] transition-all duration-300 hover:scale-110 active:scale-95"
-                            style={{
-                              boxShadow:
-                                "6px 6px 12px #bebebe, -6px -6px 12px #ffffff",
-                            }}
-                          >
-                            <MessageCircle className="w-6 h-6 text-[#25D366]" />
-                          </button>
-                        )}
                         <button
                           onClick={() => addToCart(product)}
-                          className="p-4 rounded-2xl bg-[#e0e0e0] transition-all duration-300 hover:scale-110 active:scale-95"
-                          style={{
-                            boxShadow:
-                              "6px 6px 12px #bebebe, -6px -6px 12px #ffffff",
-                          }}
+                          className={`p-4 rounded-2xl transition-all duration-300 hover:scale-110 active:scale-95 ${
+                            isGlass
+                              ? "bg-white/70 backdrop-blur-md border border-white/20 shadow-lg hover:bg-white/40"
+                              : "bg-[#e0e0e0]"
+                          }`}
+                          style={
+                            isGlass
+                              ? {}
+                              : {
+                                  boxShadow:
+                                    "6px 6px 12px #bebebe, -6px -6px 12px #ffffff",
+                                }
+                          }
                         >
                           <ShoppingCart className="w-6 h-6 text-[#8b7355]" />
                         </button>
@@ -363,17 +450,33 @@ export default function Pro({
 
         <section
           id="about"
-          className="py-24 px-4 bg-[#e8e8e8] rounded-3xl"
-          style={{
-            boxShadow:
-              "inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff",
-          }}
+          className={`py-24 px-4 rounded-3xl ${
+            isGlass
+              ? "bg-white/20 backdrop-blur-md border border-white/20 shadow-lg"
+              : "bg-[#e8e8e8]"
+          }`}
+          style={
+            isGlass
+              ? {}
+              : {
+                  boxShadow:
+                    "inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff",
+                }
+          }
         >
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#3a3a3a] mb-6">
+            <h2
+              className={`text-4xl md:text-5xl font-bold mb-6 ${
+                isGlass ? "text-white" : "text-[#3a3a3a]"
+              }`}
+            >
               About
             </h2>
-            <p className="text-lg text-[#6a6a6a] leading-relaxed mb-12">
+            <p
+              className={`text-lg leading-relaxed mb-12 ${
+                isGlass ? "text-white/90" : "text-[#6a6a6a]"
+              }`}
+            >
               We source the finest products, where traditional methods meet
               modern quality standards. Each item is inspected to meet exacting
               standards for taste and quality.
@@ -383,10 +486,18 @@ export default function Pro({
 
         <section id="contact" className="py-24 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#3a3a3a] mb-6">
+            <h2
+              className={`text-4xl md:text-5xl font-bold mb-6 ${
+                isGlass ? "text-white" : "text-[#3a3a3a]"
+              }`}
+            >
               Order Today
             </h2>
-            <p className="text-lg text-[#6a6a6a] leading-relaxed mb-12">
+            <p
+              className={`text-lg leading-relaxed mb-12 ${
+                isGlass ? "text-white/90" : "text-[#6a6a6a]"
+              }`}
+            >
               Contact us via WhatsApp for instant ordering and personalized
               service.
             </p>
@@ -395,10 +506,18 @@ export default function Pro({
                 onClick={() =>
                   openWhatsApp("Hello! I'd like to place an order")
                 }
-                className="px-10 py-5 rounded-2xl bg-[#25D366] text-white font-semibold transition-all duration-300 inline-flex items-center gap-3 hover:scale-[1.02]"
-                style={{
-                  boxShadow: "4px 4px 8px #bebebe, -4px -4px 8px #ffffff",
-                }}
+                className={`px-10 py-5 rounded-2xl font-semibold transition-all duration-300 inline-flex items-center gap-3 hover:scale-[1.02] ${
+                  isGlass
+                    ? "bg-green-500/80 backdrop-blur-md border border-white/20 shadow-lg text-white hover:bg-green-500"
+                    : "bg-[#25D366] text-white"
+                }`}
+                style={
+                  isGlass
+                    ? {}
+                    : {
+                        boxShadow: "4px 4px 8px #bebebe, -4px -4px 8px #ffffff",
+                      }
+                }
               >
                 <MessageCircle className="w-5 h-5" /> Order via WhatsApp
               </button>
@@ -420,10 +539,19 @@ export default function Pro({
         <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-3">
           <button
             onClick={() => openWhatsApp("Hello! I'd like to place an order")}
-            className="w-16 h-16 rounded-full bg-[#e0e0e0] flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-            style={{
-              boxShadow: "10px 10px 20px #bebebe, -10px -10px 20px #ffffff",
-            }}
+            className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ${
+              isGlass
+                ? "bg-white/30 backdrop-blur-md border border-white/20 shadow-lg"
+                : "bg-[#e0e0e0]"
+            }`}
+            style={
+              isGlass
+                ? {}
+                : {
+                    boxShadow:
+                      "10px 10px 20px #bebebe, -10px -10px 20px #ffffff",
+                  }
+            }
             aria-label="Order via WhatsApp"
           >
             <MessageCircle className="w-8 h-8 text-[#25D366]" />
@@ -438,26 +566,48 @@ export default function Pro({
             onClick={() => setCartOpen(false)}
           />
           <div
-            className="absolute right-0 top-0 h-full w-[400px] sm:w-[540px] bg-[#e0e0e0] shadow-xl"
-            style={{ boxShadow: "-8px 0 24px rgba(0,0,0,0.15)" }}
+            className={`absolute right-0 top-0 h-full w-[400px] sm:w-[540px] shadow-xl transition-colors duration-300 ${
+              isGlass
+                ? "bg-white/20 backdrop-blur-xl border-l border-white/20"
+                : "bg-[#e0e0e0]"
+            }`}
+            style={
+              isGlass ? {} : { boxShadow: "-8px 0 24px rgba(0,0,0,0.15)" }
+            }
           >
             <div className="flex flex-col h-full">
               <div className="p-6 border-b border-[#d0d0d0] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-full bg-[#e0e0e0] flex items-center justify-center"
-                    style={{
-                      boxShadow:
-                        "inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff",
-                    }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      isGlass
+                        ? "bg-white/30 backdrop-blur-md border border-white/20"
+                        : "bg-[#e0e0e0]"
+                    }`}
+                    style={
+                      isGlass
+                        ? {}
+                        : {
+                            boxShadow:
+                              "inset 4px 4px 8px #bebebe, inset -4px -4px 8px #ffffff",
+                          }
+                    }
                   >
                     <ShoppingCart className="w-5 h-5 text-[#8b7355]" />
                   </div>
                   <div>
-                    <div className="text-[#3a3a3a] text-xl font-semibold">
+                    <div
+                      className={`text-xl font-semibold ${
+                        isGlass ? "text-white" : "text-[#3a3a3a]"
+                      }`}
+                    >
                       Shopping Cart
                     </div>
-                    <div className="text-[#6a6a6a]">
+                    <div
+                      className={`${
+                        isGlass ? "text-white/80" : "text-[#6a6a6a]"
+                      }`}
+                    >
                       {getTotalItems()} item{getTotalItems() !== 1 ? "s" : ""}{" "}
                       in your cart
                     </div>
@@ -465,10 +615,19 @@ export default function Pro({
                 </div>
                 <button
                   onClick={() => setCartOpen(false)}
-                  className="p-2 rounded-full bg-[#e0e0e0]"
-                  style={{
-                    boxShadow: "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
-                  }}
+                  className={`p-2 rounded-full ${
+                    isGlass
+                      ? "bg-white/30 hover:bg-white/40 text-white"
+                      : "bg-[#e0e0e0]"
+                  }`}
+                  style={
+                    isGlass
+                      ? {}
+                      : {
+                          boxShadow:
+                            "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
+                        }
+                  }
                 >
                   <X className="w-4 h-4 text-[#6a6a6a]" />
                 </button>
@@ -477,18 +636,34 @@ export default function Pro({
                 {items.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center">
                     <div
-                      className="w-20 h-20 rounded-full bg-[#e0e0e0] flex items-center justify-center mb-4"
-                      style={{
-                        boxShadow:
-                          "inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff",
-                      }}
+                      className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${
+                        isGlass
+                          ? "bg-white/30 backdrop-blur-md border border-white/20"
+                          : "bg-[#e0e0e0]"
+                      }`}
+                      style={
+                        isGlass
+                          ? {}
+                          : {
+                              boxShadow:
+                                "inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff",
+                            }
+                      }
                     >
                       <ShoppingCart className="w-8 h-8 text-[#8b7355]" />
                     </div>
-                    <div className="text-lg font-semibold text-[#3a3a3a] mb-2">
+                    <div
+                      className={`text-lg font-semibold mb-2 ${
+                        isGlass ? "text-white" : "text-[#3a3a3a]"
+                      }`}
+                    >
                       Your cart is empty
                     </div>
-                    <div className="text-[#6a6a6a] max-w-xs">
+                    <div
+                      className={`max-w-xs ${
+                        isGlass ? "text-white/80" : "text-[#6a6a6a]"
+                      }`}
+                    >
                       Add items to get started
                     </div>
                   </div>
@@ -496,11 +671,19 @@ export default function Pro({
                   items.map((it) => (
                     <div
                       key={it.id}
-                      className="flex gap-4 p-4 rounded-2xl bg-[#e0e0e0]"
-                      style={{
-                        boxShadow:
-                          "8px 8px 16px #bebebe, -8px -8px 16px #ffffff",
-                      }}
+                      className={`flex gap-4 p-4 rounded-2xl ${
+                        isGlass
+                          ? "bg-white/20 backdrop-blur-md border border-white/20 shadow-sm"
+                          : "bg-[#e0e0e0]"
+                      }`}
+                      style={
+                        isGlass
+                          ? {}
+                          : {
+                              boxShadow:
+                                "8px 8px 16px #bebebe, -8px -8px 16px #ffffff",
+                            }
+                      }
                     >
                       <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#e0e0e0] shrink-0">
                         <img
@@ -510,10 +693,18 @@ export default function Pro({
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-[#3a3a3a] truncate">
+                        <div
+                          className={`font-semibold truncate ${
+                            isGlass ? "text-white" : "text-[#3a3a3a]"
+                          }`}
+                        >
                           {it.name}
                         </div>
-                        <div className="text-sm text-[#6a6a6a] line-clamp-2">
+                        <div
+                          className={`text-sm line-clamp-2 ${
+                            isGlass ? "text-white/80" : "text-[#6a6a6a]"
+                          }`}
+                        >
                           {it.description}
                         </div>
                         <div className="text-[#8b7355] font-semibold mt-1">
@@ -523,11 +714,17 @@ export default function Pro({
                       <div className="flex flex-col items-end gap-2">
                         <button
                           onClick={() => removeFromCart(it.id)}
-                          className="p-1 rounded-full bg-[#e0e0e0] hover:bg-[#f0f0f0]"
-                          style={{
-                            boxShadow:
-                              "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
-                          }}
+                          className={`p-1 rounded-full hover:bg-opacity-80 ${
+                            isGlass ? "bg-white/30" : "bg-[#e0e0e0]"
+                          }`}
+                          style={
+                            isGlass
+                              ? {}
+                              : {
+                                  boxShadow:
+                                    "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
+                                }
+                          }
                         >
                           <Trash2 className="w-4 h-4 text-[#dc2626]" />
                         </button>
@@ -536,26 +733,42 @@ export default function Pro({
                             onClick={() =>
                               updateQuantity(it.id, it.quantity - 1)
                             }
-                            className="w-8 h-8 rounded-full bg-[#e0e0e0] flex items-center justify-center"
-                            style={{
-                              boxShadow:
-                                "inset 2px 2px 4px #bebebe, inset -2px -2px 4px #ffffff",
-                            }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              isGlass ? "bg-white/30" : "bg-[#e0e0e0]"
+                            }`}
+                            style={
+                              isGlass
+                                ? {}
+                                : {
+                                    boxShadow:
+                                      "inset 2px 2px 4px #bebebe, inset -2px -2px 4px #ffffff",
+                                  }
+                            }
                           >
                             <Minus className="w-3 h-3 text-[#6a6a6a]" />
                           </button>
-                          <span className="w-8 text-center font-semibold text-[#3a3a3a]">
+                          <span
+                            className={`w-8 text-center font-semibold ${
+                              isGlass ? "text-white" : "text-[#3a3a3a]"
+                            }`}
+                          >
                             {it.quantity}
                           </span>
                           <button
                             onClick={() =>
                               updateQuantity(it.id, it.quantity + 1)
                             }
-                            className="w-8 h-8 rounded-full bg-[#e0e0e0] flex items-center justify-center"
-                            style={{
-                              boxShadow:
-                                "inset 2px 2px 4px #bebebe, inset -2px -2px 4px #ffffff",
-                            }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              isGlass ? "bg-white/30" : "bg-[#e0e0e0]"
+                            }`}
+                            style={
+                              isGlass
+                                ? {}
+                                : {
+                                    boxShadow:
+                                      "inset 2px 2px 4px #bebebe, inset -2px -2px 4px #ffffff",
+                                  }
+                            }
                           >
                             <Plus className="w-3 h-3 text-[#6a6a6a]" />
                           </button>
@@ -568,7 +781,11 @@ export default function Pro({
               {items.length > 0 && (
                 <div className="border-t border-[#d0d0d0] p-6 space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-[#3a3a3a]">
+                    <span
+                      className={`text-lg font-semibold ${
+                        isGlass ? "text-white" : "text-[#3a3a3a]"
+                      }`}
+                    >
                       Total:
                     </span>
                     <span className="text-xl font-bold text-[#8b7355]">
@@ -590,10 +807,19 @@ export default function Pro({
                     </button>
                     <button
                       onClick={clearCart}
-                      className="w-full py-2 rounded-2xl bg-[#e0e0e0] border border-[#d0d0d0] text-[#6a6a6a] hover:bg-[#f0f0f0]"
-                      style={{
-                        boxShadow: "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
-                      }}
+                      className={`w-full py-2 rounded-2xl border transition-all duration-300 ${
+                        isGlass
+                          ? "bg-white/20 border-white/20 text-white hover:bg-white/30"
+                          : "bg-[#e0e0e0] border-[#d0d0d0] text-[#6a6a6a] hover:bg-[#f0f0f0]"
+                      }`}
+                      style={
+                        isGlass
+                          ? {}
+                          : {
+                              boxShadow:
+                                "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
+                            }
+                      }
                     >
                       Clear Cart
                     </button>
