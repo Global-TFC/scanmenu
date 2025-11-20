@@ -349,15 +349,7 @@ export default function AdminDashboard() {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           {/* Display menu data info */}
-          {menuData && (
-            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-              <h3 className="font-semibold text-blue-900">Menu Info:</h3>
-              <p className="text-sm text-blue-700">
-                {menuData.shopName} • Slug: {menuData.slug} • Template:{" "}
-                {menuData.template}
-              </p>
-            </div>
-          )}
+
 
           {activeMenu === "dashboard" && (
             <DashboardView
@@ -397,10 +389,10 @@ export default function AdminDashboard() {
               shopName={shopName || menuData?.shopName || "Your Shop"}
               menuUrl={
                 typeof window !== "undefined"
-                  ? `${window.location.origin}/menu/${
-                      menuData?.slug || "shop-123"
+                  ? `${window.location.origin}/${
+                      menuData?.slug || "showrt"
                     }`
-                  : `/menu/${menuData?.slug || "shop-123"}`
+                  : `/${menuData?.slug || "showrt"}`
               }
             />
           )}

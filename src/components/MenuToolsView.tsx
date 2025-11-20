@@ -149,7 +149,7 @@ export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps)
         </button>
 
         <a
-          href="/test-shop"
+          href={menuUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"

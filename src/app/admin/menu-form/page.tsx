@@ -247,7 +247,7 @@ export default function CreateMenuForm() {
                   {errors.slug ? (
                     <p className="mt-1 text-sm text-red-600">{errors.slug}</p>
                   ) : (
-                    <p className="mt-1 text-xs text-gray-500">scanmenu.com/menu/<strong>{formData.slug || 'your-slug'}</strong></p>
+                    <p className="mt-1 text-xs text-gray-500">scanmenu.com/<strong>{formData.slug || 'your-slug'}</strong></p>
                   )}
                 </div>
 

@@ -15,6 +15,7 @@ import {
 import { Product } from "../app/admin/types";
 import ProductCard from "./ProductCard";
 import { extractMenuFromImage } from "@/lib/api/menus";
+import ImageUpload from "./ImageUpload";
 
 interface MenuItem {
   name: string;
@@ -403,13 +404,13 @@ export default function ProductsView({
                 step="0.01"
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
               />
-              <input
-                type="text"
-                placeholder="Image URL (optional)"
-                value={productImage}
-                onChange={(e) => setProductImage(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-              />
+              <div className="sm:col-span-2 lg:col-span-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+                <ImageUpload
+                  onSuccess={(url) => setProductImage(url)}
+                  currentImage={productImage}
+                />
+              </div>
               <div className="sm:col-span-2 lg:col-span-4 flex gap-3">
                 <button
                   onClick={handleAddProduct}
@@ -681,13 +682,13 @@ export default function ProductsView({
                 placeholder="Offer Price (optional)"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
               />
-              <input
-                type="text"
-                value={editImage}
-                onChange={(e) => setEditImage(e.target.value)}
-                placeholder="Image URL"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 text-sm"
-              />
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Product Image</label>
+                <ImageUpload
+                  onSuccess={(url) => setEditImage(url)}
+                  currentImage={editImage}
+                />
+              </div>
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 <input
                   type="checkbox"
