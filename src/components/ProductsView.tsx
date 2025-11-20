@@ -172,7 +172,7 @@ export default function ProductsView({
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      const img = new Image();
+      const img = new window.Image();
       img.onload = () => {
         // Compress and resize image
         const canvas = document.createElement('canvas');
