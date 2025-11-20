@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Edit2, Trash2 } from "lucide-react";
 import { Product } from "../app/admin/types";
 
@@ -14,11 +15,13 @@ export default function ProductCard({ product, viewMode, onEdit, onDelete }: Pro
   if (viewMode === "grid") {
     return (
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group">
-        <div className="aspect-square overflow-hidden bg-gray-100">
-          <img 
+        <div className="aspect-square overflow-hidden bg-gray-100 relative">
+          <Image 
             src={product.image || "/default-product.png"} 
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
         <div className="p-3 sm:p-4">
@@ -58,11 +61,13 @@ export default function ProductCard({ product, viewMode, onEdit, onDelete }: Pro
   return (
     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
       <div className="flex items-center p-3 sm:p-4 gap-3 sm:gap-4">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-          <img 
+        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 relative">
+          <Image 
             src={product.image || "/default-product.png"} 
             alt={product.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 64px, 80px"
           />
         </div>
         <div className="flex-1 min-w-0">

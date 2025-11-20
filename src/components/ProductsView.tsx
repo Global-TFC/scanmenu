@@ -1,5 +1,4 @@
-"use client";
-
+import Image from "next/image";
 import { useState } from "react";
 import {
   Plus,
@@ -517,10 +516,13 @@ export default function ProductsView({
               {/* Preview Image */}
               {image && !extractedMenu && (
                 <div className="space-y-4">
-                  <img
+                  <Image
                     src={image}
                     alt="Menu preview"
-                    className="w-full rounded-lg shadow-md"
+                    width={500}
+                    height={500}
+                    style={{ width: '100%', height: 'auto' }}
+                    className="rounded-lg shadow-md"
                   />
                   <button
                     onClick={extractMenuItems}
