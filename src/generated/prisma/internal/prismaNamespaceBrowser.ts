@@ -50,6 +50,7 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Coupon: 'Coupon',
   Menu: 'Menu',
   MenuItem: 'MenuItem',
   Session: 'Session',
@@ -80,11 +81,28 @@ export const UserScalarFieldEnum = {
   name: 'name',
   image: 'image',
   isSubscribed: 'isSubscribed',
+  subscriptionPlan: 'subscriptionPlan',
+  subscriptionExpiresAt: 'subscriptionExpiresAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const CouponScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  plan: 'plan',
+  durationMonths: 'durationMonths',
+  isRedeemed: 'isRedeemed',
+  redeemedAt: 'redeemedAt',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof CouponScalarFieldEnum]
 
 
 export const MenuScalarFieldEnum = {

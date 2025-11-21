@@ -9,9 +9,47 @@ import { fetchMenuBySlug } from "@/lib/api/menus";
 export default function ThankYouPage() {
   const [copied, setCopied] = useState(false);
   const [menuUrl, setMenuUrl] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [redeeming, setRedeeming] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [couponSuccess, setCouponSuccess] = useState("");
   const upiId = "pay.example@upi"; // Replace with actual UPI ID
   const { slug } = useParams();
   const router = useRouter();
+
+  const handleRedeemCoupon = async () => {
+    setRedeeming(true);
+    setCouponError("");
+    setCouponSuccess("");
+
+    try {
+      const response = await fetch("/api/coupons/redeem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: couponCode,
+          slug,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to redeem coupon");
+      }
+
+      setCouponSuccess("Coupon redeemed successfully! Redirecting...");
+      setTimeout(() => {
+        router.push(`/admin/${slug}`);
+      }, 2000);
+    } catch (error: any) {
+      setCouponError(error.message);
+    } finally {
+      setRedeeming(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -75,7 +113,34 @@ export default function ThankYouPage() {
         </div>
 
         {/* Payment Section */}
-        <div className="max-w-3xl mx-auto ">
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* Coupon Section */}
+          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Have a Coupon Code?</h3>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                className="flex-1 px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+              />
+              <button
+                onClick={handleRedeemCoupon}
+                disabled={redeeming || !couponCode}
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {redeeming ? "Applying..." : "Apply"}
+              </button>
+            </div>
+            {couponError && (
+              <p className="text-red-500 text-sm mt-2">{couponError}</p>
+            )}
+            {couponSuccess && (
+              <p className="text-green-600 text-sm mt-2">{couponSuccess}</p>
+            )}
+          </div>
+
           <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
             <div className="bg-slate-50 px-8 py-6 border-b border-slate-100">
               <h2 className="text-2xl font-bold text-slate-900 text-center">Complete Your Payment</h2>

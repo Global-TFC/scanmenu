@@ -49,7 +49,7 @@ const TEMPLATES = [
     description: 'Rich visual experience with categories and featured items.',
     icon: LayoutTemplate,
     color: 'bg-purple-100 text-purple-600',
-    previewUrl: '/myshop',
+    previewUrl: '/asayn',
   },
   {
     id: 'E_COM',
