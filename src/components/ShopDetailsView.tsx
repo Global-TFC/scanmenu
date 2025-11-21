@@ -83,13 +83,23 @@ export default function ShopDetailsView({
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <Phone size={16} />
-              Contact Number
+              WhatsApp Number
             </label>
             <input
               type="tel"
-              value={contactNumber}
-              onChange={(e) => onContactNumberChange(e.target.value)}
-              placeholder="Enter contact number"
+              value={contactNumber || "+91 "}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!val.startsWith("+91 ")) {
+                  onContactNumberChange("+91 ");
+                  return;
+                }
+                const numberPart = val.slice(4);
+                if (!/^\d*$/.test(numberPart)) return;
+                if (numberPart.length > 10) return;
+                onContactNumberChange(val);
+              }}
+              placeholder="+91 9876543210"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
             />
           </div>

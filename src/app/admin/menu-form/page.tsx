@@ -79,7 +79,7 @@ export default function CreateMenuForm() {
     slug: '',
     shopName: '',
     place: '',
-    contactNumber: '',
+    contactNumber: '+91 ',
     template: 'PRO' as MenuTemplateType,
   });
 
@@ -116,6 +116,12 @@ export default function CreateMenuForm() {
       newErrors.shopName = 'Shop Name is required';
     } else if (formData.shopName.length < 3) {
       newErrors.shopName = 'Shop Name must be at least 3 characters';
+    }
+
+    if (formData.contactNumber && formData.contactNumber !== '+91 ') {
+      if (!/^\+91 \d{10}$/.test(formData.contactNumber)) {
+        newErrors.contactNumber = 'WhatsApp Number must be 10 digits';
+      }
     }
 
     setErrors(newErrors);
@@ -276,7 +282,7 @@ export default function CreateMenuForm() {
                 {/* Contact Number */}
                 <div className="col-span-2 md:col-span-1">
                   <label htmlFor="contactNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Number
+                    WhatsApp Number
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -287,12 +293,33 @@ export default function CreateMenuForm() {
                       id="contactNumber"
                       name="contactNumber"
                       value={formData.contactNumber}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        // Ensure it starts with +91
+                        if (!val.startsWith("+91 ")) {
+                          handleChange({
+                            ...e,
+                            target: { ...e.target, name: "contactNumber", value: "+91 " },
+                          });
+                          return;
+                        }
+                        // Allow only numbers after +91
+                        const numberPart = val.slice(4);
+                        if (!/^\d*$/.test(numberPart)) return;
+                        
+                        // Limit to 10 digits
+                        if (numberPart.length > 10) return;
+
+                        handleChange(e);
+                      }}
                       className="block w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:ring-indigo-500 focus:border-indigo-500 transition-colors bg-gray-50 focus:bg-white"
-                      placeholder="e.g. +91 9876543210"
+                      placeholder="+91 9876543210"
                       disabled={isSubmitting}
                     />
                   </div>
+                  {errors.contactNumber && (
+                    <p className="mt-1 text-sm text-red-600">{errors.contactNumber}</p>
+                  )}
                 </div>
               </div>
             </section>

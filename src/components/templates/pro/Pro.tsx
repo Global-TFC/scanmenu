@@ -118,12 +118,10 @@ export default function Pro({
     const orderItems = items
       .map(
         (it) =>
-          `${it.name} x${it.quantity} - ₹${(it.price * it.quantity).toFixed(2)}`
+          `${it.name} x${it.quantity} - ₹${it.price * it.quantity}`
       )
       .join("\n");
-    const message = `Hi I'd Like Order :\n\n${orderItems}\n\nTotal: ₹${getTotalPrice().toFixed(
-      2
-    )}`;
+    const message = `Hi I'd Like Order :\n\n${orderItems}\n\nTotal: ₹${getTotalPrice()}`;
     openWhatsApp(message);
   };
 
@@ -177,28 +175,12 @@ export default function Pro({
             }`}
           >
             <a
-              href="#best-sellers"
-              className={`transition-colors ${
-                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
-              }`}
-            >
-              Best Sellers
-            </a>
-            <a
               href="#products"
               className={`transition-colors ${
                 isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
               }`}
             >
               Collection
-            </a>
-            <a
-              href="#features"
-              className={`transition-colors ${
-                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
-              }`}
-            >
-              Features
             </a>
             <a
               href="#about"
@@ -406,12 +388,12 @@ export default function Pro({
                                 isGlass ? "text-white" : "text-[#3a3a3a]"
                               }`}
                             >
-                              ₹{(product.offerPrice ?? product.price).toFixed(2)}
+                              ₹{product.offerPrice ?? product.price}
                             </span>
                             {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
                               <>
                                 <span className="text-lg text-[#8a8a8a] line-through">
-                                  ₹{product.price.toFixed(2)}
+                                  ₹{product.price}
                                 </span>
                                 <span className="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
                                   {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
@@ -743,7 +725,7 @@ export default function Pro({
                                     boxShadow:
                                       "inset 2px 2px 4px #bebebe, inset -2px -2px 4px #ffffff",
                                   }
-                            }
+                              }
                           >
                             <Minus className="w-3 h-3 text-[#6a6a6a]" />
                           </button>
@@ -768,7 +750,7 @@ export default function Pro({
                                     boxShadow:
                                       "inset 2px 2px 4px #bebebe, inset -2px -2px 4px #ffffff",
                                   }
-                            }
+                              }
                           >
                             <Plus className="w-3 h-3 text-[#6a6a6a]" />
                           </button>
@@ -789,7 +771,7 @@ export default function Pro({
                       Total:
                     </span>
                     <span className="text-xl font-bold text-[#8b7355]">
-                      ₹{getTotalPrice().toFixed(2)}
+                      ₹{getTotalPrice()}
                     </span>
                   </div>
                   <div className="h-px w-full bg-[#d0d0d0]" />

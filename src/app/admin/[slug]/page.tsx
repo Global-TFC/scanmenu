@@ -109,7 +109,7 @@ export default function AdminDashboard() {
         setMenuSlug(menu.slug);
         setShopName(menu.shopName);
         setPlace(menu.place || "");
-        setContactNumber(menu.contactNumber || "");
+        setContactNumber(menu.contactNumber || "+91 ");
         setTemplate(menu.template || "PRO");
       } catch (error) {
         const errorMessage =
@@ -179,6 +179,11 @@ export default function AdminDashboard() {
   const handleSaveShopDetails = async () => {
     if (!menuData?.id) {
       alert("Menu data not loaded");
+      return;
+    }
+
+    if (contactNumber && contactNumber !== '+91 ' && !/^\+91 \d{10}$/.test(contactNumber)) {
+      alert("WhatsApp Number must be 10 digits");
       return;
     }
 
