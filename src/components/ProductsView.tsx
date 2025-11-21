@@ -334,99 +334,7 @@ export default function ProductsView({
           </div>
         </div>
 
-        {/* Add Product Form */}
-        {showAddProduct && (
-          <div className="p-4 sm:p-6 bg-gray-50 border-b border-gray-200">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <input
-                type="text"
-                placeholder="Product Name *"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-              />
-              <div className="space-y-2">
-                <select
-                  value={newCategoryMode ? "__new__" : category}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    if (v === "__new__") {
-                      setNewCategoryMode(true);
-                      setCategory("");
-                    } else {
-                      setNewCategoryMode(false);
-                      setCategory(v);
-                    }
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-                >
-                  <option value="">Select Category</option>
-                  {availableCategories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                  <option value="__new__">Create New Category</option>
-                </select>
-                {newCategoryMode && (
-                  <input
-                    type="text"
-                    placeholder="New Category Name *"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-                  />
-                )}
-                {availableCategories.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {availableCategories.map((cat) => (
-                      <span key={cat} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <input
-                type="number"
-                placeholder="Price *"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                step="0.01"
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-              />
-              <input
-                type="number"
-                placeholder="Offer Price (optional)"
-                value={offerPrice}
-                onChange={(e) => setOfferPrice(e.target.value)}
-                step="0.01"
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
-              />
-              <div className="sm:col-span-2 lg:col-span-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
-                <ImageUpload
-                  onSuccess={(url) => setProductImage(url)}
-                  currentImage={productImage}
-                />
-              </div>
-              <div className="sm:col-span-2 lg:col-span-4 flex gap-3">
-                <button
-                  onClick={handleAddProduct}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
-                >
-                  Add Product
-                </button>
-                <button
-                  onClick={() => setShowAddProduct(false)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Products Grid */}
         <div className="p-4 sm:p-6">
@@ -725,6 +633,113 @@ export default function ProductsView({
                 Delete
               </button>
               <button onClick={cancelDelete} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Product Modal */}
+      {showAddProduct && (
+        <div className="fixed inset-0 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">Add New Product</h3>
+              <button 
+                onClick={() => setShowAddProduct(false)} 
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <input
+                type="text"
+                placeholder="Product Name *"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+              />
+              <div className="space-y-2">
+                <select
+                  value={newCategoryMode ? "__new__" : category}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v === "__new__") {
+                      setNewCategoryMode(true);
+                      setCategory("");
+                    } else {
+                      setNewCategoryMode(false);
+                      setCategory(v);
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                >
+                  <option value="">Select Category</option>
+                  {availableCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  <option value="__new__">Create New Category</option>
+                </select>
+                {newCategoryMode && (
+                  <input
+                    type="text"
+                    placeholder="New Category Name *"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                  />
+                )}
+                {availableCategories.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {availableCategories.map((cat) => (
+                      <span key={cat} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="number"
+                  placeholder="Price *"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                />
+                <input
+                  type="number"
+                  placeholder="Offer Price (optional)"
+                  value={offerPrice}
+                  onChange={(e) => setOfferPrice(e.target.value)}
+                  step="0.01"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">Product Image</label>
+                <ImageUpload
+                  onSuccess={(url) => setProductImage(url)}
+                  currentImage={productImage}
+                />
+              </div>
+            </div>
+            <div className="p-6 flex gap-3 border-t border-gray-200">
+              <button
+                onClick={handleAddProduct}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+              >
+                Add Product
+              </button>
+              <button
+                onClick={() => setShowAddProduct(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+              >
                 Cancel
               </button>
             </div>
