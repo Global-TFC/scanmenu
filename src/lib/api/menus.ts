@@ -4,9 +4,11 @@ export async function createMenu(data: {
   userId: string;
   slug: string;
   shopName: string;
+  shopLogo?: string;
   place?: string;
   contactNumber?: string;
   template?: MenuTemplateType;
+  isWhatsappOrderingEnabled?: boolean;
 }) {
   const res = await fetch("/api/menu", {
     method: "POST",
@@ -160,10 +162,12 @@ export async function extractMenuFromImage(image: string) {
 export async function updateMenu(data: {
   id: string;
   shopName?: string;
+  shopLogo?: string;
   place?: string;
   contactNumber?: string;
   template?: MenuTemplateType;
   slug?: string;
+  isWhatsappOrderingEnabled?: boolean;
 }) {
   if (!data.id) throw new Error("Menu id is required");
 

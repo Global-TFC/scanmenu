@@ -43,9 +43,11 @@ export default function AdminDashboard() {
   // Shop details state
   const [menuSlug, setMenuSlug] = useState("");
   const [shopName, setShopName] = useState("");
+  const [shopLogo, setShopLogo] = useState("");
   const [place, setPlace] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [template, setTemplate] = useState("PRO");
+  const [isWhatsappOrderingEnabled, setIsWhatsappOrderingEnabled] = useState(true);
 
   // Products state
   const [products, setProducts] = useState<Product[]>([]);
@@ -108,9 +110,11 @@ export default function AdminDashboard() {
         // Populate shop details from fetched menu
         setMenuSlug(menu.slug);
         setShopName(menu.shopName);
+        setShopLogo(menu.shopLogo || "");
         setPlace(menu.place || "");
         setContactNumber(menu.contactNumber || "+91 ");
         setTemplate(menu.template || "PRO");
+        setIsWhatsappOrderingEnabled(menu.isWhatsappOrderingEnabled ?? true);
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Failed to fetch menu";
@@ -191,10 +195,12 @@ export default function AdminDashboard() {
       const updated = await updateMenu({
         id: menuData.id,
         shopName,
+        shopLogo,
         place,
         contactNumber,
         template: template as MenuTemplateType,
         slug: menuSlug !== slug ? menuSlug : undefined,
+        isWhatsappOrderingEnabled,
       });
       
       setMenuData(updated);
@@ -349,6 +355,8 @@ export default function AdminDashboard() {
         <TopBar
           onMobileMenuClick={() => setMobileSidebarOpen(true)}
           onDesktopMenuClick={() => setSidebarOpen(!sidebarOpen)}
+          shopName={shopName || menuData?.shopName}
+          shopLogo={shopLogo || menuData?.shopLogo || undefined}
         />
 
         {/* Main Content */}
@@ -377,14 +385,18 @@ export default function AdminDashboard() {
             <ShopDetailsView
               slug={menuSlug} // Pass menuSlug
               shopName={shopName}
+              shopLogo={shopLogo}
               place={place}
               contactNumber={contactNumber}
               template={template}
+              isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
               onSlugChange={setMenuSlug} // New handler for slug change
               onShopNameChange={setShopName}
+              onShopLogoChange={setShopLogo}
               onPlaceChange={setPlace}
               onContactNumberChange={setContactNumber}
               onTemplateChange={setTemplate}
+              onWhatsappOrderingEnabledChange={setIsWhatsappOrderingEnabled}
               onSave={handleSaveShopDetails}
             />
           )}

@@ -60,15 +60,15 @@ model Menu {
   user      User             @relation(fields: [userId], references: [id])
   slug      String           @unique
   shopName     String
+  shopLogo      String?
   place      String?
   contactNumber   String?
   template  MenuTemplateType @default(PRO)
+  isWhatsappOrderingEnabled Boolean @default(true)
   items     MenuItem[]
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 }
-
- 
 
 model MenuItem {
   id          String    @id @default(cuid())

@@ -1,33 +1,42 @@
 "use client";
 
-import { User, Store, MapPin, Phone, Layout } from "lucide-react";
+import { User, Store, MapPin, Phone, Layout, Image as ImageIcon, MessageCircle } from "lucide-react";
 import { MenuTemplateType } from "@/generated/prisma/enums";
+import ImageUpload from "./ImageUpload";
 
 interface ShopDetailsViewProps {
   slug: string;
   shopName: string;
+  shopLogo?: string;
   place: string;
   contactNumber: string;
   template: string;
+  isWhatsappOrderingEnabled: boolean;
   onSlugChange: (value: string) => void;
   onShopNameChange: (value: string) => void;
+  onShopLogoChange: (value: string) => void;
   onPlaceChange: (value: string) => void;
   onContactNumberChange: (value: string) => void;
   onTemplateChange: (value: string) => void;
+  onWhatsappOrderingEnabledChange: (value: boolean) => void;
   onSave: () => void;
 }
 
 export default function ShopDetailsView({
   slug,
   shopName,
+  shopLogo,
   place,
   contactNumber,
   template,
+  isWhatsappOrderingEnabled,
   onSlugChange,
   onShopNameChange,
+  onShopLogoChange,
   onPlaceChange,
   onContactNumberChange,
   onTemplateChange,
+  onWhatsappOrderingEnabledChange,
   onSave,
 }: ShopDetailsViewProps) {
   return (
@@ -38,6 +47,20 @@ export default function ShopDetailsView({
       </div>
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="col-span-1 md:col-span-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <ImageIcon size={16} />
+              Shop Logo
+            </label>
+            <div className="max-w-xs">
+              <ImageUpload
+                onSuccess={onShopLogoChange}
+                currentImage={shopLogo}
+                folder="/shop-logos"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
               <User size={16} />
@@ -118,6 +141,30 @@ export default function ShopDetailsView({
               <option value={MenuTemplateType.PRO}>Pro</option>
               <option value={MenuTemplateType.E_COM}>E‑Com</option>
             </select>
+          </div>
+
+          <div className="col-span-1 md:col-span-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <MessageCircle size={16} />
+              WhatsApp Ordering
+            </label>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => onWhatsappOrderingEnabledChange(!isWhatsappOrderingEnabled)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  isWhatsappOrderingEnabled ? "bg-indigo-600" : "bg-gray-200"
+                }`}
+              >
+                <span
+                  className={`${
+                    isWhatsappOrderingEnabled ? "translate-x-6" : "translate-x-1"
+                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />
+              </button>
+              <span className="text-sm text-gray-600">
+                {isWhatsappOrderingEnabled ? "Enabled" : "Disabled"}
+              </span>
+            </div>
           </div>
         </div>
         <div className="mt-6">

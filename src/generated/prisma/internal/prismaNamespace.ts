@@ -1009,9 +1009,11 @@ export const MenuScalarFieldEnum = {
   userId: 'userId',
   slug: 'slug',
   shopName: 'shopName',
+  shopLogo: 'shopLogo',
   place: 'place',
   contactNumber: 'contactNumber',
   template: 'template',
+  isWhatsappOrderingEnabled: 'isWhatsappOrderingEnabled',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

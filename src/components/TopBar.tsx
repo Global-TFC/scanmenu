@@ -5,9 +5,11 @@ import { Menu, Search, Bell, Settings, User } from "lucide-react";
 interface TopBarProps {
   onMobileMenuClick: () => void;
   onDesktopMenuClick: () => void;
+  shopName?: string;
+  shopLogo?: string;
 }
 
-export default function TopBar({ onMobileMenuClick, onDesktopMenuClick }: TopBarProps) {
+export default function TopBar({ onMobileMenuClick, onDesktopMenuClick, shopName, shopLogo }: TopBarProps) {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
       <div className="h-16 flex items-center justify-between px-4 sm:px-6">
@@ -25,9 +27,18 @@ export default function TopBar({ onMobileMenuClick, onDesktopMenuClick }: TopBar
           >
             <Menu size={20} />
           </button>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
-            <p className="text-xs text-gray-500 hidden sm:block">Manage your products and shop</p>
+          <div className="flex items-center gap-3">
+            {shopLogo ? (
+              <img 
+                src={shopLogo} 
+                alt={shopName} 
+                className="w-10 h-10 rounded-full object-cover border border-gray-200"
+              />
+            ) : null}
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">{shopName || "Admin Dashboard"}</h1>
+              <p className="text-xs text-gray-500 hidden sm:block">Manage your products and shop</p>
+            </div>
           </div>
         </div>
 

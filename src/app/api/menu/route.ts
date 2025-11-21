@@ -5,13 +5,15 @@ import { MenuTemplateType } from "@/generated/prisma/enums";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, slug, shopName, place, contactNumber, template } = body as {
+    const { userId, slug, shopName, shopLogo, place, contactNumber, template, isWhatsappOrderingEnabled } = body as {
       userId: string;
       slug: string;
       shopName: string;
+      shopLogo?: string;
       place?: string;
       contactNumber?: string;
       template?: MenuTemplateType;
+      isWhatsappOrderingEnabled?: boolean;
     };
 
     // Validation
@@ -51,9 +53,11 @@ export async function POST(request: NextRequest) {
         userId,
         slug,
         shopName,
+        shopLogo: shopLogo || null,
         place: place || null,
         contactNumber: contactNumber || null,
         template: template || MenuTemplateType.PRO,
+        isWhatsappOrderingEnabled: isWhatsappOrderingEnabled ?? true,
       },
       include: {
         user: {
@@ -76,13 +80,15 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, shopName, place, contactNumber, template, slug } = body as {
+    const { id, shopName, shopLogo, place, contactNumber, template, slug, isWhatsappOrderingEnabled } = body as {
       id: string;
       shopName?: string;
+      shopLogo?: string | null;
       place?: string | null;
       contactNumber?: string | null;
       template?: MenuTemplateType;
       slug?: string;
+      isWhatsappOrderingEnabled?: boolean;
     };
 
     if (!id) {
@@ -115,10 +121,12 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: {
         ...(shopName !== undefined && { shopName }),
+        ...(shopLogo !== undefined && { shopLogo }),
         ...(place !== undefined && { place }),
         ...(contactNumber !== undefined && { contactNumber }),
         ...(template !== undefined && { template }),
         ...(slug !== undefined && { slug }),
+        ...(isWhatsappOrderingEnabled !== undefined && { isWhatsappOrderingEnabled }),
       },
       include: {
         user: { select: { id: true, name: true, email: true } },

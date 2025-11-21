@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Search,
   Grid3x3,
@@ -31,18 +31,23 @@ export default function Ecommerce({
   shopName,
   shopPlace,
   shopContact,
+  shopLogo,
   products,
+  isWhatsappOrderingEnabled = true,
 }: {
   shopName: string;
   shopPlace: string;
   shopContact: string;
+  shopLogo?: string;
   products: Product[];
+  isWhatsappOrderingEnabled?: boolean;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [cartOpen, setCartOpen] = useState(false);
   const [items, setItems] = useState<(Product & { quantity: number })[]>([]);
+  const [loadedShopName, setLoadedShopName] = useState<string | null>(null);
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(products.map((p) => p.category)))],
@@ -66,6 +71,34 @@ export default function Ecommerce({
       return matchesSearch && matchesCategory;
     });
   }, [products, searchTerm, selectedCategory]);
+
+  // Load cart from session storage
+  useEffect(() => {
+    if (!shopName) return;
+    try {
+      const saved = sessionStorage.getItem(`cart_${shopName}`);
+      if (saved) {
+        setItems(JSON.parse(saved));
+      } else {
+        setItems([]);
+      }
+    } catch (e) {
+      console.error("Failed to load cart", e);
+      setItems([]);
+    } finally {
+      setLoadedShopName(shopName);
+    }
+  }, [shopName]);
+
+  // Save cart to session storage
+  useEffect(() => {
+    if (loadedShopName !== shopName || !shopName) return;
+    try {
+      sessionStorage.setItem(`cart_${shopName}`, JSON.stringify(items));
+    } catch (e) {
+      console.error("Failed to save cart", e);
+    }
+  }, [items, shopName, loadedShopName]);
 
   const whatsappNumber = (shopContact || "").replace(/\s+/g, "");
   const canWhatsApp = whatsappNumber && /\d/.test(whatsappNumber);
@@ -104,6 +137,18 @@ export default function Ecommerce({
   const getTotalPrice = () =>
     items.reduce((sum, it) => sum + it.price * it.quantity, 0);
 
+  const orderViaWhatsApp = () => {
+    if (!canWhatsApp || items.length === 0) return;
+    const orderItems = items
+      .map(
+        (it) =>
+          `${it.name} x${it.quantity} - ₹${it.price * it.quantity}`
+      )
+      .join("\n");
+    const message = `Hi I'd Like Order :\n\n${orderItems}\n\nTotal: ₹${getTotalPrice()}`;
+    openWhatsApp(message);
+  };
+
   const regularProducts = filteredProducts.filter((p) => !p.isFeatured);
 
   return (
@@ -114,11 +159,21 @@ export default function Ecommerce({
           {/* Logo and Cart */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-black border-[3px] border-black rotate-[-2deg] flex items-center justify-center shadow-[3px_3px_0_#000]">
-                <span className="text-white font-black text-2xl rotate-[2deg]">
-                  {String(shopName || "S")[0]}
-                </span>
-              </div>
+              {shopLogo ? (
+                <div className="w-12 h-12 border-[3px] border-black rotate-[-2deg] shadow-[3px_3px_0_#000] overflow-hidden bg-white">
+                  <img
+                    src={shopLogo}
+                    alt={shopName}
+                    className="w-full h-full object-cover rotate-[2deg]"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 bg-black border-[3px] border-black rotate-[-2deg] flex items-center justify-center shadow-[3px_3px_0_#000]">
+                  <span className="text-white font-black text-2xl rotate-[2deg]">
+                    {String(shopName || "S")[0]}
+                  </span>
+                </div>
+              )}
               <span className="font-black text-2xl uppercase tracking-tight transform rotate-[-1deg]">
                 {shopName || "Shop"}
               </span>
@@ -394,18 +449,19 @@ export default function Ecommerce({
                     >
                       Clear Cart
                     </button>
-                    {canWhatsApp && (
+                    {isWhatsappOrderingEnabled && canWhatsApp ? (
                       <button
-                        onClick={() =>
-                          openWhatsApp(
-                            `Hi! I'd like to order these items. Total: ₹${getTotalPrice().toFixed(
-                              2
-                            )}`
-                          )
-                        }
-                        className="flex-1 py-2 bg-green-500 border-[3px] border-black font-black uppercase shadow-[3px_3px_0_#000]"
+                        onClick={orderViaWhatsApp}
+                        className="flex-1 py-2 bg-green-500 border-[3px] border-black font-black uppercase shadow-[3px_3px_0_#000] hover:bg-green-600"
                       >
                         WhatsApp Order
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="flex-1 py-2 bg-gray-400 border-[3px] border-black font-black uppercase shadow-[3px_3px_0_#000] cursor-not-allowed opacity-50 text-white text-xs"
+                      >
+                        {!isWhatsappOrderingEnabled ? "WhatsApp Disabled" : "No WhatsApp"}
                       </button>
                     )}
                   </div>

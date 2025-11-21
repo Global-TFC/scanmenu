@@ -26,6 +26,8 @@ export default function SlugMenuPage() {
   const [shopName, setShopName] = useState("");
   const [shopPlace, setShopPlace] = useState("");
   const [shopContact, setShopContact] = useState("");
+  const [shopLogo, setShopLogo] = useState("");
+  const [isWhatsappOrderingEnabled, setIsWhatsappOrderingEnabled] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +48,8 @@ export default function SlugMenuPage() {
         setShopName(String(menu?.shopName ?? ""));
         setShopPlace(String(menu?.place ?? ""));
         setShopContact(String(menu?.contactNumber ?? ""));
+        setShopLogo(String(menu?.shopLogo ?? ""));
+        setIsWhatsappOrderingEnabled(menu?.isWhatsappOrderingEnabled ?? true);
         setTemplate((menu?.template as MenuTemplateType) ?? null);
         const arr = items as Array<Record<string, unknown>>;
         const list = arr.map((it) => {
@@ -121,10 +125,10 @@ export default function SlugMenuPage() {
   }
 
   if (template === MenuTemplateType.PRO) {
-    return <Pro shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
+    return <Pro shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} shopLogo={shopLogo} products={products} isWhatsappOrderingEnabled={isWhatsappOrderingEnabled} />;
   }
   if (template === MenuTemplateType.E_COM) {
-    return <Ecommerce shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
+    return <Ecommerce shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} shopLogo={shopLogo} products={products} isWhatsappOrderingEnabled={isWhatsappOrderingEnabled} />;
   }
-  return <Normal shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} products={products} />;
+  return <Normal shopName={shopName} shopPlace={shopPlace} shopContact={shopContact} shopLogo={shopLogo} products={products} />;
 }

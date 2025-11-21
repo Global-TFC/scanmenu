@@ -30,12 +30,16 @@ export default function Pro({
   shopName,
   shopPlace,
   shopContact,
+  shopLogo,
   products,
+  isWhatsappOrderingEnabled = true,
 }: {
   shopName: string;
   shopPlace: string;
   shopContact: string;
+  shopLogo?: string;
   products: Product[];
+  isWhatsappOrderingEnabled?: boolean;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -43,6 +47,7 @@ export default function Pro({
   const [cartOpen, setCartOpen] = useState(false);
   const [items, setItems] = useState<(Product & { quantity: number })[]>([]);
   const [isGlass, setIsGlass] = useState(false);
+  const [loadedShopName, setLoadedShopName] = useState<string | null>(null);
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(products.map((p) => p.category)))],
@@ -69,6 +74,35 @@ export default function Pro({
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Load cart from session storage
+  useEffect(() => {
+    if (!shopName) return;
+    try {
+      const saved = sessionStorage.getItem(`cart_${shopName}`);
+      if (saved) {
+        setItems(JSON.parse(saved));
+      } else {
+        setItems([]);
+      }
+    } catch (e) {
+      console.error("Failed to load cart", e);
+      setItems([]);
+    } finally {
+      setLoadedShopName(shopName);
+    }
+  }, [shopName]);
+
+  // Save cart to session storage
+  useEffect(() => {
+    if (loadedShopName !== shopName || !shopName) return;
+    
+    try {
+      sessionStorage.setItem(`cart_${shopName}`, JSON.stringify(items));
+    } catch (e) {
+      console.error("Failed to save cart", e);
+    }
+  }, [items, shopName, loadedShopName]);
 
   const whatsappNumber = (shopContact || "").replace(/\s+/g, "");
   const canWhatsApp = whatsappNumber && /\d/.test(whatsappNumber);
@@ -147,20 +181,36 @@ export default function Pro({
           }
         >
           <Link href="#top" className="flex items-center gap-2 shrink-0">
-            <span
-              className={`inline-block w-7 h-7 rounded-full ${
-                isGlass ? "bg-white/50" : "bg-[#e0e0e0]"
-              }`}
-              style={
-                isGlass
-                  ? {}
-                  : {
-                      boxShadow:
-                        "inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff",
-                    }
-              }
-              aria-hidden
-            />
+            {shopLogo ? (
+              <img
+                src={shopLogo}
+                alt={shopName}
+                className="w-8 h-8 rounded-full object-cover"
+                style={
+                  isGlass
+                    ? { border: "1px solid rgba(255,255,255,0.2)" }
+                    : {
+                        boxShadow:
+                          "inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff",
+                      }
+                }
+              />
+            ) : (
+              <span
+                className={`inline-block w-7 h-7 rounded-full ${
+                  isGlass ? "bg-white/50" : "bg-[#e0e0e0]"
+                }`}
+                style={
+                  isGlass
+                    ? {}
+                    : {
+                        boxShadow:
+                          "inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff",
+                      }
+                }
+                aria-hidden
+              />
+            )}
             <span
               className={`font-semibold tracking-tight ${
                 isGlass ? "text-white" : "text-[#3a3a3a]"
@@ -776,17 +826,31 @@ export default function Pro({
                   </div>
                   <div className="h-px w-full bg-[#d0d0d0]" />
                   <div className="space-y-3">
-                    <button
-                      onClick={orderViaWhatsApp}
-                      className="w-full py-3 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold"
-                      style={{
-                        boxShadow: "4px 4px 8px #bebebe, -4px -4px 8px #ffffff",
-                      }}
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <ShoppingCart className="w-5 h-5" /> Order via WhatsApp
-                      </span>
-                    </button>
+                    {isWhatsappOrderingEnabled && canWhatsApp ? (
+                      <button
+                        onClick={orderViaWhatsApp}
+                        className="w-full py-3 rounded-2xl bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold"
+                        style={{
+                          boxShadow: "4px 4px 8px #bebebe, -4px -4px 8px #ffffff",
+                        }}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <ShoppingCart className="w-5 h-5" /> Order via WhatsApp
+                        </span>
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-3 rounded-2xl bg-gray-400 text-white font-semibold cursor-not-allowed opacity-50"
+                        style={{
+                          boxShadow: "4px 4px 8px #bebebe, -4px -4px 8px #ffffff",
+                        }}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <ShoppingCart className="w-5 h-5" /> {!isWhatsappOrderingEnabled ? "WhatsApp Ordering Disabled" : "WhatsApp Not Available"}
+                        </span>
+                      </button>
+                    )}
                     <button
                       onClick={clearCart}
                       className={`w-full py-2 rounded-2xl border transition-all duration-300 ${
