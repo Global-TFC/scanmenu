@@ -302,15 +302,17 @@ export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, o
                   <QRCode
                     ref={qrRef}
                     value={menuUrl}
-                    size={220}
+                    size={240}
                     logoImage={shopLogo}
-                    logoWidth={shopLogo ? 80 : undefined}
-                    logoHeight={shopLogo ? 80 : undefined}
+                    logoWidth={shopLogo ? 70 : undefined}
+                    logoHeight={shopLogo ? 70 : undefined}
                     removeQrCodeBehindLogo={true}
+                    logoPadding={2}
                     qrStyle="dots"
                     eyeRadius={5}
                     fgColor="#1f2937"
                     enableCORS={true}
+                    ecLevel="H"
                   />
                 </div>
               </div>
