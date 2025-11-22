@@ -1,17 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { QrCode, Eye, Palette, ImageDown, FileDown, X, Copy, Check } from "lucide-react";
+import { QrCode, Eye, Palette, ImageDown, FileDown, X, Copy, Check, Layout, Save } from "lucide-react";
+import { MenuTemplateType } from "@/generated/prisma/enums";
 
 interface MenuToolsViewProps {
   shopName: string;
   menuUrl: string;
+  template: string;
+  onTemplateChange: (value: string) => void;
+  onSave: () => void;
 }
 
-export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps) {
+export default function MenuToolsView({ shopName, menuUrl, template, onTemplateChange, onSave }: MenuToolsViewProps) {
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const getPreviewUrl = () => {
+    if (typeof window === 'undefined') return menuUrl;
+    const origin = window.location.origin;
+    switch (template) {
+      case MenuTemplateType.NORMAL:
+        return `${origin}/hoppe`;
+      case MenuTemplateType.PRO:
+        return `${origin}/asayn`;
+      case MenuTemplateType.CAFE:
+        return `${origin}/showrt`;
+      case MenuTemplateType.E_COM:
+        return `${origin}/showrt`;
+      default:
+        return menuUrl;
+    }
+  };
 
   const createPosterCanvas = async () => {
     const width = 1080;
@@ -133,8 +154,54 @@ export default function MenuToolsView({ shopName, menuUrl }: MenuToolsViewProps)
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h2 className="text-lg font-bold text-gray-900 mb-4">Menu Tools</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-bold text-gray-900">Menu Tools</h2>
+        <button
+            onClick={onSave}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+            <Save size={18} />
+            Save Changes
+        </button>
+      </div>
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Template Selection Card */}
+        <div className="col-span-1 sm:col-span-2 lg:col-span-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+            <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Layout className="text-indigo-600" size={20} />
+                </div>
+                <div className="flex-1">
+                    <h3 className="font-medium text-gray-900">Menu Template</h3>
+                    <p className="text-sm text-gray-500 mb-4">Choose the layout and design for your digital menu</p>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                        <select
+                            value={template}
+                            onChange={(e) => onTemplateChange(e.target.value)}
+                            className="w-full sm:w-64 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white"
+                        >
+                            <option value={MenuTemplateType.NORMAL}>Normal</option>
+                            <option value={MenuTemplateType.PRO}>Pro</option>
+                            <option value={MenuTemplateType.E_COM}>E‑Com</option>
+                            <option value={MenuTemplateType.CAFE}>Cafe</option>
+                        </select>
+
+                        <a
+                            href={getPreviewUrl()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                        >
+                            <Eye size={16} />
+                            Preview {template.toLowerCase()} Template
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <button
           onClick={() => setIsQrModalOpen(true)}
           className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"

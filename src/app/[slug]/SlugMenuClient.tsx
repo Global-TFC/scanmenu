@@ -3,6 +3,7 @@
 import Normal from "@/components/templates/normal/Normal";
 import Pro from "@/components/templates/pro/Pro";
 import Ecommerce from "@/components/templates/ecommerce/Ecommerce";
+import Cafe from "@/components/templates/cafe/Cafe";
 import { MenuTemplateType } from "@/generated/prisma/enums";
 
 interface Product {
@@ -52,6 +53,18 @@ export default function SlugMenuClient({
   if (template === MenuTemplateType.E_COM) {
     return (
       <Ecommerce
+        shopName={shopName}
+        shopPlace={shopPlace}
+        shopContact={shopContact}
+        shopLogo={shopLogo}
+        products={products}
+        isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
+      />
+    );
+  }
+  if (template === MenuTemplateType.CAFE) {
+    return (
+      <Cafe
         shopName={shopName}
         shopPlace={shopPlace}
         shopContact={shopContact}

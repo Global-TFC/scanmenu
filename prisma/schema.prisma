@@ -52,6 +52,7 @@ enum MenuTemplateType {
   NORMAL
   PRO
   E_COM
+  CAFE
 }
 
 model Menu {

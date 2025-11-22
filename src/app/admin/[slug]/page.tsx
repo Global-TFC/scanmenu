@@ -388,14 +388,12 @@ export default function AdminDashboard() {
               shopLogo={shopLogo}
               place={place}
               contactNumber={contactNumber}
-              template={template}
               isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
               onSlugChange={setMenuSlug} // New handler for slug change
               onShopNameChange={setShopName}
               onShopLogoChange={setShopLogo}
               onPlaceChange={setPlace}
               onContactNumberChange={setContactNumber}
-              onTemplateChange={setTemplate}
               onWhatsappOrderingEnabledChange={setIsWhatsappOrderingEnabled}
               onSave={handleSaveShopDetails}
             />
@@ -411,6 +409,9 @@ export default function AdminDashboard() {
                     }`
                   : `/${menuData?.slug || "showrt"}`
               }
+              template={template}
+              onTemplateChange={setTemplate}
+              onSave={handleSaveShopDetails}
             />
           )}
         </main>

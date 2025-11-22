@@ -479,49 +479,6 @@ export default function Pro({
             </div>
           )}
         </section>
-
-       
-
-        <section id="contact" className="py-24 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2
-              className={`text-4xl md:text-5xl font-bold mb-6 ${
-                isGlass ? "text-white" : "text-[#3a3a3a]"
-              }`}
-            >
-              Order Today
-            </h2>
-            <p
-              className={`text-lg leading-relaxed mb-12 ${
-                isGlass ? "text-white/90" : "text-[#6a6a6a]"
-              }`}
-            >
-              Contact us via WhatsApp for instant ordering and personalized
-              service.
-            </p>
-            {canWhatsApp && (
-              <button
-                onClick={() =>
-                  openWhatsApp("Hello! I'd like to place an order")
-                }
-                className={`px-10 py-5 rounded-2xl font-semibold transition-all duration-300 inline-flex items-center gap-3 hover:scale-[1.02] ${
-                  isGlass
-                    ? "bg-green-500/80 backdrop-blur-md border border-white/20 shadow-lg text-white hover:bg-green-500"
-                    : "bg-[#25D366] text-white"
-                }`}
-                style={
-                  isGlass
-                    ? {}
-                    : {
-                        boxShadow: "4px 4px 8px #bebebe, -4px -4px 8px #ffffff",
-                      }
-                }
-              >
-                <MessageCircle className="w-5 h-5" /> Order via WhatsApp
-              </button>
-            )}
-          </div>
-        </section>
       </main>
 
       <footer className="bg-[#2a2a2a] text-white mt-12 py-8">

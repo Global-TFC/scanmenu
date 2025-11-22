@@ -275,16 +275,6 @@ export default function Normal({
           <p className="text-xs text-gray-400 uppercase tracking-wider">© 2025 {shopName}</p>
         </div>
       </footer>
-      
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 }
