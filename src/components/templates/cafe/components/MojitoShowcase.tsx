@@ -113,7 +113,7 @@ export default function MojitoShowcase({ products }: { products: Product[] }) {
                                         <img
                                             src={product.image || "/placeholder.png"}
                                             alt={product.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
                                         />
                                     </div>
                                     {/* Text */}
