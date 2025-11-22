@@ -1,6 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
-import { Search, MapPin, Phone, Clock, Star, Heart, Grid3x3, List } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { Search, ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
 
 interface Product {
   id: string;
@@ -12,6 +12,10 @@ interface Product {
   image: string;
   rating?: number;
   reviews?: number;
+}
+
+interface CartItem extends Product {
+  quantity: number;
 }
 
 export default function Normal({
@@ -29,11 +33,14 @@ export default function Normal({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isScrolled, setIsScrolled] = useState(false);
 
+  // Categories
   const categories = useMemo(() => ["All", ...Array.from(new Set(products.map((p) => p.category)))], [products]);
 
+  // Filter Products
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -42,168 +49,153 @@ export default function Normal({
     });
   }, [products, searchTerm, selectedCategory]);
 
-  const toggleFavorite = (id: string) => {
-    const next = new Set(favorites);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setFavorites(next);
+  // Scroll Effect
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Load Cart
+  useEffect(() => {
+    if (!shopName) return;
+    try {
+      const saved = sessionStorage.getItem(`cart_${shopName}`);
+      if (saved) setCartItems(JSON.parse(saved));
+    } catch (e) {
+      console.error("Failed to load cart", e);
+    }
+  }, [shopName]);
+
+  // Save Cart
+  useEffect(() => {
+    if (!shopName) return;
+    sessionStorage.setItem(`cart_${shopName}`, JSON.stringify(cartItems));
+  }, [cartItems, shopName]);
+
+  // Cart Actions
+  const addToCart = (product: Product) => {
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+  };
+
+  const updateQuantity = (id: string, delta: number) => {
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          return { ...item, quantity: Math.max(0, item.quantity + delta) };
+        }
+        return item;
+      }).filter((item) => item.quantity > 0)
+    );
+  };
+
+  const removeFromCart = (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + (item.offerPrice ?? item.price) * item.quantity, 0);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const whatsappNumber = (shopContact || "").replace(/\s+/g, "");
+  const canWhatsApp = whatsappNumber && /\d/.test(whatsappNumber);
+
+  const checkout = () => {
+    if (!canWhatsApp) return;
+    const text = `*New Order from ${shopName}*\n\n${cartItems
+      .map((item) => `${item.name} x${item.quantity} - ₹${(item.offerPrice ?? item.price) * item.quantity}`)
+      .join("\n")}\n\n*Total: ₹${cartTotal}*`;
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b sticky top-0 z-30 backdrop-blur-lg bg-white/80">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              {shopLogo && (
-                <img 
-                  src={shopLogo} 
-                  alt={shopName} 
-                  className="w-12 h-12 rounded-full object-cover border border-gray-200 shadow-sm"
-                />
-              )}
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">{shopName}</h1>
-            </div>
-            <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-full">
-              <Star className="text-amber-500 fill-amber-500" size={18} />
-              <span className="font-bold text-gray-900">4.6</span>
-            </div>
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+      {/* Header */}
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md border-b border-gray-100 py-3" : "bg-white py-5"}`}>
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {shopLogo && <img src={shopLogo} alt={shopName} className="w-8 h-8 object-cover rounded-full" />}
+            <h1 className="text-xl font-bold tracking-tight uppercase">{shopName}</h1>
           </div>
-          <div className="flex flex-wrap gap-3 text-xs md:text-sm text-gray-600">
-            <div className="flex items-center gap-1.5">
-              <MapPin size={14} className="text-orange-500 flex-shrink-0" />
-              <span className="truncate">{shopPlace}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Phone size={14} className="text-green-500 flex-shrink-0" />
-              <span>{shopContact}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock size={14} className="text-blue-500 flex-shrink-0" />
-              <span>9 AM - 10 PM</span>
-            </div>
+          <div className="flex items-center gap-4">
+            <button onClick={() => setCartOpen(true)} className="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
+              <ShoppingBag size={22} strokeWidth={1.5} />
+              {cartCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-black text-white text-[10px] font-bold flex items-center justify-center rounded-full">{cartCount}</span>}
+            </button>
           </div>
         </div>
       </header>
-      <div className="relative bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 py-8 md:py-12 text-center text-white">
-          <h2 className="text-2xl md:4xl font-bold mb-2">Explore Our Menu</h2>
-          <p className="text-sm md:text-lg text-white/90">Fresh ingredients, amazing flavors</p>
+
+      {/* Hero / Search */}
+      <div className="pt-24 pb-6 px-4 max-w-7xl mx-auto">
+        <div className="relative mb-8">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search for dresses, shoes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-gray-50 border-none rounded-full py-3 pl-12 pr-4 text-sm focus:ring-1 focus:ring-black transition-all placeholder:text-gray-400"
+          />
+        </div>
+
+        {/* Categories */}
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-5 py-2 rounded-full text-sm whitespace-nowrap transition-all border ${
+                selectedCategory === cat ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </div>
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input type="text" placeholder="Search dishes..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm" />
-          </div>
+
+      {/* Product Grid */}
+      <main className="max-w-7xl mx-auto px-4 pb-20">
+        <div className="flex justify-between items-end mb-4">
+          <p className="text-sm text-gray-500">{filteredProducts.length} Items</p>
         </div>
-        <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-          {categories.map((cat) => (
-            <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-all ${selectedCategory === cat ? "bg-orange-600 text-white shadow-md" : "bg-white text-gray-700 border border-gray-200 hover:border-orange-300"}`}>{cat}</button>
-          ))}
-          <div className="ml-auto flex items-center gap-2 bg-white border border-gray-200 rounded-full p-1">
-            <button onClick={() => setViewMode("grid")} className={`p-2 rounded-full transition-all ${viewMode === "grid" ? "bg-orange-600 text-white" : "text-gray-500"}`}>
-              <Grid3x3 size={16} />
-            </button>
-            <button onClick={() => setViewMode("list")} className={`p-2 rounded-full transition-all ${viewMode === "list" ? "bg-orange-600 text-white" : "text-gray-500"}`}>
-              <List size={16} />
-            </button>
-          </div>
-        </div>
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">
-            <span className="font-semibold text-gray-900">{filteredProducts.length}</span> items{selectedCategory !== "All" && <span> in {selectedCategory}</span>}
-          </p>
-        </div>
+
         {filteredProducts.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-              <Search className="text-gray-400" size={32} />
-            </div>
-            <p className="text-gray-500 text-lg font-medium">No items found</p>
-            <p className="text-gray-400 text-sm mt-1">Try adjusting your search</p>
-          </div>
-        ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <button onClick={() => toggleFavorite(product.id)} className="absolute top-3 right-3 p-2.5 bg-white/90 backdrop-blur rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95">
-                    <Heart size={18} className={favorites.has(product.id) ? "text-red-500 fill-red-500" : "text-gray-400"} />
-                  </button>
-                  {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
-                    <div className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                      {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
-                    </div>
-                  )}
-                  {!product.offerPrice && (
-                    <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">{product.category}</div>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <div className="flex items-baseline gap-2">
-                      <div className="text-white font-bold text-2xl">₹{(product.offerPrice ?? product.price).toFixed(2)}</div>
-                      {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
-                        <div className="text-white/70 text-sm line-through">₹{product.price.toFixed(2)}</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-gray-900 text-lg mb-1 line-clamp-1">{product.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center bg-amber-50 px-2 py-1 rounded-lg">
-                      <Star className="text-amber-500 fill-amber-500" size={14} />
-                      <span className="ml-1 text-sm font-semibold text-gray-900">{product.rating}</span>
-                    </div>
-                    <span className="text-gray-400 text-xs">({product.reviews})</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-20">
+            <p className="text-gray-400">No products found.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-gray-100">
-                <div className="flex flex-col sm:flex-row">
-                  <div className="relative w-full sm:w-40 h-40 flex-shrink-0 overflow-hidden">
-                    <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover" />
-                    <button onClick={() => toggleFavorite(product.id)} className="absolute top-2 right-2 p-2 bg-white/90 backdrop-blur rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95">
-                      <Heart size={16} className={favorites.has(product.id) ? "text-red-500 fill-red-500" : "text-gray-400"} />
-                    </button>
-                    {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
-                      <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md">
-                        {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
-                      </div>
+              <div key={product.id} className="group cursor-pointer">
+                <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden rounded-lg mb-3">
+                  <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  {product.offerPrice && product.offerPrice < product.price && (
+                    <span className="absolute top-3 left-3 bg-black text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                      Sale
+                    </span>
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+                    className="absolute bottom-3 right-3 bg-white text-black p-2.5 rounded-full shadow-lg translate-y-0 opacity-100 md:translate-y-12 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black hover:text-white"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{product.category}</p>
+                  <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1 group-hover:underline decoration-1 underline-offset-4">{product.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">₹{product.offerPrice ?? product.price}</span>
+                    {product.offerPrice && product.offerPrice < product.price && (
+                      <span className="text-xs text-gray-400 line-through">₹{product.price}</span>
                     )}
-                  </div>
-                  <div className="flex-1 p-4 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-gray-900 text-lg mb-1">{product.name}</h3>
-                          <span className="inline-block bg-gray-100 text-gray-700 px-2.5 py-0.5 rounded-full text-xs font-medium">{product.category}</span>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-orange-600 font-bold text-xl whitespace-nowrap">₹{(product.offerPrice ?? product.price).toFixed(2)}</div>
-                          {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
-                            <div className="text-gray-400 text-sm line-through">₹{product.price.toFixed(2)}</div>
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-3">{product.description}</p>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center bg-amber-50 px-2 py-1 rounded-lg">
-                          <Star className="text-amber-500 fill-amber-500" size={14} />
-                          <span className="ml-1 text-sm font-semibold text-gray-900">{product.rating}</span>
-                        </div>
-                        <span className="text-gray-400 text-xs">({product.reviews} reviews)</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -211,15 +203,87 @@ export default function Normal({
           </div>
         )}
       </main>
-      <footer className="bg-gray-900 text-white mt-12 py-8">
+
+      {/* Cart Drawer */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setCartOpen(false)} />
+          <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-lg font-bold uppercase tracking-wide">Shopping Bag ({cartCount})</h2>
+              <button onClick={() => setCartOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+              {cartItems.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center text-gray-500">
+                  <ShoppingBag size={48} strokeWidth={1} className="mb-4 opacity-20" />
+                  <p>Your bag is empty.</p>
+                </div>
+              ) : (
+                cartItems.map((item) => (
+                  <div key={item.id} className="flex gap-4">
+                    <div className="w-20 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 flex flex-col justify-between py-1">
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-sm font-medium line-clamp-2">{item.name}</h3>
+                          <button onClick={() => removeFromCart(item.id)} className="text-gray-400 hover:text-red-500 ml-2">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{item.category}</p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center border border-gray-200 rounded-full">
+                          <button onClick={() => updateQuantity(item.id, -1)} className="p-1.5 hover:bg-gray-50 rounded-l-full"><Minus size={14} /></button>
+                          <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.id, 1)} className="p-1.5 hover:bg-gray-50 rounded-r-full"><Plus size={14} /></button>
+                        </div>
+                        <span className="text-sm font-bold">₹{(item.offerPrice ?? item.price) * item.quantity}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="p-5 border-t border-gray-100 bg-gray-50">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-sm text-gray-600">Subtotal</span>
+                <span className="text-lg font-bold">₹{cartTotal}</span>
+              </div>
+              <button 
+                onClick={checkout}
+                disabled={cartItems.length === 0}
+                className="w-full bg-black text-white py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+              >
+                Checkout on WhatsApp <ArrowRight size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="border-t border-gray-100 py-8 mt-auto">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-gray-400 text-sm">© 2025 {shopName}. All rights reserved.</p>
-          <p className="mt-1 text-xs text-gray-500">Create your own digital menu today!</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wider">© 2025 {shopName}</p>
         </div>
       </footer>
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      
+      <style jsx global>{`
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
       `}</style>
     </div>
   );

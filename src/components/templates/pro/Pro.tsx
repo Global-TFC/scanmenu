@@ -480,41 +480,7 @@ export default function Pro({
           )}
         </section>
 
-        <section
-          id="about"
-          className={`py-24 px-4 rounded-3xl ${
-            isGlass
-              ? "bg-white/20 backdrop-blur-md border border-white/20 shadow-lg"
-              : "bg-[#e8e8e8]"
-          }`}
-          style={
-            isGlass
-              ? {}
-              : {
-                  boxShadow:
-                    "inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff",
-                }
-          }
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            <h2
-              className={`text-4xl md:text-5xl font-bold mb-6 ${
-                isGlass ? "text-white" : "text-[#3a3a3a]"
-              }`}
-            >
-              About
-            </h2>
-            <p
-              className={`text-lg leading-relaxed mb-12 ${
-                isGlass ? "text-white/90" : "text-[#6a6a6a]"
-              }`}
-            >
-              We source the finest products, where traditional methods meet
-              modern quality standards. Each item is inspected to meet exacting
-              standards for taste and quality.
-            </p>
-          </div>
-        </section>
+       
 
         <section id="contact" className="py-24 px-4">
           <div className="max-w-4xl mx-auto text-center">
