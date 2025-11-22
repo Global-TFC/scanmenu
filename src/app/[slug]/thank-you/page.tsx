@@ -198,13 +198,13 @@ export default function ThankYouPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* Basic Plan */}
           <div className="group relative bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
             <div className="p-8 md:p-10 space-y-6">
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold text-slate-900">Basic Plan</h3>
-                <p className="text-slate-500">Essential features for small businesses</p>
+                <p className="text-slate-500">Get a professional website worth min ₹10k</p>
               </div>
               <div className="flex items-baseline">
                 <span className="text-5xl font-extrabold text-slate-900">₹1,788</span>
@@ -216,9 +216,10 @@ export default function ThankYouPage() {
               <div className="border-t border-slate-100 my-6"></div>
               <ul className="space-y-4">
                 {[
-                  "Up to 10 Product Listings",
-                  "Basic Analytics Dashboard",
-                  "Standard Email Support",
+                  "Up to 20 Product Listings",
+                  "All Premium Templates",
+                  "AI Scanner to add products",
+                  "WhatsApp Ordering",
                   "QR Code Generation"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center text-slate-600">
@@ -255,15 +256,49 @@ export default function ThankYouPage() {
               <div className="border-t border-slate-800 my-6"></div>
               <ul className="space-y-4">
                 {[
-                  "50+ Product Listings",
-                  "Advanced Analytics & Insights",
+                  "Up to 50 Product Listings",
+                  "All Premium Templates",
+                  "AI Scanner to add products",
+                  "WhatsApp Ordering",
                   "Priority 24/7 Support",
-                  "Custom Domain Integration",
-                  "Premium Menu Templates"
+                  "Custom Domain Integration"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center text-slate-300">
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center mr-3">
                       <Check className="h-4 w-4 text-blue-400" />
+                    </div>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Enterprise Plan */}
+          <div className="group relative bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+            <div className="p-8 md:p-10 space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-slate-900">Enterprise</h3>
+                <p className="text-slate-500">For large scale operations</p>
+              </div>
+              <div className="flex items-baseline">
+                <span className="text-5xl font-extrabold text-slate-900">Custom</span>
+              </div>
+              <div className="inline-block bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-base font-semibold">
+                Contact Sales
+              </div>
+              <div className="border-t border-slate-100 my-6"></div>
+              <ul className="space-y-4">
+                {[
+                  "Unlimited products",
+                  "Multiple locations",
+                  "Custom branding",
+                  "API access",
+                  "Dedicated support"
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-center text-slate-600">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                      <Check className="h-4 w-4 text-purple-600" />
                     </div>
                     {feature}
                   </li>

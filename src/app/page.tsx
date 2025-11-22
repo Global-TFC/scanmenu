@@ -285,30 +285,39 @@ export default function Home() {
               Simple, Transparent Pricing
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Choose the plan that works best for your business
+              Get a professional website worth min ₹10k for a fraction of the price
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Free Plan */}
+            {/* Starter Plan */}
             <div className="p-8 rounded-2xl border-2 border-gray-200 hover:border-indigo-600 transition-all">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
               <div className="mb-4">
-                <span className="text-4xl font-bold text-gray-900">₹0</span>
+                <span className="text-4xl font-bold text-gray-900">₹149</span>
                 <span className="text-gray-600">/month</span>
+                <p className="text-sm text-gray-500 mt-1">Billed yearly (₹1,788/year)</p>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Up to 20 menu items</span>
+                  <span className="text-gray-600">Up to 20 products</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">1 menu template</span>
+                  <span className="text-gray-600">All Premium Templates</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-600 mr-2">✓</span>
+                  <span className="text-gray-600">AI Scanner to add products</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
                   <span className="text-gray-600">QR code generation</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-600 mr-2">✓</span>
+                  <span className="text-gray-600">WhatsApp Ordering</span>
                 </li>
               </ul>
               <Link
@@ -326,25 +335,26 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
               <div className="mb-4">
-                <span className="text-4xl font-bold text-gray-900">₹299</span>
+                <span className="text-4xl font-bold text-gray-900">₹249</span>
                 <span className="text-gray-600">/month</span>
+                <p className="text-sm text-gray-500 mt-1">Billed yearly (₹2,988/year)</p>
               </div>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Unlimited menu items</span>
+                  <span className="text-gray-600">Up to 50 products</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">All templates</span>
+                  <span className="text-gray-600">All Premium Templates</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">AI menu scanning</span>
+                  <span className="text-gray-600">AI Scanner to add products</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">WhatsApp ordering</span>
+                  <span className="text-gray-600">WhatsApp Ordering</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
@@ -368,7 +378,7 @@ export default function Home() {
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Everything in Pro</span>
+                  <span className="text-gray-600">Unlimited products</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 mr-2">✓</span>
