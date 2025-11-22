@@ -402,6 +402,7 @@ export default function AdminDashboard() {
           {activeMenu === "tools" && (
             <MenuToolsView
               shopName={shopName || menuData?.shopName || "Your Shop"}
+              shopLogo={shopLogo || menuData?.shopLogo || undefined}
               menuUrl={
                 typeof window !== "undefined"
                   ? `${window.location.origin}/${

@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { QrCode, Eye, Palette, ImageDown, FileDown, X, Copy, Check, Layout, Save } from "lucide-react";
 import { MenuTemplateType } from "@/generated/prisma/enums";
+import { QRCode } from "react-qrcode-logo";
 
 interface MenuToolsViewProps {
   shopName: string;
+  shopLogo?: string;
   menuUrl: string;
   template: string;
   onTemplateChange: (value: string) => void;
   onSave: () => void;
 }
 
-export default function MenuToolsView({ shopName, menuUrl, template, onTemplateChange, onSave }: MenuToolsViewProps) {
+export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, onTemplateChange, onSave }: MenuToolsViewProps) {
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const qrRef = useRef<any>(null);
 
   const getPreviewUrl = () => {
     if (typeof window === 'undefined') return menuUrl;
@@ -150,6 +153,12 @@ export default function MenuToolsView({ shopName, menuUrl, template, onTemplateC
     navigator.clipboard.writeText(menuUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadQRCode = () => {
+    if (qrRef.current) {
+      qrRef.current.download("png", `${shopName || "shop"}-qr-code`);
+    }
   };
 
   return (
@@ -287,10 +296,22 @@ export default function MenuToolsView({ shopName, menuUrl, template, onTemplateC
             <div className="mb-6">
               <p className="text-gray-600 mb-4">Scan this QR code to access your digital menu</p>
               
-              {/* QR Code Placeholder */}
+              {/* QR Code with Logo */}
               <div className="flex justify-center mb-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-xl w-48 h-48 flex items-center justify-center">
-                  <QrCode className="text-gray-400" size={64} />
+                <div className="bg-white p-4 rounded-xl border-2 border-gray-200">
+                  <QRCode
+                    ref={qrRef}
+                    value={menuUrl}
+                    size={220}
+                    logoImage={shopLogo}
+                    logoWidth={shopLogo ? 80 : undefined}
+                    logoHeight={shopLogo ? 80 : undefined}
+                    removeQrCodeBehindLogo={true}
+                    qrStyle="dots"
+                    eyeRadius={5}
+                    fgColor="#1f2937"
+                    enableCORS={true}
+                  />
                 </div>
               </div>
               
@@ -315,7 +336,7 @@ export default function MenuToolsView({ shopName, menuUrl, template, onTemplateC
                 Close
               </button>
               <button
-                onClick={() => alert("QR Code downloaded!")}
+                onClick={downloadQRCode}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
               >
                 Download QR Code
