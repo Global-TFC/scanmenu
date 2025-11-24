@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ClaimShopPage({ params }: { params: Promise<{ slug: string }> }) {
+function ClaimShopContent({ slug }: { slug: string }) {
   const { data: session, isPending } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -14,15 +14,6 @@ export default function ClaimShopPage({ params }: { params: Promise<{ slug: stri
   
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Verifying claim...');
-  const [slug, setSlug] = useState<string>('');
-
-  useEffect(() => {
-    const init = async () => {
-        const resolvedParams = await params;
-        setSlug(resolvedParams.slug);
-    };
-    init();
-  }, [params]);
 
   useEffect(() => {
     if (!slug || !code) return;
@@ -106,5 +97,35 @@ export default function ClaimShopPage({ params }: { params: Promise<{ slug: stri
         )}
       </div>
     </div>
+  );
+}
+
+export default function ClaimShopPage({ params }: { params: Promise<{ slug: string }> }) {
+  const [slug, setSlug] = useState<string>('');
+
+  useEffect(() => {
+    const init = async () => {
+        const resolvedParams = await params;
+        setSlug(resolvedParams.slug);
+    };
+    init();
+  }, [params]);
+
+  if (!slug) {
+      return (
+          <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+          </div>
+      );
+  }
+
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    }>
+      <ClaimShopContent slug={slug} />
+    </Suspense>
   );
 }
