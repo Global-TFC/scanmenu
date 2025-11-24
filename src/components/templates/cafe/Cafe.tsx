@@ -40,7 +40,7 @@ export default function Cafe({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-      <Navbar activeColor={activeColor} />
+      <Navbar activeColor={activeColor} shopName={shopName} shopLogo={shopLogo} />
       <Hero products={products} />
       <MojitoShowcase products={products} />
       <Menu onColorChange={setActiveColor} products={products} />

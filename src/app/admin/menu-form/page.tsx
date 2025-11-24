@@ -154,7 +154,7 @@ export default function CreateMenuForm() {
       const newMenu = await createMenu(menuData);
       
       setSuccessMessage(`Menu "${newMenu.shopName}" created successfully!`);
-      router.push(`/admin/${formData.slug}`);
+      router.push(`/thank-you?slug=${formData.slug}`);
       
       setFormData({
         slug: '',

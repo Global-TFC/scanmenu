@@ -4,18 +4,24 @@ import Link from "next/link";
 import { Store, ArrowLeft } from "lucide-react";
 import GoogleAuth from "@/components/auth/GoogleAuth";
 import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AuthPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   useEffect(() => {
     if (session?.user) {
-      router.push("/admin/menu-form");
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else {
+        router.push("/admin/menu-form");
+      }
     }
-  }, [session, router]);
+  }, [session, router, callbackUrl]);
 
   // Show loading while checking session
   if (isPending) {

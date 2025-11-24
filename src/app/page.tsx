@@ -1,9 +1,74 @@
 "use client";
 import Link from "next/link";
 import { Menu, X, Store, Zap, Smartphone, QrCode, TrendingUp, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
 import Image from "next/image";
+
+function ReadymadeShopsList() {
+  const [shops, setShops] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/readymade-shops')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setShops(data);
+        }
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <div className="text-center py-10">Loading shops...</div>;
+  }
+
+  if (shops.length === 0) {
+    return <div className="text-center py-10 text-gray-500">No readymade shops available at the moment.</div>;
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {shops.map((shop) => (
+        <Link 
+          key={shop.id} 
+          href={`/${shop.slug}`}
+          className="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-indigo-100"
+        >
+          <div className="aspect-video relative overflow-hidden bg-gray-100">
+            {shop.items?.[0]?.image ? (
+              <Image
+                src={shop.items[0].image}
+                alt={shop.shopName}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                <Store className="h-12 w-12" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+              <span className="text-white font-medium flex items-center gap-2">
+                Visit Shop <ArrowRight className="h-4 w-4" />
+              </span>
+            </div>
+          </div>
+          <div className="p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+              {shop.shopName}
+            </h3>
+            <p className="text-sm text-gray-500">
+              scanmenu.com/{shop.slug}
+            </p>
+          </div>
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -402,6 +467,22 @@ export default function Home() {
               </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Readymade Shops Section */}
+      <section className="py-20 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+              Explore Readymade Shops
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              See what's possible with ScanMenu. Claim one of these designs or create your own.
+            </p>
+          </div>
+
+          <ReadymadeShopsList />
         </div>
       </section>
 

@@ -66,6 +66,8 @@ model Menu {
   contactNumber   String?
   template  MenuTemplateType @default(PRO)
   isWhatsappOrderingEnabled Boolean @default(true)
+  isReadymade Boolean @default(false)
+  claimCode String?
   items     MenuItem[]
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt

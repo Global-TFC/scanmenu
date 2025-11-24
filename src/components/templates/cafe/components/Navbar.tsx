@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import CategoryModal from './CategoryModal';
 
-export default function Navbar({ activeColor }: { activeColor?: string | null }) {
+export default function Navbar({ activeColor, shopName, shopLogo }: { activeColor?: string | null, shopName: string, shopLogo?: string }) {
     const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
@@ -39,12 +38,20 @@ export default function Navbar({ activeColor }: { activeColor?: string | null })
                         {/* Logo Icon */}
                         <motion.div
                             layout
-                            className={`flex items-center justify-center ${isScrolled
+                            className={`flex items-center justify-center overflow-hidden ${isScrolled
                                 ? 'w-10 h-10 bg-transparent'
                                 : 'w-12 h-12 rounded-full bg-white/20 backdrop-blur-md'
                                 }`}
                         >
-                            <span className="text-2xl">☕</span>
+                            {shopLogo ? (
+                                <img 
+                                    src={shopLogo} 
+                                    alt={shopName} 
+                                    className="w-full h-full object-cover rounded-full"
+                                />
+                            ) : (
+                                <span className="text-2xl">☕</span>
+                            )}
                         </motion.div>
 
                         {/* Text Content - Hidden when scrolled */}
@@ -59,7 +66,7 @@ export default function Navbar({ activeColor }: { activeColor?: string | null })
                                     className="text-3xl font-bold text-white"
                                     style={{ fontFamily: 'Playfair Display, serif' }}
                                 >
-                                    Essence
+                                    {shopName}
                                 </h1>
                                 <p className="text-xs text-white/80">
                                     Cafe & Lounge

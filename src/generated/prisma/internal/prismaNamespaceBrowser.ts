@@ -115,6 +115,8 @@ export const MenuScalarFieldEnum = {
   contactNumber: 'contactNumber',
   template: 'template',
   isWhatsappOrderingEnabled: 'isWhatsappOrderingEnabled',
+  isReadymade: 'isReadymade',
+  claimCode: 'claimCode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

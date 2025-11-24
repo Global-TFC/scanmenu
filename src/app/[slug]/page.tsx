@@ -90,6 +90,7 @@ export default async function SlugMenuPage({ params }: PageProps) {
       products={products}
       template={menu.template as MenuTemplateType}
       isWhatsappOrderingEnabled={menu.isWhatsappOrderingEnabled}
+      isReadymade={menu.isReadymade}
     />
   );
 }
