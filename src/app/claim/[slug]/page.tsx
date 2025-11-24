@@ -31,7 +31,7 @@ export default function ClaimShopPage({ params }: { params: Promise<{ slug: stri
 
     if (!session) {
       // Should have been handled by middleware or redirect, but just in case
-      router.push(`/auth?callbackUrl=/claim/${slug}?code=${code}`);
+      router.push(`/auth?callbackUrl=${encodeURIComponent(`/claim/${slug}?code=${code}`)}`);
       return;
     }
 

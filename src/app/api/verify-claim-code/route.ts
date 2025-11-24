@@ -23,8 +23,19 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "This shop is not available for claiming" }, { status: 400 });
     }
 
-    if (menu.claimCode !== code) {
-      return NextResponse.json({ valid: false, error: "Invalid Coupon Code" }, { status: 200 });
+    if (menu.claimCode) {
+        if (menu.claimCode !== code) {
+            return NextResponse.json({ valid: false, error: "Invalid Claim Code" }, { status: 200 });
+        }
+    } else {
+        // If no specific claim code, check if it's a valid coupon
+        const coupon = await prisma.coupon.findUnique({ where: { code } });
+        if (!coupon) {
+             return NextResponse.json({ valid: false, error: "Invalid Coupon Code" }, { status: 200 });
+        }
+        if (coupon.isRedeemed) {
+             return NextResponse.json({ valid: false, error: "Coupon Already Redeemed" }, { status: 200 });
+        }
     }
 
     return NextResponse.json({ valid: true }, { status: 200 });
