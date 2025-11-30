@@ -18,6 +18,7 @@ import {
   updateMenuItem,
   deleteMenuItem,
   updateMenu,
+  bulkUpsertMenuItems,
 } from "@/lib/api/menus";
 import { Menu } from "@/generated/prisma/client";
 import { MenuTemplateType } from "@/generated/prisma/enums";
@@ -294,6 +295,51 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleBulkProducts = async (items: any[]) => {
+    try {
+      const result = await bulkUpsertMenuItems(slug as string, items);
+      alert(result.message);
+      // Refresh products
+      const updatedItems = await fetchMenuItems(slug as string);
+      if (Array.isArray(updatedItems)) {
+        const itemsArr = updatedItems as Array<Record<string, unknown>>;
+        const mapped = itemsArr.map((it) => {
+            const getStr = (k: string, fallback = "") => {
+              const v = it[k];
+              return typeof v === "string" ? v : fallback;
+            };
+            const getNum = (k: string, fallback = 0) => {
+              const v = it[k];
+              return typeof v === "number" ? v : fallback;
+            };
+            const getBool = (k: string, fallback = false) => {
+              const v = it[k];
+              return typeof v === "boolean" ? v : fallback;
+            };
+            return {
+              id: getStr("id", Date.now().toString()),
+              name: getStr("name", "Menu Item"),
+              category: getStr("category", "Menu Item"),
+              price: getNum("price", 0),
+              image: getStr("image", ""),
+              isFeatured: getBool("isFeatured", false),
+              offerPrice: (() => {
+                const v = it["offerPrice"];
+                return typeof v === "number" ? (v as number) : undefined;
+              })(),
+            };
+          });
+        setProducts(mapped);
+      }
+    } catch (error) {
+      alert(
+        `Failed to bulk upload products: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  };
+
   // Loading states
   if (isPending || isLoadingMenu) {
     return (
@@ -378,6 +424,7 @@ export default function AdminDashboard() {
               onAddProduct={handleAddProduct}
               onDeleteProduct={handleDeleteProduct}
               onEditProduct={handleEditProduct}
+              onBulkUpload={handleBulkProducts}
             />
           )}
 

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Plus,
   Search,
@@ -16,6 +16,9 @@ import ProductCard from "./ProductCard";
 import { extractMenuFromImage } from "@/lib/api/menus";
 import ImageUpload from "./ImageUpload";
 
+import Papa from "papaparse";
+import * as XLSX from "xlsx";
+
 interface MenuItem {
   name: string;
   price: number;
@@ -30,6 +33,7 @@ interface ProductsViewProps {
   onAddProduct: (product: Omit<Product, "id">) => void;
   onDeleteProduct: (id: string) => void;
   onEditProduct: (product: Product) => void;
+  onBulkUpload: (items: any[]) => void;
 }
 
 export default function ProductsView({
@@ -37,7 +41,75 @@ export default function ProductsView({
   onAddProduct,
   onDeleteProduct,
   onEditProduct,
+  onBulkUpload,
 }: ProductsViewProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const processFile = (file: File) => {
+    if (file.name.endsWith(".csv")) {
+      Papa.parse(file, {
+        header: true,
+        complete: (results) => {
+          const items = results.data.map((row: any) => ({
+            name: row.name || row.Name || row.NAME,
+            price: parseFloat(row.price || row.Price || row.PRICE || "0"),
+            category: row.category || row.Category || row.CATEGORY,
+            image: row.image || row.Image || row.IMAGE,
+            offerPrice: row.offerPrice ? parseFloat(row.offerPrice) : undefined,
+          })).filter((item: any) => item.name && item.price);
+          onBulkUpload(items);
+        },
+      });
+    } else if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const bstr = evt.target?.result;
+        const wb = XLSX.read(bstr, { type: "binary" });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws);
+        const items = data.map((row: any) => ({
+            name: row.name || row.Name || row.NAME,
+            price: parseFloat(row.price || row.Price || row.PRICE || "0"),
+            category: row.category || row.Category || row.CATEGORY,
+            image: row.image || row.Image || row.IMAGE,
+            offerPrice: row.offerPrice ? parseFloat(row.offerPrice) : undefined,
+        })).filter((item: any) => item.name && item.price);
+        onBulkUpload(items);
+      };
+      reader.readAsBinaryString(file);
+    } else {
+      alert("Please upload a CSV or Excel file.");
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processFile(file);
+      // Reset input so same file can be selected again if needed
+      e.target.value = "";
+    }
+  };
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -254,7 +326,19 @@ export default function ProductsView({
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div 
+        className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative ${isDragging ? "border-indigo-500 ring-2 ring-indigo-500 ring-opacity-50" : ""}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {isDragging && (
+          <div className="absolute inset-0 bg-indigo-50 bg-opacity-90 z-50 flex flex-col items-center justify-center backdrop-blur-sm transition-all">
+            <Upload className="text-indigo-600 w-16 h-16 mb-4 animate-bounce" />
+            <h3 className="text-2xl font-bold text-indigo-900">Drop file to upload</h3>
+            <p className="text-indigo-700 mt-2">Support CSV, Excel</p>
+          </div>
+        )}
         {/* Section Header */}
         <div className="p-4 sm:p-6 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -294,6 +378,21 @@ export default function ProductsView({
                 <CameraIcon size={16} className="sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">Scan</span>
               </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors shadow-sm border border-gray-300"
+                title="Upload CSV/Excel"
+              >
+                <Upload size={16} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Import</span>
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                accept=".csv,.xlsx,.xls"
+                className="hidden"
+              />
               <button
                 onClick={() => setShowAddProduct(!showAddProduct)}
                 className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm text-sm"

@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import prisma from '@/lib/prisma'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://scanmenu-five.vercel.app/'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://scanmenu.billinco.com'
 
   // Fetch all shops
   const menus = await prisma.menu.findMany({

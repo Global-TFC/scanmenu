@@ -235,3 +235,23 @@ export async function deleteMenuItem(slug: string, id: string) {
   }
   return res.json();
 }
+
+export async function bulkUpsertMenuItems(slug: string, items: any[]) {
+  const res = await fetch(`/api/menu/${encodeURIComponent(slug)}/items/bulk`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
+  });
+
+  if (!res.ok) {
+    const contentType = res.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const error = await res.json();
+      throw new Error(error.error || "Failed to bulk upsert menu items");
+    }
+    const text = await res.text();
+    throw new Error(`Request failed ${res.status}: ${text}`);
+  }
+
+  return res.json();
+}
