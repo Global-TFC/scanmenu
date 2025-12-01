@@ -2,19 +2,23 @@
 
 import { useState, useRef } from "react";
 import { upload } from "@imagekit/next";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
+
+import GlobalImageSelector from "./GlobalImageSelector";
 
 interface ImageUploadProps {
   onSuccess: (url: string) => void;
   onError?: (err: any) => void;
   folder?: string;
   currentImage?: string;
+  defaultSearchTerm?: string;
 }
 
-export default function ImageUpload({ onSuccess, onError, folder = "/menu-items", currentImage }: ImageUploadProps) {
+export default function ImageUpload({ onSuccess, onError, folder = "/menu-items", currentImage, defaultSearchTerm }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showGlobalSelector, setShowGlobalSelector] = useState(false);
 
   const authenticator = async () => {
     try {
@@ -70,7 +74,7 @@ export default function ImageUpload({ onSuccess, onError, folder = "/menu-items"
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
       <input
         type="file"
         ref={fileInputRef}
@@ -82,17 +86,29 @@ export default function ImageUpload({ onSuccess, onError, folder = "/menu-items"
       />
       
       {!currentImage && !uploading && (
-        <label
-          htmlFor="image-upload-input"
-          className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
-        >
-          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-            <Upload className="w-8 h-8 mb-2 text-gray-500" />
-            <p className="text-sm text-gray-500">
-              <span className="font-semibold">Click to upload</span> or drag and drop
-            </p>
-          </div>
-        </label>
+        <div className="flex gap-2">
+          <label
+            htmlFor="image-upload-input"
+            className="flex-1 flex flex-col items-center justify-center h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <Upload className="w-8 h-8 mb-2 text-gray-500" />
+              <p className="text-sm text-gray-500 text-center px-2">
+                <span className="font-semibold">Click to upload</span>
+              </p>
+            </div>
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowGlobalSelector(true)}
+            className="flex-1 flex flex-col items-center justify-center h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-indigo-50 hover:bg-indigo-100 transition-colors"
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <ImageIcon className="w-8 h-8 mb-2 text-indigo-500" />
+              <p className="text-sm text-indigo-600 font-semibold">Select from Library</p>
+            </div>
+          </button>
+        </div>
       )}
 
       {uploading && (
@@ -129,6 +145,14 @@ export default function ImageUpload({ onSuccess, onError, folder = "/menu-items"
             </label>
             <button
               type="button"
+              onClick={() => setShowGlobalSelector(true)}
+              className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700"
+              title="Select from Library"
+            >
+              <ImageIcon size={16} />
+            </button>
+            <button
+              type="button"
               onClick={() => onSuccess("")}
               className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600"
               title="Remove Image"
@@ -138,6 +162,13 @@ export default function ImageUpload({ onSuccess, onError, folder = "/menu-items"
           </div>
         </div>
       )}
+
+      <GlobalImageSelector
+        isOpen={showGlobalSelector}
+        onClose={() => setShowGlobalSelector(false)}
+        onSelect={(url) => onSuccess(url)}
+        initialSearchTerm={defaultSearchTerm}
+      />
     </div>
   );
 }

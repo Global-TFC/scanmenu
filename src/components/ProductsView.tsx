@@ -696,6 +696,7 @@ export default function ProductsView({
                 <ImageUpload
                   onSuccess={(url) => setEditImage(url)}
                   currentImage={editImage}
+                  defaultSearchTerm={editName}
                 />
               </div>
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -760,6 +761,14 @@ export default function ProductsView({
                 onChange={(e) => setProductName(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
               />
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-gray-700">Product Image</label>
+                  <ImageUpload
+                    onSuccess={(url) => setProductImage(url)}
+                    currentImage={productImage}
+                    defaultSearchTerm={productName}
+                  />
+                </div>
               <div className="space-y-2">
                 <select
                   value={newCategoryMode ? "__new__" : category}
