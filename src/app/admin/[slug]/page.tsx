@@ -425,6 +425,7 @@ export default function AdminDashboard() {
               onDeleteProduct={handleDeleteProduct}
               onEditProduct={handleEditProduct}
               onBulkUpload={handleBulkProducts}
+              slug={slug as string}
             />
           )}
 

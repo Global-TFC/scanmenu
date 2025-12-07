@@ -10,6 +10,7 @@ import {
   X,
   Upload,
   Check,
+  Share2,
 } from "lucide-react";
 import { Product } from "../app/admin/types";
 import ProductCard from "./ProductCard";
@@ -34,6 +35,7 @@ interface ProductsViewProps {
   onDeleteProduct: (id: string) => void;
   onEditProduct: (product: Product) => void;
   onBulkUpload: (items: any[]) => void;
+  slug: string;
 }
 
 export default function ProductsView({
@@ -42,6 +44,7 @@ export default function ProductsView({
   onDeleteProduct,
   onEditProduct,
   onBulkUpload,
+  slug,
 }: ProductsViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -346,6 +349,39 @@ export default function ProductsView({
               Product Management
             </h2>
             <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const featured = products
+                    .filter((p) => p.isFeatured)
+                    .slice(0, 5);
+                  
+                  if (featured.length === 0) {
+                    alert("No featured products found!");
+                    return;
+                  }
+
+                  const text = [
+                    "*ഫ്ലാഷ് ഡീലുകൾ - പരിമിത കാല ഓഫർ*",
+                    "ഈ ഓഫറുകൾ അവസാനിക്കുന്നതിന് മുൻപ് സ്വന്തമാക്കൂ!",
+                    "",
+                    ...featured.map((p) => {
+                      const priceDisplay = p.offerPrice 
+                        ? `~₹${p.price}~  *₹${p.offerPrice}*`
+                        : `*₹${p.price}*`;
+                      return `*${p.name}*  :  ${priceDisplay}`;
+                    }),
+                    "",
+                    `കൂടുതൽ ഓഫറുകൾ അറിയാൻ സന്ദർശിക്കുക: ${window.location.origin}/${slug}`
+                  ].join("\n");
+
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                }}
+                className="flex items-center gap-1 sm:gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm border border-transparent"
+                title="Share Featured on WhatsApp"
+              >
+                <Share2 size={16} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Share</span>
+              </button>
               <div className="flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode("grid")}
