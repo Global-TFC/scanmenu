@@ -59,14 +59,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      images,
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images,
     },
   };
 }
