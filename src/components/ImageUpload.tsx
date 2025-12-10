@@ -14,7 +14,7 @@ interface ImageUploadProps {
   defaultSearchTerm?: string;
 }
 
-export default function ImageUpload({ onSuccess, onError, folder = "/menu-items", currentImage, defaultSearchTerm }: ImageUploadProps) {
+export default function ImageUpload({ onSuccess, onError, folder = "/global", currentImage, defaultSearchTerm }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);

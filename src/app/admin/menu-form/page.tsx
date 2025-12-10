@@ -189,12 +189,79 @@ export default function CreateMenuForm() {
     }
   };
 
+  const isAdmin = session?.user?.email === 'asayn.com@gmail.com';
+
   if (isSessionLoading || isCheckingShop) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show admin-only message for non-admin users
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="max-w-2xl w-full">
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-6">
+              <h2 className="text-3xl font-bold text-white text-center">Shop Creation Restricted</h2>
+            </div>
+            <div className="p-8 md:p-12 space-y-6">
+              <div className="text-center space-y-4">
+                <div className="inline-flex items-center justify-center p-4 bg-indigo-100 rounded-full">
+                  <Store className="h-12 w-12 text-indigo-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900">
+                  Admin Only Feature
+                </h3>
+                <p className="text-lg text-slate-600">
+                  Shop creation is currently restricted to administrators only. 
+                  Please contact us to create your shop.
+                </p>
+              </div>
+
+              <div className="border-t border-slate-200 my-8"></div>
+
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold text-slate-900 text-center">
+                  Get Your Shop Created
+                </h4>
+                <p className="text-center text-slate-600">
+                  Contact us on WhatsApp to set up your digital menu
+                </p>
+                
+                <a
+                  href="https://wa.me/919562695758"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full"
+                >
+                  <button className="w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all transform hover:-translate-y-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:shadow-green-200 flex items-center justify-center gap-3">
+                    <Phone className="h-6 w-6" />
+                    Contact on WhatsApp
+                    <span className="text-sm font-normal">+91 95626 95758</span>
+                  </button>
+                </a>
+
+                <p className="text-center text-sm text-slate-500 mt-4">
+                  We'll help you set up your shop and get you started quickly!
+                </p>
+              </div>
+
+              {session?.user && (
+                <div className="mt-6 p-4 bg-slate-50 rounded-xl">
+                  <p className="text-sm text-slate-600 text-center">
+                    Logged in as: <span className="font-semibold">{session.user.email}</span>
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );

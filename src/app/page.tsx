@@ -94,9 +94,6 @@ export default function Home() {
               <a href="#how-it-works" className="text-gray-600 hover:text-indigo-600 transition-colors">
                 How It Works
               </a>
-              <a href="#pricing" className="text-gray-600 hover:text-indigo-600 transition-colors">
-                Pricing
-              </a>
               <Link
                 href="/auth"
                 className="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium shadow-sm"
@@ -134,13 +131,6 @@ export default function Home() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 How It Works
-              </a>
-              <a
-                href="#pricing"
-                className="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Pricing
               </a>
               <Link
                 href="/auth"
@@ -342,133 +332,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 px-4 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Get a professional website worth min ₹10k for a fraction of the price
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Starter Plan */}
-            <div className="p-8 rounded-2xl border-2 border-gray-200 hover:border-indigo-600 transition-all">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Starter</h3>
-              <div className="mb-4">
-                <span className="text-4xl font-bold text-gray-900">₹149</span>
-                <span className="text-gray-600">/month</span>
-                <p className="text-sm text-gray-500 mt-1">Billed yearly (₹1,788/year)</p>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Up to 20 products</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">All Premium Templates</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">AI Scanner to add products</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">QR code generation</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">WhatsApp Ordering</span>
-                </li>
-              </ul>
-              <Link
-                href="/auth"
-                className="block w-full px-6 py-3 text-center bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-              >
-                Get Started
-              </Link>
-            </div>
-
-            {/* Pro Plan */}
-            <div className="p-8 rounded-2xl border-2 border-indigo-600 bg-gradient-to-br from-indigo-50 to-purple-50 relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                Popular
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-              <div className="mb-4">
-                <span className="text-4xl font-bold text-gray-900">₹249</span>
-                <span className="text-gray-600">/month</span>
-                <p className="text-sm text-gray-500 mt-1">Billed yearly (₹2,988/year)</p>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Up to 50 products</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">All Premium Templates</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">AI Scanner to add products</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">WhatsApp Ordering</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Priority support</span>
-                </li>
-              </ul>
-              <Link
-                href="/auth"
-                className="block w-full px-6 py-3 text-center bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-              >
-                Start Free Trial
-              </Link>
-            </div>
-
-            {/* Enterprise Plan */}
-            <div className="p-8 rounded-2xl border-2 border-gray-200 hover:border-indigo-600 transition-all">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-              <div className="mb-4">
-                <span className="text-4xl font-bold text-gray-900">Custom</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Unlimited products</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Multiple locations</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Custom branding</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">API access</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-600 mr-2">✓</span>
-                  <span className="text-gray-600">Dedicated support</span>
-                </li>
-              </ul>
-              <button className="block w-full px-6 py-3 text-center bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-                Contact Sales
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Readymade Shops Section */}
       <section className="py-20 px-4 bg-gray-50">
@@ -522,7 +386,6 @@ export default function Home() {
               <h4 className="text-white font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Templates</a></li>
               </ul>
             </div>

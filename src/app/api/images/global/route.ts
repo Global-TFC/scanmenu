@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   const searchQuery = searchParams.get("search");
 
   try {
-    let url = "https://api.imagekit.io/v1/files?path=global&limit=20";
+    let url = "https://api.imagekit.io/v1/files?path=global&limit=10";
     
     if (searchQuery) {
       // User requested: const expr = `tags HAS "${userInput}"`;
