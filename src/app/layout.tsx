@@ -14,7 +14,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "ScanMenu - Digital Menus for Offline Shops",
   description: "Create digital menus for your offline shop",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
 };
 
 export default function RootLayout({
