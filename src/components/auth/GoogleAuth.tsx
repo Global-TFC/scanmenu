@@ -1,11 +1,15 @@
 "use client"
 import { signIn } from "@/lib/auth-client";
 
-function GoogleAuth() {
+interface GoogleAuthProps {
+  callbackUrl?: string | null;
+}
+
+function GoogleAuth({ callbackUrl }: GoogleAuthProps) {
   const signInWithGoogle = async () => {
     await signIn.social({
       provider: "google",
-      callbackURL: "/admin/menu-form",
+      callbackURL: callbackUrl || "/admin/menu-form",
     });
   };
 

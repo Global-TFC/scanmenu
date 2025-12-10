@@ -62,18 +62,36 @@ const TEMPLATES = [
 ] as const;
 
 export default function CreateMenuForm() {
-  const { data: session } = useSession();
+  const { data: session, isPending: isSessionLoading } = useSession();
   const router = useRouter();
+  const [isCheckingShop, setIsCheckingShop] = useState(true);
 
   useEffect(() => {
+    if (isSessionLoading) return;
+
     const checkForm = async () => {
-      const response = await isMenuFormAlreadyFilled(session?.user?.id || '');
-      if (response.exists && response.menu?.slug) {
-        router.push(`/admin/${response.menu.slug}`);
+      // If not logged in, we stop checking and show form (or redirect to auth if preferred, but existing code showed form)
+      if (!session?.user?.id) {
+        setIsCheckingShop(false);
+        return;
       }
+
+      try {
+        const response = await isMenuFormAlreadyFilled(session.user.id);
+        if (response.exists && response.menu?.slug) {
+          // If coming from a claim callback, we might want to do something else,
+          // but typically if they have a shop, we send them there.
+          router.push(`/admin/${response.menu.slug}`);
+          return; 
+        }
+      } catch (e) {
+        console.error("Failed to check existing shop", e);
+      }
+      
+      setIsCheckingShop(false);
     };
     checkForm();
-  }, [session, router]);
+  }, [session, isSessionLoading, router]);
 
   const [formData, setFormData] = useState<FormData>({
     slug: '',
@@ -170,6 +188,17 @@ export default function CreateMenuForm() {
       setIsSubmitting(false);
     }
   };
+
+  if (isSessionLoading || isCheckingShop) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

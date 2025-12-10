@@ -7,43 +7,7 @@ import { headers } from "next/headers";
 // Helper to generate random string
 const randomString = (length: number) => Math.random().toString(36).substring(2, length + 2);
 
-const DUMMY_PRODUCTS = [
-    {
-    name: "Sandwich",
-    category: "Sandwich",
-    price: 100,
-    description: "Sandwich with fresh lettuce and tomatoes",
-    image: "https://ik.imagekit.io/0o54sx5fz7/menu-items/cafe.png?updatedAt=1763983509400"
-   },
-    {
-    name: "Fried Chicken",
-    category: "Chicken",
-    price: 120,
-    description: "Fried chicken with fresh lettuce and tomatoes",
-    image: "https://ik.imagekit.io/0o54sx5fz7/menu-items/cafe1.png"
-  },
-  {
-    name: "Burger",
-    category: "Burgers",
-    price: 100,
-    description: "Classic burger with fresh lettuce and tomatoes",
-    image: "https://ik.imagekit.io/0o54sx5fz7/menu-items/cafe2.png?updatedAt=1763983511400"
-  },
-  {
-    name: "Mojito",
-    category: "Drinks",
-    price: 90,
-    description: "Refreshing mojito with fresh mint and lime",
-    image: "https://ik.imagekit.io/0o54sx5fz7/menu-items/cafe3.png"
-  },
-  {
-    name: "Coffee",
-    category: "Drinks",
-    price: 20,
-    description: "Fresh coffee with fresh mint and lime",
-    image: "https://ik.imagekit.io/0o54sx5fz7/menu-items/cafe4.png"
-  }
-];
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,14 +55,7 @@ export async function POST(request: NextRequest) {
         claimCode: claimCode || null,
         isWhatsappOrderingEnabled: true,
         items: {
-          create: DUMMY_PRODUCTS.map(product => ({
-            name: product.name,
-            category: product.category,
-            price: product.price,
-            image: product.image,
-            isAvailable: true,
-            isFeatured: true
-          }))
+          create: []
         }
       },
       include: {

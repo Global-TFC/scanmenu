@@ -5,6 +5,7 @@ import { useSession } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { Store, Plus, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import ProductsView from '@/components/ProductsView';
 
 interface ReadymadeShop {
   id: string;
@@ -16,7 +17,7 @@ interface ReadymadeShop {
 export default function DeveloperAdmin() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
-  const [shops, setShops] = useState<ReadymadeShop[]>([]);
+  const [shops, setShops] = useState<any[]>([]); // Using any for flexibility or improved type later
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState({
@@ -25,6 +26,11 @@ export default function DeveloperAdmin() {
     template: 'PRO'
   });
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+
+  // Product Management State
+  const [managingShop, setManagingShop] = useState<any | null>(null); // Shop being managed
+  const [shopProducts, setShopProducts] = useState<any[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
   useEffect(() => {
     if (!isPending && (!session || session.user.email !== 'asayn.com@gmail.com')) {
@@ -36,17 +42,42 @@ export default function DeveloperAdmin() {
     fetchShops();
   }, []);
 
+  useEffect(() => {
+    if (managingShop) {
+      fetchShopProducts(managingShop.slug);
+    }
+  }, [managingShop]);
+
   const fetchShops = async () => {
     try {
-      const res = await fetch('/api/readymade-shops');
+      const res = await fetch('/api/developer/shops');
       if (res.ok) {
         const data = await res.json();
         setShops(data);
+      } else {
+        console.error("Fetch shops failed:", res.status);
+        setMessage({ type: 'error', text: `Failed to load shops` });
       }
     } catch (error) {
       console.error("Failed to fetch shops", error);
+      setMessage({ type: 'error', text: "Network error fetching shops" });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchShopProducts = async (slug: string) => {
+    setIsLoadingProducts(true);
+    try {
+      const res = await fetch(`/api/developer/shops/${slug}/items`);
+      if (res.ok) {
+        const data = await res.json();
+        setShopProducts(data.items || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products", error);
+    } finally {
+      setIsLoadingProducts(false);
     }
   };
 
@@ -78,6 +109,91 @@ export default function DeveloperAdmin() {
     }
   };
 
+  const handleDeleteShop = async (slug: string) => {
+    if (!confirm(`Are you sure you want to delete shop: ${slug}? This cannot be undone.`)) return;
+
+    try {
+      const res = await fetch('/api/developer/shops', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug })
+      });
+
+      if (res.ok) {
+        setShops(shops.filter(s => s.slug !== slug));
+        if (managingShop?.slug === slug) setManagingShop(null);
+      } else {
+        alert('Failed to delete shop');
+      }
+    } catch (error) {
+       console.error("Delete error", error);
+       alert('Error deleting shop');
+    }
+  };
+
+  // Product Handlers
+  const handleAddProduct = async (product: any) => {
+    if (!managingShop) return;
+    try {
+      const res = await fetch(`/api/developer/shops/${managingShop.slug}/items`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+      if (res.ok) {
+        fetchShopProducts(managingShop.slug);
+      } else {
+        alert("Failed to add product");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error adding product");
+    }
+  };      
+
+  const handleEditProduct = async (product: any) => {
+    if (!managingShop) return;
+    try {
+      const res = await fetch(`/api/developer/shops/${managingShop.slug}/items`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product) // includes id
+      });
+      if (res.ok) {
+        fetchShopProducts(managingShop.slug);
+      } else {
+        alert("Failed to edit product");
+      }
+    } catch (error) {
+       console.error(error);
+      alert("Error editing product");
+    }
+  };
+
+  const handleDeleteProduct = async (id: string) => {
+    if (!managingShop) return;
+    try {
+       const res = await fetch(`/api/developer/shops/${managingShop.slug}/items`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      });
+      if (res.ok) {
+        fetchShopProducts(managingShop.slug);
+      } else {
+         alert("Failed to delete product");
+      }
+    } catch (error) {
+       console.error(error);
+      alert("Error deleting product");
+    }
+  };
+
+  const handleBulkUpload = async (items: any[]) => {
+      // Not implemented for developer admin yet, or can reuse existing bulk logic if adapted
+      alert("Bulk upload not implemented in dev admin yet.");
+  };
+
   if (isPending || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -88,6 +204,44 @@ export default function DeveloperAdmin() {
 
   if (!session || session.user.email !== 'asayn.com@gmail.com') {
     return null; // Will redirect in useEffect
+  }
+
+  if (managingShop) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+         <div className="max-w-7xl mx-auto">
+            <button 
+                onClick={() => setManagingShop(null)}
+                className="mb-6 flex items-center gap-2 text-indigo-600 hover:text-indigo-800"
+            >
+                ← Back to Shops
+            </button>
+            <div className="flex items-center justify-between mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Managing: <span className="text-indigo-600">{managingShop.shopName}</span>
+                </h1>
+                 <div className="text-sm text-gray-500">
+                    Slug: {managingShop.slug}
+                  </div>
+            </div>
+
+            {isLoadingProducts ? (
+                 <div className="flex justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                 </div>
+            ) : (
+                <ProductsView 
+                    products={shopProducts}
+                    slug={managingShop.slug}
+                    onAddProduct={handleAddProduct}
+                    onEditProduct={handleEditProduct}
+                    onDeleteProduct={handleDeleteProduct}
+                    onBulkUpload={handleBulkUpload}
+                />
+            )}
+         </div>
+      </div>
+    );
   }
 
   return (
@@ -134,8 +288,6 @@ export default function DeveloperAdmin() {
                   />
                 </div>
 
-
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Template</label>
                   <select
@@ -181,23 +333,35 @@ export default function DeveloperAdmin() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900">Active Readymade Shops</h2>
+                <h2 className="text-xl font-semibold text-gray-900">All Shops ({shops.length})</h2>
               </div>
               
               {shops.length === 0 ? (
                 <div className="p-8 text-center text-gray-500">
-                  No readymade shops created yet.
+                  No shops found.
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-gray-200 max-h-[800px] overflow-y-auto">
                   {shops.map((shop) => (
-                    <div key={shop.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                    <div key={shop.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-colors gap-4">
                       <div>
-                        <h3 className="font-semibold text-gray-900">{shop.shopName}</h3>
+                        <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">{shop.shopName}</h3>
+                            {shop.isReadymade && <span className="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full">Readymade</span>}
+                        </div>
                         <p className="text-sm text-gray-500">/{shop.slug}</p>
-                        <p className="text-xs text-gray-400 mt-1">Created: {new Date(shop.createdAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-gray-400 mt-1">
+                            Owner: {shop.user?.email || 'N/A'} • Created: {new Date(shop.createdAt).toLocaleDateString()}
+                        </p>
+                         <p className="text-xs text-gray-500 mt-1">Items: {shop._count?.items || 0}</p>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                         <button
+                            onClick={() => setManagingShop(shop)}
+                            className="text-xs bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors font-medium"
+                         >
+                            Manage Products
+                         </button>
                         <Link
                           href={`/${shop.slug}`}
                           target="_blank"
@@ -206,6 +370,14 @@ export default function DeveloperAdmin() {
                         >
                           <ExternalLink className="h-5 w-5" />
                         </Link>
+                        <button
+                            onClick={() => handleDeleteShop(shop.slug)}
+                            className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                            title="Delete Shop"
+                        >
+                            <span className="sr-only">Delete</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        </button>
                       </div>
                     </div>
                   ))}

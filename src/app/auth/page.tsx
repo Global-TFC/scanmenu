@@ -81,7 +81,7 @@ function AuthContent() {
               Get Started
             </h2>
 
-            <GoogleAuth />
+            <GoogleAuth callbackUrl={callbackUrl} />
 
             {/* Divider */}
             <div className="relative my-6">
