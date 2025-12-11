@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Package, Store, Wrench } from "lucide-react";
+import { LayoutDashboard, Package, Store, Wrench, Tag } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import DashboardView from "@/components/DashboardView";
 import ProductsView from "@/components/ProductsView";
 import ShopDetailsView from "@/components/ShopDetailsView";
 import MenuToolsView from "@/components/MenuToolsView";
+import CategoriesView from "@/components/CategoriesView";
 import { Product, MenuItem } from "../types";
 import { useParams, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
@@ -70,6 +71,12 @@ export default function AdminDashboard() {
       label: "Products",
       icon: Package,
       active: activeMenu === "products",
+    },
+    {
+      id: "categories",
+      label: "Categories",
+      icon: Tag,
+      active: activeMenu === "categories",
     },
     {
       id: "shop",
@@ -427,6 +434,10 @@ export default function AdminDashboard() {
               onBulkUpload={handleBulkProducts}
               slug={slug as string}
             />
+          )}
+
+          {activeMenu === "categories" && (
+            <CategoriesView slug={slug as string} />
           )}
 
           {activeMenu === "shop" && (

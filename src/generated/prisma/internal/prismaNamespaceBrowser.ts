@@ -53,6 +53,7 @@ export const ModelName = {
   Coupon: 'Coupon',
   Menu: 'Menu',
   MenuItem: 'MenuItem',
+  Category: 'Category',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification'
@@ -135,10 +136,23 @@ export const MenuItemScalarFieldEnum = {
   isFeatured: 'isFeatured',
   isAvailable: 'isAvailable',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  categoryId: 'categoryId'
 } as const
 
 export type MenuItemScalarFieldEnum = (typeof MenuItemScalarFieldEnum)[keyof typeof MenuItemScalarFieldEnum]
+
+
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  image: 'image',
+  menuId: 'menuId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { getProducts, ProductResult } from "@/actions/get-products";
+import { getCategories } from "@/actions/get-categories";
 import { useInView } from "react-intersection-observer";
 
 // Define the Product interface matching what the templates expect
@@ -19,33 +20,46 @@ interface UseProductsProps {
 
 export function useProducts({ initialProducts, slug }: UseProductsProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [dbCategories, setDbCategories] = useState<{ id: string; name: string }[]>([]);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true); // Assume true initially if full page, but logic below refines it
+  // Check if initialProducts suggests there might be more (assuming PAGE_SIZE is 10)
+  const [hasMore, setHasMore] = useState(initialProducts.length >= 10);
   const [loading, setLoading] = useState(false);
   
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Reset pagination when filter changes
+  // Debounce search term - 400ms delay
   useEffect(() => {
-    // If we are just starting (page 1) and searchTerm/Category match initial state (empty/All),
-    // and we have initialProducts, we don't need to fetch immediately?
-    // Actually, handling initial state vs filtered state is tricky.
-    // Simplest approach:
-    // If filters change, we reset everything and fetch page 1.
-    // BUT, we want to avoid double fetching on mount.
-    
-    // We can use a ref to track if it's the first mount?
-    // Or just fetch immediately if filters are applied.
-    
-    // Let's just create a debounce for search if needed, but for now simple effect.
-    
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch categories from DB
+  useEffect(() => {
+    const fetchCats = async () => {
+        try {
+            const cats = await getCategories(slug);
+            setDbCategories(cats);
+        } catch (e) {
+            console.error("Failed to fetch categories", e);
+        }
+    };
+    fetchCats();
+  }, [slug]);
+
+  // Reset pagination when filter changes (uses debounced search)
+  useEffect(() => {
     const fetchFirstPage = async () => {
       setLoading(true);
       const res = await getProducts({
         slug,
         page: 1,
-        search: searchTerm,
+        search: debouncedSearchTerm,
         category: selectedCategory,
       });
       setProducts(res.products);
@@ -54,24 +68,15 @@ export function useProducts({ initialProducts, slug }: UseProductsProps) {
       setLoading(false);
     };
 
-    // Only fetch if we are NOT using the initial data passed from server.
-    // However, the initial data is for "All" categories and "" search.
-    // If user changes search or category, we MUST fetch.
-    // If search is "" and category is "All", we *could* rely on initialProducts
-    // IF we haven't paginated yet.
-    
-    // Let's check if we strictly need to fetch.
-    if (searchTerm === "" && selectedCategory === "All" && page === 1 && products === initialProducts) {
+    if (debouncedSearchTerm === "" && selectedCategory === "All" && page === 1 && products === initialProducts) {
        // Do nothing, we have initial data
-       // But wait, what if we went away and came back?
     } else {
        // We should fetch
        fetchFirstPage();
     }
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, selectedCategory, slug]); 
-  // removed page and products from deps to avoid loops, this effect is for FILTER changes
+  }, [debouncedSearchTerm, selectedCategory, slug]); 
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -81,7 +86,7 @@ export function useProducts({ initialProducts, slug }: UseProductsProps) {
     const res = await getProducts({
       slug,
       page: nextPage,
-      search: searchTerm,
+      search: debouncedSearchTerm,
       category: selectedCategory,
     });
 
@@ -89,7 +94,7 @@ export function useProducts({ initialProducts, slug }: UseProductsProps) {
     setHasMore(res.hasMore);
     setPage(nextPage);
     setLoading(false);
-  }, [slug, page, hasMore, loading, searchTerm, selectedCategory]);
+  }, [slug, page, hasMore, loading, debouncedSearchTerm, selectedCategory]);
 
   const { ref, inView } = useInView({
     threshold: 0,
@@ -102,29 +107,17 @@ export function useProducts({ initialProducts, slug }: UseProductsProps) {
     }
   }, [inView, loadMore]);
 
-  // Extract categories from INITIAL products? 
-  // No, if we filter, we might lose categories.
-  // Ideally, valid categories should come from the server or derive from ALL products.
-  // Since we don't have all products, we might need to derive from initial set OR 
-  // fetch distinct categories separately.
-  // For now, let's derive from the products we HAVE seen (or just initialProducts if that's the full sample of logic).
-  // Actually, standard practice for infinite scroll is:
-  // 1. Categories usually static or fetched once.
-  // 2. We can use initialProducts to get categories, assuming the initial batch covers main ones 
-  //    or we accept that some categories might appear later.
-  // Better: Let's assume the passed `initialProducts` (or a separate prop if we could) has enough info.
-  // Or we just stick to what `useMemo` did before, but using `products` might be limited if we are in a filtered view.
-  // Let's use `initialProducts` specifically for deriving categories list to keep it stable-ish?
-  // Warning: if initial batch doesn't have a category, it won't show in filter.
-  // We'll stick to `products` for now, or maybe the component should ask for all categories separately.
-  // Let's use a Set of all unique categories seen so far in the session.
-  
   const categories = useMemo(() => {
-    // Unique categories from ALL loaded products + "All"
-    // (Ideally we'd want ALL possible categories from DB, but that's a separate query)
-    const cats = new Set(products.map(p => p.category));
-    return ["All", ...Array.from(cats)];
-  }, [products]);
+    // Merge DB categories and current products' categories to ensure coverage
+    const productCategories = new Set(products.map(p => p.category));
+    const dbCategoryNames = new Set(dbCategories.map(c => c.name));
+    
+    const combined = new Set([...Array.from(dbCategoryNames), ...Array.from(productCategories)]);
+    combined.delete("All"); // Remove explicit "All" if present in data
+    
+    const sorted = Array.from(combined).filter(Boolean).sort();
+    return ["All", ...sorted];
+  }, [products, dbCategories]);
 
   return {
     products,

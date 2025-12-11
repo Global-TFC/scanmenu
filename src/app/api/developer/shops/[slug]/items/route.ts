@@ -73,11 +73,31 @@ export async function POST(request: NextRequest) {
     });
     if (!menu) return NextResponse.json({ error: "Menu not found" }, { status: 404 });
 
+    // Handle Category - create if doesn't exist
+    let categoryId: string | undefined;
+    if (category) {
+      const cat = await prisma.category.upsert({
+        where: {
+          menuId_name: {
+            menuId: menu.id,
+            name: category,
+          },
+        },
+        update: {},
+        create: {
+          name: category,
+          menuId: menu.id,
+        },
+      });
+      categoryId = cat.id;
+    }
+
     const newItem = await prisma.menuItem.create({
       data: {
         menuId: menu.id,
         name,
         category: category || null,
+        categoryId: categoryId,
         price: price ?? null,
         offerPrice: offerPrice ?? null,
         image: image || null,
@@ -138,7 +158,34 @@ export async function PUT(request: NextRequest) {
 
     const data: Record<string, unknown> = {};
     if (name !== undefined) data.name = name;
-    if (category !== undefined) data.category = category || null;
+    
+    // Handle Category Update - create if doesn't exist
+    if (category !== undefined) {
+      data.category = category || null;
+      if (category) {
+        try {
+          const cat = await prisma.category.upsert({
+            where: {
+              menuId_name: {
+                menuId: menu.id,
+                name: category,
+              },
+            },
+            update: {},
+            create: {
+              name: category,
+              menuId: menu.id,
+            },
+          });
+          data.categoryId = cat.id;
+        } catch (e) {
+          console.error("Error upserting category during PUT:", e);
+        }
+      } else {
+        data.categoryId = null;
+      }
+    }
+    
     if (price !== undefined) data.price = price ?? null;
     if (offerPrice !== undefined) data.offerPrice = offerPrice ?? null;
     if (image !== undefined) data.image = image || null;

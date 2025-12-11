@@ -62,6 +62,11 @@ export type Menu = Prisma.MenuModel
  */
 export type MenuItem = Prisma.MenuItemModel
 /**
+ * Model Category
+ * 
+ */
+export type Category = Prisma.CategoryModel
+/**
  * Model Session
  * 
  */

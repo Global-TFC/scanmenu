@@ -60,6 +60,11 @@ export async function getProducts({
         id: true,
         name: true,
         category: true,
+        categoryItem: {
+          select: {
+            name: true,
+          }
+        },
         price: true,
         offerPrice: true,
         image: true,
@@ -78,8 +83,8 @@ export async function getProducts({
     const products: ProductResult[] = items.map((item) => ({
       id: item.id,
       name: item.name,
-      category: item.category || "General",
-      description: item.category || "General", // Existing frontend logic often uses category as description fallback
+      category: item.categoryItem?.name || item.category || "General",
+      description: item.categoryItem?.name || item.category || "General", // Existing frontend logic often uses category as description fallback
       price: item.price || 0,
       offerPrice: item.offerPrice || undefined,
       image: item.image || "/default-product.png",

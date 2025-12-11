@@ -125,8 +125,8 @@ export default function Normal({
       </header>
 
       {/* Hero / Search */}
-      <div className="pt-24 pb-6 px-4 max-w-7xl mx-auto px-4">
-        <div className="relative mb-8">
+      <div className="pt-24 pb-4 px-4 max-w-7xl mx-auto px-4">
+        <div className="relative mb-4">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
@@ -138,7 +138,7 @@ export default function Normal({
         </div>
 
         {/* Categories */}
-        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -155,16 +155,13 @@ export default function Normal({
 
       {/* Product Grid */}
       <main className="max-w-7xl mx-auto px-4 pb-20">
-        <div className="flex justify-between items-end mb-4">
-          <p className="text-sm text-gray-500">{filteredProducts.length} Items</p>
-        </div>
 
         {filteredProducts.length === 0 && !loading ? (
           <div className="text-center py-20">
             <p className="text-gray-400">No products found.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-4">
              <AnimatePresence mode="popLayout">
             {filteredProducts.map((product) => (
               <motion.div

@@ -46,14 +46,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-  const { slug, name, category, price, offerPrice, image } = body as {
-    slug: string;
-    name: string;
-    category?: string;
-    price?: number;
-    offerPrice?: number;
-    image?: string;
-  };
+    const { slug, name, category, price, offerPrice, image } = body as {
+      slug: string;
+      name: string;
+      category?: string;
+      price?: number;
+      offerPrice?: number;
+      image?: string;
+    };
 
     if (!slug)
       return NextResponse.json({ error: "Missing slug" }, { status: 400 });
@@ -68,11 +68,32 @@ export async function POST(request: NextRequest) {
     if (!menu)
       return NextResponse.json({ error: "Menu not found" }, { status: 404 });
 
+    // Handle Category
+    let categoryId: string | undefined;
+    if (category) {
+      // Try to find existing category or create new one
+      const cat = await prisma.category.upsert({
+        where: {
+          menuId_name: {
+            menuId: menu.id,
+            name: category,
+          },
+        },
+        update: {},
+        create: {
+          name: category,
+          menuId: menu.id,
+        },
+      });
+      categoryId = cat.id;
+    }
+
     const newItem = await prisma.menuItem.create({
       data: {
         menuId: menu.id,
         name,
         category: category || null,
+        categoryId: categoryId,
         price: price ?? null,
         offerPrice: offerPrice ?? null,
         image: image || null,
@@ -95,27 +116,27 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-  const {
-    slug,
-    id,
-    name,
-    category,
-    price,
-    offerPrice,
-    image,
-    isFeatured,
-    isAvailable,
-  } = body as {
-    slug: string;
-    id: string;
-    name?: string;
-    category?: string;
-    price?: number;
-    offerPrice?: number;
-    image?: string;
-    isFeatured?: boolean;
-    isAvailable?: boolean;
-  };
+    const {
+      slug,
+      id,
+      name,
+      category,
+      price,
+      offerPrice,
+      image,
+      isFeatured,
+      isAvailable,
+    } = body as {
+      slug: string;
+      id: string;
+      name?: string;
+      category?: string;
+      price?: number;
+      offerPrice?: number;
+      image?: string;
+      isFeatured?: boolean;
+      isAvailable?: boolean;
+    };
 
     if (!slug)
       return NextResponse.json({ error: "Missing slug" }, { status: 400 });
@@ -146,12 +167,40 @@ export async function PUT(request: NextRequest) {
 
     const data: Record<string, unknown> = {};
     if (name !== undefined) data.name = name;
-  if (category !== undefined) data.category = category || null;
-  if (price !== undefined) data.price = price ?? null;
-  if (offerPrice !== undefined) data.offerPrice = offerPrice ?? null;
-  if (image !== undefined) data.image = image || null;
-  if (isFeatured !== undefined) data.isFeatured = !!isFeatured;
-  if (isAvailable !== undefined) data.isAvailable = !!isAvailable;
+    
+    // Handle Category Update
+    if (category !== undefined) {
+      data.category = category || null;
+      if (category) {
+        // Upsert category
+        try {
+          const cat = await prisma.category.upsert({
+            where: {
+              menuId_name: {
+                menuId: menu.id,
+                name: category,
+              },
+            },
+            update: {},
+            create: {
+              name: category,
+              menuId: menu.id,
+            },
+          });
+          data.categoryId = cat.id;
+        } catch (e) {
+          console.error("Error upserting category during PUT:", e);
+        }
+      } else {
+         data.categoryId = null;
+      }
+    }
+
+    if (price !== undefined) data.price = price ?? null;
+    if (offerPrice !== undefined) data.offerPrice = offerPrice ?? null;
+    if (image !== undefined) data.image = image || null;
+    if (isFeatured !== undefined) data.isFeatured = !!isFeatured;
+    if (isAvailable !== undefined) data.isAvailable = !!isAvailable;
 
     const updated = await prisma.menuItem.update({
       where: { id },

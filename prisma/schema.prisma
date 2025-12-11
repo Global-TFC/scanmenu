@@ -69,6 +69,7 @@ model Menu {
   isReadymade Boolean @default(false)
   claimCode String?
   items     MenuItem[]
+  categories Category[]
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
 }
@@ -89,6 +90,23 @@ model MenuItem {
 
   @@index([isFeatured])
   @@index([isAvailable])
+
+  categoryId String?
+  categoryItem Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  image     String?
+  menuId    String
+  menu      Menu     @relation(fields: [menuId], references: [id])
+  items     MenuItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([menuId, name])
+  @@map("category")
 }
 
 model Session {

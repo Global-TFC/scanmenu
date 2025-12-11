@@ -205,36 +205,6 @@ export default function Pro({
               {shopName || "Shop"}
             </span>
           </Link>
-          <div
-            className={`hidden md:flex items-center gap-8 mx-auto ${
-              isGlass ? "text-white/80" : "text-[#6a6a6a]"
-            }`}
-          >
-            <a
-              href="#products"
-              className={`transition-colors ${
-                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
-              }`}
-            >
-              Collection
-            </a>
-            <a
-              href="#about"
-              className={`transition-colors ${
-                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
-              }`}
-            >
-              About
-            </a>
-            <a
-              href="#contact"
-              className={`transition-colors ${
-                isGlass ? "hover:text-white" : "hover:text-[#3a3a3a]"
-              }`}
-            >
-              Contact
-            </a>
-          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsGlass(!isGlass)}

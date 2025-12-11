@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Store, Plus, ExternalLink, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import ProductsView from '@/components/ProductsView';
+import CategoriesView from '@/components/CategoriesView';
 
 interface ReadymadeShop {
   id: string;
@@ -29,6 +30,7 @@ export default function DeveloperAdmin() {
 
   // Product Management State
   const [managingShop, setManagingShop] = useState<any | null>(null); // Shop being managed
+  const [managingMode, setManagingMode] = useState<'products' | 'categories'>('products');
   const [shopProducts, setShopProducts] = useState<any[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
@@ -211,7 +213,7 @@ export default function DeveloperAdmin() {
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
          <div className="max-w-7xl mx-auto">
             <button 
-                onClick={() => setManagingShop(null)}
+                onClick={() => { setManagingShop(null); setManagingMode('products'); }}
                 className="mb-6 flex items-center gap-2 text-indigo-600 hover:text-indigo-800"
             >
                 ← Back to Shops
@@ -220,24 +222,57 @@ export default function DeveloperAdmin() {
                 <h1 className="text-3xl font-bold text-gray-900">
                     Managing: <span className="text-indigo-600">{managingShop.shopName}</span>
                 </h1>
-                 <div className="text-sm text-gray-500">
-                    Slug: {managingShop.slug}
-                  </div>
+                 <div className="flex items-center gap-4">
+                   <div className="text-sm text-gray-500">
+                     Slug: {managingShop.slug}
+                   </div>
+                   <div className="flex bg-gray-100 rounded-lg p-1">
+                     <button
+                       onClick={() => setManagingMode('products')}
+                       className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                         managingMode === 'products'
+                           ? 'bg-white shadow text-indigo-600'
+                           : 'text-gray-600 hover:text-gray-900'
+                       }`}
+                     >
+                       Products
+                     </button>
+                     <button
+                       onClick={() => setManagingMode('categories')}
+                       className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                         managingMode === 'categories'
+                           ? 'bg-white shadow text-indigo-600'
+                           : 'text-gray-600 hover:text-gray-900'
+                       }`}
+                     >
+                       Categories
+                     </button>
+                   </div>
+                 </div>
             </div>
 
-            {isLoadingProducts ? (
-                 <div className="flex justify-center py-12">
-                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
-                 </div>
-            ) : (
-                <ProductsView 
-                    products={shopProducts}
-                    slug={managingShop.slug}
-                    onAddProduct={handleAddProduct}
-                    onEditProduct={handleEditProduct}
-                    onDeleteProduct={handleDeleteProduct}
-                    onBulkUpload={handleBulkUpload}
-                />
+            {managingMode === 'products' && (
+              isLoadingProducts ? (
+                   <div className="flex justify-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                   </div>
+              ) : (
+                  <ProductsView 
+                      products={shopProducts}
+                      slug={managingShop.slug}
+                      onAddProduct={handleAddProduct}
+                      onEditProduct={handleEditProduct}
+                      onDeleteProduct={handleDeleteProduct}
+                      onBulkUpload={handleBulkUpload}
+                  />
+              )
+            )}
+
+            {managingMode === 'categories' && (
+              <CategoriesView 
+                slug={managingShop.slug} 
+                apiBasePath="/api/developer/shops" 
+              />
             )}
          </div>
       </div>
