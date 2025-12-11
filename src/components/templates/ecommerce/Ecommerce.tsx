@@ -15,6 +15,8 @@ import {
 import FlashDeals from "./FlashDeals";
 import { useProducts, Product } from "@/hooks/use-products";
 import { motion, AnimatePresence } from "framer-motion";
+import { FlashDealsErrorBoundary, ProductGridErrorBoundary } from "@/components/error-boundaries/ProductErrorBoundary";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function Ecommerce({
   shopName,
@@ -38,10 +40,14 @@ export default function Ecommerce({
   const [loadedShopName, setLoadedShopName] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Use our custom hook for data fetching
+  // Use our custom hook for data fetching with dual product management
   const {
-    products,
-    loading,
+    featuredProducts,
+    featuredLoading,
+    featuredError,
+    regularProducts,
+    regularLoading,
+    regularError,
     hasMore,
     loadMoreRef,
     searchTerm,
@@ -49,6 +55,8 @@ export default function Ecommerce({
     selectedCategory,
     setSelectedCategory,
     categories,
+    retryFeaturedProducts,
+    retryRegularProducts,
   } = useProducts({ initialProducts, slug });
 
   const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -136,15 +144,8 @@ export default function Ecommerce({
     openWhatsApp(message);
   };
 
-  // Separate featured products for Flash Deals?
-  // Current logic: FlashDeals uses 'regular' products passed in. 
-  // In new logic, `products` contains everything from server.
-  // We can filter `products` for isFeatured here if we want to show Flash Deals from the CURRENT batch,
-  // OR we might want to fetch featured specifically. 
-  // For simplicity, let's use the current `products` list. 
-  // Note: Server sorts by createdAt desc. 
-  const regularProducts = products.filter((p) => !p.isFeatured);
-  const featuredProducts = products.filter((p) => p.isFeatured);
+  // Products are now separated by the useProducts hook
+  // No need to filter here - featuredProducts and regularProducts come pre-separated
 
   return (
     <div className="min-h-screen bg-[#fafafa] overflow-x-hidden">
@@ -231,120 +232,170 @@ export default function Ecommerce({
         </div>
       </div>
 
-      {/* Flash Deals */}
-      {/* We pass the filtered list, but FlashDeals component usage might need check if it filters internally again? 
-          Assuming FlashDeals just displays what is passed. */}
-      {featuredProducts.length > 0 && (
-         <FlashDeals products={featuredProducts} onAdd={addToCart} />
-      )}
+      {/* Flash Deals - now uses pre-filtered featured products with error handling */}
+      <FlashDealsErrorBoundary>
+        {featuredError ? (
+          <div className="py-6 bg-red-50 border-y-[4px] border-red-500 my-4">
+            <div className="px-4 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-red-500 border-[3px] border-black shadow-[3px_3px_0_#000] rotate-[-2deg] mb-4">
+                <AlertTriangle className="text-white" size={20} />
+              </div>
+              <p className="text-red-800 text-sm font-bold uppercase mb-2">
+                Failed to load flash deals
+              </p>
+              <button
+                onClick={retryFeaturedProducts}
+                className="inline-flex items-center gap-2 px-3 py-1 bg-red-500 text-white border-[2px] border-black font-black uppercase text-xs shadow-[2px_2px_0_#000] hover:shadow-[1px_1px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+              >
+                <RefreshCw className="w-3 h-3" />
+                Retry
+              </button>
+            </div>
+          </div>
+        ) : featuredLoading ? (
+          <div className="py-6 bg-[#fff7d6] border-y-[4px] border-black my-4">
+            <div className="flex justify-center py-8">
+              <div className="w-8 h-8 border-4 border-black border-t-purple-500 rounded-full animate-spin"></div>
+            </div>
+          </div>
+        ) : featuredProducts.length > 0 ? (
+           <FlashDeals products={featuredProducts} onAdd={addToCart} />
+        ) : null}
+      </FlashDealsErrorBoundary>
 
       {/* All Products */}
-      <div className="px-4 py-6">
-        <h2 className="text-3xl font-black mb-6 uppercase tracking-tight bg-yellow-300 border-[4px] border-black px-4 py-3 inline-block shadow-[6px_6px_0_#000] transform rotate-[-1deg]">
-          All Products
-        </h2>
-        {regularProducts.length === 0 && !loading ? (
-          <div className="text-center py-16">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-300 border-[3px] border-black shadow-[3px_3px_0_#000] rotate-[-2deg] mb-4">
-              <Search className="text-black" size={28} />
-            </div>
-            <p className="text-black text-lg font-black uppercase">
-              No products found
-            </p>
-            <p className="text-gray-700 text-sm mt-1 font-bold uppercase">
-              Try adjusting your search or filter
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:gap-3 md:gap-3 lg:gap-3 max-w-[360px] mx-auto sm:max-w-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            <AnimatePresence mode="popLayout">
-            {regularProducts.map((product, index) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-                key={product.id}
-                className="w-full max-w-[160px] sm:max-w-none mx-auto"
+      <ProductGridErrorBoundary>
+        <div className="px-4 py-6">
+          <h2 className="text-3xl font-black mb-6 uppercase tracking-tight bg-yellow-300 border-[4px] border-black px-4 py-3 inline-block shadow-[6px_6px_0_#000] transform rotate-[-1deg]">
+            All Products
+          </h2>
+          
+          {regularError ? (
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500 border-[3px] border-black shadow-[3px_3px_0_#000] rotate-[-2deg] mb-4">
+                <AlertTriangle className="text-white" size={28} />
+              </div>
+              <p className="text-red-800 text-lg font-black uppercase mb-2">
+                Failed to load products
+              </p>
+              <p className="text-red-700 text-sm mb-4 font-bold uppercase">
+                {regularError}
+              </p>
+              <button
+                onClick={retryRegularProducts}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white border-[3px] border-black font-black uppercase shadow-[3px_3px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all"
               >
-                <div className="bg-white border-[3px] border-black p-3 shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all transform rotate-[-0.5deg] hover:rotate-[0deg]">
-                  {/* Image Container */}
-                  <div className="relative aspect-square border-[3px] border-black overflow-hidden mb-3">
-                    <img
-                      src={product.image || "/default-product.png"}
-                      alt={product.name}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                    {(() => {
-                      const d =
-                        typeof product.offerPrice === "number" &&
-                        product.offerPrice < product.price
-                          ? Math.round(
-                              ((product.price - product.offerPrice) /
-                                product.price) * 100
-                            )
-                          : 0;
-                      return d > 0 ? (
-                        <div className="absolute top-2 left-2 bg-red-600 text-white font-black text-xs px-2 py-1 uppercase border-[2px] border-black shadow-[2px_2px_0_#000] rotate-[-3deg]">
-                          -{d}%
-                        </div>
-                      ) : null;
-                    })()}
-                  </div>
+                <RefreshCw className="w-4 h-4" />
+                Try Again
+              </button>
+            </div>
+          ) : regularProducts.length === 0 && !regularLoading ? (
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-300 border-[3px] border-black shadow-[3px_3px_0_#000] rotate-[-2deg] mb-4">
+                <Search className="text-black" size={28} />
+              </div>
+              <p className="text-black text-lg font-black uppercase">
+                No products found
+              </p>
+              <p className="text-gray-700 text-sm mt-1 font-bold uppercase">
+                Try adjusting your search or filter
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4 sm:gap-3 md:gap-3 lg:gap-3 max-w-[360px] mx-auto sm:max-w-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              <AnimatePresence mode="popLayout">
+              {regularProducts.map((product, index) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  key={product.id}
+                  className="w-full max-w-[160px] sm:max-w-none mx-auto"
+                >
+                  <div className="bg-white border-[3px] border-black p-3 shadow-[4px_4px_0_#000] hover:shadow-[6px_6px_0_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] transition-all transform rotate-[-0.5deg] hover:rotate-[0deg]">
+                    {/* Image Container */}
+                    <div className="relative aspect-square border-[3px] border-black overflow-hidden mb-3">
+                      <img
+                        src={product.image || "/default-product.png"}
+                        alt={product.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/default-product.png";
+                        }}
+                      />
+                      {(() => {
+                        const d =
+                          typeof product.offerPrice === "number" &&
+                          product.offerPrice < product.price
+                            ? Math.round(
+                                ((product.price - product.offerPrice) /
+                                  product.price) * 100
+                              )
+                            : 0;
+                        return d > 0 ? (
+                          <div className="absolute top-2 left-2 bg-red-600 text-white font-black text-xs px-2 py-1 uppercase border-[2px] border-black shadow-[2px_2px_0_#000] rotate-[-3deg]">
+                            -{d}%
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
 
-                  {/* Product Info */}
-                  <div>
-                    <h3 className="font-black text-sm mb-1 line-clamp-2 uppercase">
-                      {product.name}
-                    </h3>
-                    <p className="text-xs font-bold text-gray-700 mb-2 uppercase">
-                      {product.description.substring(0, 20)}
-                    </p>
+                    {/* Product Info */}
+                    <div>
+                      <h3 className="font-black text-sm mb-1 line-clamp-2 uppercase">
+                        {product.name}
+                      </h3>
+                      <p className="text-xs font-bold text-gray-700 mb-2 uppercase">
+                        {product.description.substring(0, 20)}
+                      </p>
 
-                    {/* Price and Add Button */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="font-black text-lg">
-                            ₹{(product.offerPrice ?? product.price).toFixed(0)}
-                          </span>
-                          {typeof product.offerPrice === "number" ? (
-                            <span className="text-xs font-bold text-gray-500 line-through">
-                              ₹{product.price.toFixed(0)}
+                      {/* Price and Add Button */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-black text-lg">
+                              ₹{(product.offerPrice ?? product.price).toFixed(0)}
                             </span>
-                          ) : null}
+                            {typeof product.offerPrice === "number" ? (
+                              <span className="text-xs font-bold text-gray-500 line-through">
+                                ₹{product.price.toFixed(0)}
+                              </span>
+                            ) : null}
+                          </div>
                         </div>
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="w-9 h-9 bg-black text-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all rotate-[3deg] hover:rotate-[0deg]"
+                        >
+                          <Plus className="w-5 h-5 font-black" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => addToCart(product)}
-                        className="w-9 h-9 bg-black text-white border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0_#000] hover:shadow-[2px_2px_0_#000] hover:translate-x-[1px] hover:translate-y-[1px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all rotate-[3deg] hover:rotate-[0deg]"
-                      >
-                        <Plus className="w-5 h-5 font-black" />
-                      </button>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-            </AnimatePresence>
-          </div>
-        )}
-        
-        {/* Infinite Scroll Trigger */}
-        {(hasMore || loading) && (
-          <div 
-             ref={loadMoreRef} 
-             className="flex justify-center py-8"
-          >
-             {loading && (
-               <div className="w-8 h-8 border-4 border-black border-t-yellow-300 rounded-full animate-spin"></div>
-             )}
-          </div>
-        )}
+                </motion.div>
+              ))}
+              </AnimatePresence>
+            </div>
+          )}
+          
+          {/* Infinite Scroll Trigger - now only for regular products */}
+          {(hasMore || regularLoading) && !regularError && (
+            <div 
+               ref={loadMoreRef} 
+               className="flex justify-center py-8"
+            >
+               {regularLoading && (
+                 <div className="w-8 h-8 border-4 border-black border-t-yellow-300 rounded-full animate-spin"></div>
+               )}
+            </div>
+          )}
 
-      </div>
+        </div>
+      </ProductGridErrorBoundary>
 
       {/* Footer */}
       <footer className="bg-yellow-300 border-t-[4px] border-black mt-12 py-8 shadow-[0_-4px_0_#000]">
