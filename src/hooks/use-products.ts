@@ -34,7 +34,7 @@ interface UseProductsReturn {
   regularLoading: boolean;
   regularError: string | null;
   hasMore: boolean;
-  loadMoreRef: React.RefObject<HTMLDivElement>;
+  loadMoreRef: (node?: Element | null) => void;
   
   // Shared filters
   searchTerm: string;
