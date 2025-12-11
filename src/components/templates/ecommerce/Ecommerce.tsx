@@ -13,27 +13,17 @@ import {
   Milk,
 } from "lucide-react";
 import FlashDeals from "./FlashDeals";
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  image: string;
-  rating?: number;
-  reviews?: number;
-  isFeatured?: boolean;
-  offerPrice?: number;
-}
+import { useProducts, Product } from "@/hooks/use-products";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Ecommerce({
   shopName,
   shopPlace,
   shopContact,
   shopLogo,
-  products,
+  products: initialProducts,
   isWhatsappOrderingEnabled = true,
+  slug,
 }: {
   shopName: string;
   shopPlace: string;
@@ -41,36 +31,33 @@ export default function Ecommerce({
   shopLogo?: string;
   products: Product[];
   isWhatsappOrderingEnabled?: boolean;
+  slug: string;
 }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [cartOpen, setCartOpen] = useState(false);
   const [items, setItems] = useState<(Product & { quantity: number })[]>([]);
   const [loadedShopName, setLoadedShopName] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(products.map((p) => p.category)))],
-    [products]
-  );
+  // Use our custom hook for data fetching
+  const {
+    products,
+    loading,
+    hasMore,
+    loadMoreRef,
+    searchTerm,
+    setSearchTerm,
+    selectedCategory,
+    setSelectedCategory,
+    categories,
+  } = useProducts({ initialProducts, slug });
 
   const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
     All: Grid3x3,
     Fruits: Apple,
     Vegetables: Leaf,
     Dairy: Milk,
+    // Add more defaults or dynamic icon mapping if needed
   };
-
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "All" || product.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [products, searchTerm, selectedCategory]);
 
   // Load cart from session storage
   useEffect(() => {
@@ -149,7 +136,15 @@ export default function Ecommerce({
     openWhatsApp(message);
   };
 
-  const regularProducts = filteredProducts.filter((p) => !p.isFeatured);
+  // Separate featured products for Flash Deals?
+  // Current logic: FlashDeals uses 'regular' products passed in. 
+  // In new logic, `products` contains everything from server.
+  // We can filter `products` for isFeatured here if we want to show Flash Deals from the CURRENT batch,
+  // OR we might want to fetch featured specifically. 
+  // For simplicity, let's use the current `products` list. 
+  // Note: Server sorts by createdAt desc. 
+  const regularProducts = products.filter((p) => !p.isFeatured);
+  const featuredProducts = products.filter((p) => p.isFeatured);
 
   return (
     <div className="min-h-screen bg-[#fafafa] overflow-x-hidden">
@@ -237,14 +232,18 @@ export default function Ecommerce({
       </div>
 
       {/* Flash Deals */}
-      <FlashDeals products={filteredProducts} onAdd={addToCart} />
+      {/* We pass the filtered list, but FlashDeals component usage might need check if it filters internally again? 
+          Assuming FlashDeals just displays what is passed. */}
+      {featuredProducts.length > 0 && (
+         <FlashDeals products={featuredProducts} onAdd={addToCart} />
+      )}
 
       {/* All Products */}
       <div className="px-4 py-6">
         <h2 className="text-3xl font-black mb-6 uppercase tracking-tight bg-yellow-300 border-[4px] border-black px-4 py-3 inline-block shadow-[6px_6px_0_#000] transform rotate-[-1deg]">
           All Products
         </h2>
-        {regularProducts.length === 0 ? (
+        {regularProducts.length === 0 && !loading ? (
           <div className="text-center py-16">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-300 border-[3px] border-black shadow-[3px_3px_0_#000] rotate-[-2deg] mb-4">
               <Search className="text-black" size={28} />
@@ -258,8 +257,14 @@ export default function Ecommerce({
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:gap-3 md:gap-3 lg:gap-3 max-w-[360px] mx-auto sm:max-w-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {regularProducts.map((product) => (
-              <div
+            <AnimatePresence mode="popLayout">
+            {regularProducts.map((product, index) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
                 key={product.id}
                 className="w-full max-w-[160px] sm:max-w-none mx-auto"
               >
@@ -269,6 +274,7 @@ export default function Ecommerce({
                     <img
                       src={product.image || "/default-product.png"}
                       alt={product.name}
+                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                     {(() => {
@@ -320,10 +326,24 @@ export default function Ecommerce({
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
+            </AnimatePresence>
           </div>
         )}
+        
+        {/* Infinite Scroll Trigger */}
+        {(hasMore || loading) && (
+          <div 
+             ref={loadMoreRef} 
+             className="flex justify-center py-8"
+          >
+             {loading && (
+               <div className="w-8 h-8 border-4 border-black border-t-yellow-300 rounded-full animate-spin"></div>
+             )}
+          </div>
+        )}
+
       </div>
 
       {/* Footer */}

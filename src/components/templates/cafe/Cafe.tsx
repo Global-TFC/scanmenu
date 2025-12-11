@@ -26,6 +26,7 @@ interface CafeProps {
   shopLogo?: string;
   products: Product[];
   isWhatsappOrderingEnabled?: boolean;
+  slug: string;
 }
 
 export default function Cafe({
@@ -35,6 +36,7 @@ export default function Cafe({
   shopLogo,
   products,
   isWhatsappOrderingEnabled,
+  slug,
 }: CafeProps) {
   const [activeColor, setActiveColor] = useState<string | null>(null);
 

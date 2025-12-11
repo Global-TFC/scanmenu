@@ -13,26 +13,18 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
+import { useProducts, Product } from "@/hooks/use-products";
 
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  offerPrice?: number;
-  image: string;
-  rating?: number;
-  reviews?: number;
-}
+
 
 export default function Pro({
   shopName,
   shopPlace,
   shopContact,
   shopLogo,
-  products,
+  products: initialProducts,
   isWhatsappOrderingEnabled = true,
+  slug,
 }: {
   shopName: string;
   shopPlace: string;
@@ -40,34 +32,28 @@ export default function Pro({
   shopLogo?: string;
   products: Product[];
   isWhatsappOrderingEnabled?: boolean;
+  slug: string;
 }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [showWhatsAppFloat, setShowWhatsAppFloat] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [items, setItems] = useState<(Product & { quantity: number })[]>([]);
   const [isGlass, setIsGlass] = useState(false);
   const [loadedShopName, setLoadedShopName] = useState<string | null>(null);
 
-  const categories = useMemo(
-    () => ["All", ...Array.from(new Set(products.map((p) => p.category)))],
-    [products]
-  );
-
-  const filteredProducts = useMemo(() => {
-    const byCategory =
-      selectedCategory === "All"
-        ? products
-        : products.filter((p) => p.category === selectedCategory);
-    const bySearch = searchTerm
-      ? byCategory.filter(
-          (p) =>
-            p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.description.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : byCategory;
-    return bySearch;
-  }, [products, selectedCategory, searchTerm]);
+  const {
+    products,
+    loading,
+    hasMore,
+    loadMoreRef,
+    searchTerm,
+    setSearchTerm,
+    selectedCategory,
+    setSelectedCategory,
+    categories,
+  } = useProducts({ initialProducts, slug });
+  
+  // Direct use of products from hook
+  const filteredProducts = products;
 
   useEffect(() => {
     const onScroll = () => setShowWhatsAppFloat(window.scrollY > 300);
@@ -363,7 +349,7 @@ export default function Pro({
             </div>
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {filteredProducts.length === 0 && !loading ? (
             <div className="text-center py-16">
               <div
                 className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
@@ -392,7 +378,19 @@ export default function Pro({
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product) => (
-                <div
+                <div // We can't use Framer Motion easily with replace_file_content if we don't import it. I need to add import. 
+                  // I'll skip Framer Motion here for simplicity in this large replacement OR I'll add the import in a separate call?
+                  // Wait, I am replacing the WHOLE function, but NOT the imports.
+                  // I MUST add imports first or use multi_replace.
+                  // `replace_file_content` targets lines.
+                  // I am replacing lines 29-482. Imports are lines 1-15.
+                  // So I can't add imports in this call.
+                  // I'll proceed without Framer Motion for Pro in this step, or I'll just use standard div and add imports later.
+                  // Let's just use standard div for now to get infinite scroll working, and maybe add animation in a second pass if really needed,
+                  // or I should have used multi_replace.
+                  // Actually, I can use `multi_replace` to add import AND replace body. 
+                  // But I am already committed to this tool call.
+                  // I will just use standard divs here.
                   key={product.id}
                   className={`group rounded-3xl overflow-hidden transition-all duration-500 hover:scale-[1.02] ${
                     isGlass
@@ -478,6 +476,19 @@ export default function Pro({
               ))}
             </div>
           )}
+          
+           {/* Infinite Scroll Trigger */}
+        {(hasMore || loading) && (
+          <div 
+             ref={loadMoreRef} 
+             className="flex justify-center py-8"
+          >
+             {loading && (
+               <div className={`w-8 h-8 rounded-full border-4 animate-spin ${isGlass ? "border-white border-t-transparent" : "border-[#8b7355] border-t-transparent"}`}></div>
+             )}
+          </div>
+        )}
+
         </section>
       </main>
 

@@ -31,6 +31,7 @@ interface SlugMenuClientProps {
   template: MenuTemplateType | null;
   isWhatsappOrderingEnabled: boolean;
   isReadymade?: boolean;
+  slug: string;
 }
 
 export default function SlugMenuClient({
@@ -42,6 +43,7 @@ export default function SlugMenuClient({
   template,
   isWhatsappOrderingEnabled,
   isReadymade,
+  slug,
 }: SlugMenuClientProps) {
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimCode, setClaimCode] = useState("");
@@ -58,14 +60,6 @@ export default function SlugMenuClient({
     setError("");
 
     try {
-      // Verify code first
-      // We need the slug. But wait, we don't have slug in props?
-      // We can get it from window location or pass it.
-      // Let's assume we can pass it or extract it.
-      // Actually, we can just pass slug to this component.
-      // But for now let's use window.location.pathname
-      const slug = window.location.pathname.split('/').pop() || '';
-
       const res = await fetch('/api/verify-claim-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -146,6 +140,7 @@ export default function SlugMenuClient({
           shopLogo={shopLogo}
           products={products}
           isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
+          slug={slug}
         />
       )}
       {template === MenuTemplateType.E_COM && (
@@ -156,6 +151,7 @@ export default function SlugMenuClient({
           shopLogo={shopLogo}
           products={products}
           isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
+          slug={slug}
         />
       )}
       {template === MenuTemplateType.CAFE && (
@@ -166,6 +162,7 @@ export default function SlugMenuClient({
           shopLogo={shopLogo}
           products={products}
           isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
+          slug={slug}
         />
       )}
       {template === MenuTemplateType.NORMAL && (
@@ -175,6 +172,7 @@ export default function SlugMenuClient({
           shopContact={shopContact}
           shopLogo={shopLogo}
           products={products}
+          slug={slug}
         />
       )}
     </>

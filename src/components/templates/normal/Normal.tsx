@@ -1,18 +1,8 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
 import { Search, ShoppingBag, X, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
-
-interface Product {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  price: number;
-  offerPrice?: number;
-  image: string;
-  rating?: number;
-  reviews?: number;
-}
+import { useProducts, Product } from "@/hooks/use-products";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CartItem extends Product {
   quantity: number;
@@ -23,31 +13,34 @@ export default function Normal({
   shopPlace,
   shopContact,
   shopLogo,
-  products,
+  products: initialProducts,
+  slug,
 }: {
   shopName: string;
   shopPlace: string;
   shopContact: string;
   shopLogo?: string;
   products: Product[];
+  slug: string;
 }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Categories
-  const categories = useMemo(() => ["All", ...Array.from(new Set(products.map((p) => p.category)))], [products]);
+  const {
+    products,
+    loading,
+    hasMore,
+    loadMoreRef,
+    searchTerm,
+    setSearchTerm,
+    selectedCategory,
+    setSelectedCategory,
+    categories,
+  } = useProducts({ initialProducts, slug });
 
-  // Filter Products
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [products, searchTerm, selectedCategory]);
+  // Filter Products - Handled by hook now, but we use 'products' from hook directly.
+  const filteredProducts = products;
 
   // Scroll Effect
   useEffect(() => {
@@ -132,7 +125,7 @@ export default function Normal({
       </header>
 
       {/* Hero / Search */}
-      <div className="pt-24 pb-6 px-4 max-w-7xl mx-auto">
+      <div className="pt-24 pb-6 px-4 max-w-7xl mx-auto px-4">
         <div className="relative mb-8">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input
@@ -166,14 +159,23 @@ export default function Normal({
           <p className="text-sm text-gray-500">{filteredProducts.length} Items</p>
         </div>
 
-        {filteredProducts.length === 0 ? (
+        {filteredProducts.length === 0 && !loading ? (
           <div className="text-center py-20">
             <p className="text-gray-400">No products found.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
+             <AnimatePresence mode="popLayout">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="group cursor-pointer">
+              <motion.div
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                key={product.id}
+                className="group cursor-pointer"
+              >
                 <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden rounded-lg mb-3">
                   <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   {product.offerPrice && product.offerPrice < product.price && (
@@ -198,8 +200,21 @@ export default function Normal({
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* Infinite Scroll Trigger */}
+        {(hasMore || loading) && (
+          <div 
+             ref={loadMoreRef} 
+             className="flex justify-center py-8"
+          >
+             {loading && (
+               <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+             )}
           </div>
         )}
       </main>

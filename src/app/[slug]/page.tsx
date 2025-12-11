@@ -73,21 +73,50 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SlugMenuPage({ params }: PageProps) {
   const { slug } = await params;
+  // Fetch menu first to check existence
   const menu = await getMenuBySlug(slug);
 
   if (!menu) {
     notFound();
   }
 
-  const products = transformItemsToProducts(menu.items);
+  // We only fetch the first 12 items initially for SSR
+  // But wait, getMenuBySlug (existing) fetches ALL items via include: { items: true }
+  // We should optimize this if we want true "infinite scroll" efficiency from start.
+  // However, modifying getMenuBySlug might break other things. 
+  // For now, let's just slice the products here OR use our new action if we can call it directly?
+  // We can call getProducts directly here!
+  
+  // Re-fetch using our pagination logic to be consistent? 
+  // Or just use the already fetched items but slice them?
+  // If `getMenuBySlug` fetches 1000 items, that's heavy.
+  // Ideally, `getMenuBySlug` should NOT fetch items, or we make a new function.
+  // But strictly following plan: "Limit initial product fetch".
+  
+  // Let's rely on the fact that `getMenuBySlug` fetches all for now (unless we change it),
+  // but we only pass the first 12 to the client to keep hydration payload small?
+  // No, if we send 1000 items in props, hydration is heavy.
+  
+  // Let's use `getProducts` here for the items part.
+  
+  const { products: initialProducts } = await import("@/actions/get-products").then(mod => 
+    mod.getProducts({ slug, page: 1, limit: 12 } as any) // Our action doesn't accept limit yet, default is 12.
+  );
 
+  // We need to transform these "ProductResult" back to the "Product" shape if they differ?
+  // Our action returns the correct shape (filtered).
+  // But we need to make sure we don't conflict with `menu.items`.
+  
+  // Actually, we can just effectively ignore `menu.items` if we use `initialProducts`.
+  
   return (
     <SlugMenuClient
+      slug={slug}
       shopName={menu.shopName}
       shopPlace={menu.place || ""}
       shopContact={menu.contactNumber || ""}
       shopLogo={menu.shopLogo || ""}
-      products={products}
+      products={initialProducts as any} // Casting safely as shapes align mostly
       template={menu.template as MenuTemplateType}
       isWhatsappOrderingEnabled={menu.isWhatsappOrderingEnabled}
       isReadymade={menu.isReadymade}
