@@ -5,11 +5,15 @@ import Image from 'next/image';
 interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  shopLogo?: string;
+  shopName: string;
 }
 
 const Header: React.FC<HeaderProps> = ({
   searchQuery,
   onSearchChange,
+  shopLogo,
+  shopName
 }) => {
   return (
     <header className="px-4 pt-4 pb-2 sticky -top-20 z-40">
@@ -18,9 +22,9 @@ const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-2 py-2">
           <div className="flex items-center justify-center rounded-full shadow-lg p-2 shadow-blue-100 border border-gray-200">
-            <Image src="/default-logo.png" alt="" width={40} height={40} />
+            <Image src={shopLogo || "/default-logo.png"} alt="" width={40} height={40} />
           </div>
-          <span className="text-lg font-semibold">Shop Name</span>
+          <span className="text-lg font-semibold">{shopName}</span>
         </div>
         <div className="flex items-center justify-center rounded-full shadow-lg p-3 shadow-blue-100 border border-gray-200">
           {/* <div className="rounded-l-full px-2 py-1 pr-4 -mr-3 text-white text-sm font-semibold bg-green-600">

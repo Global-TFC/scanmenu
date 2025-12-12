@@ -57,7 +57,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
         <img
           src={item.image}
           alt={item.name}
-          className="w-full h-full object-cover p-4 rounded-3xl transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-contain p-2 rounded-3xl transition-transform duration-700 group-hover:scale-110"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = '/default-product.png';
@@ -72,11 +72,11 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
         )}
 
         {/* Price Tag */}
-        <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-lg border border-gray-200 px-3 py-2 rounded-3xl shadow-2xl">
+        <div className="absolute bottom-1 left-2 bg-white/95 backdrop-blur-lg border border-gray-200 px-3 py-2 rounded-3xl shadow-2xl">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-black text-gray-900">₹{displayPrice}</span>
+            <span className="text-xs font-black text-gray-900">₹{displayPrice}</span>
             {hasOffer && (
-              <span className="text-sm text-gray-500 line-through font-medium">₹{item.price}</span>
+              <span className="text-xs text-gray-500 line-through font-medium">₹{item.price}</span>
             )}
           </div>
         </div>
@@ -94,12 +94,12 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
       </div>
 
       {/* Card Content */}
-      <div className="p-4">
-        <h3 className="font-bold text-gray-900 text-lg line-clamp-1">
+      <div className="px-4 py-2">
+        <h3 className="font-bold text-gray-900 text-sm line-clamp-1">
           {item.name}
         </h3>
         {item.description && (
-          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed leading-relaxed">
+          <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed leading-relaxed">
             {item.description}
           </p>
         )}

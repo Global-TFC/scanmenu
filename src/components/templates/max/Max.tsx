@@ -140,6 +140,8 @@ const Max: React.FC<MaxProps> = ({
       <Header
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        shopLogo={shopLogo}
+        shopName={shopName}
       />
 
       {/* Category Stories - Shop name first, then Specials, then categories */}
@@ -154,7 +156,7 @@ const Max: React.FC<MaxProps> = ({
       />
 
       {/* Food Grid */}
-      <div className="flex-1 pb-20">
+      <div className="flex-1 pb-10">
         <FoodGrid
           items={filteredProducts}
           onAddToCart={addToCart}

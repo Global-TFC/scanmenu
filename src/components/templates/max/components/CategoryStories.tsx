@@ -63,7 +63,7 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
   ];
 
   return (
-    <div className="w-full  z-40 overflow-x-auto scrollbar-hide py-3 rounded-b-2xl backdrop-blur-sm ">
+    <div className="w-full z-40 overflow-x-auto scrollbar-hide py-1 rounded-b-2xl backdrop-blur-sm ">
       <div className="flex gap-4 px-4 min-w-max rounded-b-4xl ">
         {categoryBubbles.map((category) => {
           return (
