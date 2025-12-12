@@ -172,11 +172,30 @@ const Max: React.FC<MaxProps> = ({
       {cartItemCount > 0 && !isCartOpen && (
         <button
           onClick={toggleCart}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-blue-600 shadow-lg flex items-center gap-3 hover:scale-105 transition-transform animate-bounce-in text-white"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 
+             px-5 py-3.5 rounded-full bg-blue-600 text-white shadow-2xl 
+             flex items-center gap-3 hover:scale-105 active:scale-95 
+             transition-all duration-200 animate-bounce-in
+             whitespace-nowrap min-w-max" // ← Key fixes
         >
-          <ShoppingBag className="w-5 h-5" />
-          <span className="font-semibold">
-            {cartItemCount} item{cartItemCount > 1 ? 's' : ''} • ₹{Math.round(cartItems.reduce((sum, item) => sum + (item.offerPrice || item.price) * item.quantity, 0))}
+          <div className="relative">
+            <ShoppingBag className="w-5 h-5" />
+            {/* Optional: little badge for count */}
+            {/* {cartItemCount > 0 && (
+      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+        {cartItemCount}
+      </span>
+    )} */}
+          </div>
+
+          <span className="font-semibold text-sm md:text-base flex items-center gap-2">
+            <span>
+              {cartItemCount} item{cartItemCount !== 1 ? 's' : ''}
+            </span>
+            <span className="text-xs">•</span>
+            <span className="font-bold">
+              ₹{Math.round(cartItems.reduce((sum, item) => sum + (item.offerPrice || item.price) * item.quantity, 0))}
+            </span>
           </span>
         </button>
       )}
