@@ -75,7 +75,9 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
               {/* Story ring */}
               <div
                 className={`w-16 h-16 rounded-full p-[3px] transition-all duration-200 ${
-                  category.isActive
+                  category.isSpecial
+                    ? 'bg-green-500 border-2 border-green-600'
+                    : category.isActive
                     ? 'bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500'
                     : 'bg-gray-200 group-hover:bg-gray-300'
                 }`}
