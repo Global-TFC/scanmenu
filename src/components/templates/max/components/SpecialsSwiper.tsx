@@ -49,13 +49,23 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
         } else {
           setHistory((prev) => [...prev, { index: currentIndex, addedToCart: false }]);
         }
-        setCurrentIndex((prev) => prev + 1);
+        
+        const nextIndex = currentIndex + 1;
+        if (nextIndex >= featuredProducts.length) {
+          // All cards swiped, close automatically after a short delay
+          setTimeout(() => {
+            onClose();
+          }, 500);
+        } else {
+          setCurrentIndex(nextIndex);
+        }
+        
         setSwipeDirection(null);
         setPosition({ x: 0, y: 0 });
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [swipeDirection, currentProduct, currentIndex, onAddToCart]);
+  }, [swipeDirection, currentProduct, currentIndex, onAddToCart, featuredProducts.length, onClose]);
 
   const handleStart = (clientX: number, clientY: number) => {
     if (isFinished) return;
@@ -177,31 +187,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
       <div className="flex-1 flex flex-col items-center justify-center px-4 pb-6">
         {/* Card stack */}
         <div className="relative w-full max-w-sm h-[500px] mx-auto">
-          {isFinished ? (
-            <div className="w-full h-full flex flex-col items-center justify-center text-center p-6 bg-white rounded-2xl shadow-lg animate-card-enter">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                That's all specials!
-              </h2>
-              <p className="text-gray-600 mb-6">
-                You've seen all {featuredProducts.length} special dishes.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleRestart}
-                  className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  See Again
-                </button>
-                <button
-                  onClick={onClose}
-                  className="px-6 py-3 bg-gray-200 text-gray-900 font-medium rounded-lg hover:bg-gray-300 transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          ) : (
+          {!isFinished && (
             <>
               {/* Next card (underneath) */}
               {nextProduct && (
@@ -307,7 +293,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
         </div>
 
         {/* Action buttons */}
-        {!isFinished && (
+        {!isFinished && currentProduct && (
           <div className="flex justify-center gap-6 mt-6">
             <button
               onClick={handleSwipeLeft}
@@ -333,7 +319,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
         )}
 
         {/* Instructions */}
-        {!isFinished && (
+        {!isFinished && currentProduct && (
           <p className="mt-4 text-sm text-white/80 text-center">
             Swipe right to add • Swipe left to skip
           </p>

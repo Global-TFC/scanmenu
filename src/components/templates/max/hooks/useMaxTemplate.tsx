@@ -21,7 +21,13 @@ interface UseMaxTemplateReturn {
   // Cart management
   cartItems: CartItem[];
   addToCart: (product: Product) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
   cartItemCount: number;
+  
+  // Cart UI
+  isCartOpen: boolean;
+  toggleCart: () => void;
   
   // WhatsApp ordering
   handleWhatsAppOrder: () => void;
@@ -39,6 +45,7 @@ const useMaxTemplate = ({
   
   // Cart state
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Memoized cart calculations
   const cartItemCount = useMemo(() => {
@@ -79,6 +86,27 @@ const useMaxTemplate = ({
     }
   }, [canWhatsAppOrder, cartItems, shopName, shopContact]);
 
+  const removeFromCart = useCallback((productId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  }, []);
+
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === productId ? { ...item, quantity } : item
+        )
+      );
+    }
+  }, [removeFromCart]);
+
+  // Cart UI functions
+  const toggleCart = useCallback(() => {
+    setIsCartOpen(prev => !prev);
+  }, []);
+
   const closeSpecialsSwiper = useCallback(() => {
     setShowSpecialsSwiper(false);
   }, []);
@@ -91,7 +119,13 @@ const useMaxTemplate = ({
     // Cart management
     cartItems,
     addToCart,
+    removeFromCart,
+    updateQuantity,
     cartItemCount,
+    
+    // Cart UI
+    isCartOpen,
+    toggleCart,
     
     // WhatsApp ordering
     handleWhatsAppOrder,

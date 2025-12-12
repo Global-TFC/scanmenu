@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { ShoppingBag } from 'lucide-react';
 import { useProducts, Product } from '@/hooks/use-products';
 import Header from './components/Header';
 import CategoryStories from './components/CategoryStories';
 import FoodGrid from './components/FoodGrid';
+import OrderCart from './components/OrderCart';
 import SpecialsSwiper from './components/SpecialsSwiper';
 import useMaxTemplate from './hooks/useMaxTemplate';
 import useCategories from './hooks/useCategories';
@@ -61,7 +63,11 @@ const Max: React.FC<MaxProps> = ({
     closeSpecialsSwiper,
     cartItems,
     addToCart,
+    removeFromCart,
+    updateQuantity,
     cartItemCount,
+    isCartOpen,
+    toggleCart,
     handleWhatsAppOrder,
     canWhatsAppOrder,
   } = useMaxTemplate({
@@ -160,25 +166,31 @@ const Max: React.FC<MaxProps> = ({
         />
       </div>
 
-      {/* Bottom Cart - Only show if items in cart */}
-      {cartItemCount > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 p-4">
-          <button
-            onClick={canWhatsAppOrder ? handleWhatsAppOrder : undefined}
-            className={`w-full py-3 px-4 rounded-xl font-semibold flex items-center justify-between ${
-              canWhatsAppOrder 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'bg-blue-600 text-white'
-            }`}
-            disabled={!canWhatsAppOrder}
-          >
-            <span>
-              {canWhatsAppOrder ? 'Order via WhatsApp' : 'View Cart'} ({cartItemCount} items)
-            </span>
-            <span>₹{Math.round(cartItems.reduce((sum, item) => sum + (item.offerPrice || item.price) * item.quantity, 0))}</span>
-          </button>
-        </div>
+      {/* Bottom Cart Button - Only show if items in cart */}
+      {cartItemCount > 0 && !isCartOpen && (
+        <button
+          onClick={toggleCart}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-blue-600 shadow-lg flex items-center gap-3 hover:scale-105 transition-transform animate-bounce-in text-white"
+        >
+          <ShoppingBag className="w-5 h-5" />
+          <span className="font-semibold">
+            {cartItemCount} item{cartItemCount > 1 ? 's' : ''} • ₹{Math.round(cartItems.reduce((sum, item) => sum + (item.offerPrice || item.price) * item.quantity, 0))}
+          </span>
+        </button>
       )}
+
+
+
+      {/* Order Cart Modal */}
+      <OrderCart
+        items={cartItems}
+        onRemoveItem={removeFromCart}
+        onUpdateQuantity={updateQuantity}
+        isOpen={isCartOpen}
+        onToggle={toggleCart}
+        onWhatsAppOrder={canWhatsAppOrder ? handleWhatsAppOrder : undefined}
+        canWhatsApp={canWhatsAppOrder}
+      />
 
       {/* Specials Swiper - Full screen Tinder-like interface */}
       {showSpecialsSwiperState && featuredProducts.length > 0 && (

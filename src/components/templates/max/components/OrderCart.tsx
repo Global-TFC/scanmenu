@@ -59,19 +59,6 @@ const OrderCart: React.FC<OrderCartProps> = ({
 
   return (
     <>
-      {/* Cart toggle button - fixed at bottom */}
-      {items.length > 0 && (
-        <button
-          onClick={onToggle}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-full bg-blue-600 shadow-lg flex items-center gap-3 hover:scale-105 transition-transform animate-bounce-in text-white"
-        >
-          <ShoppingBag className="w-5 h-5" />
-          <span className="font-semibold">
-            {totalItems} item{totalItems > 1 ? 's' : ''} • ₹{total.toFixed(0)}
-          </span>
-        </button>
-      )}
-
       {/* Cart panel */}
       <div
         className={`fixed top-0 right-0 h-full w-full sm:w-80 bg-white shadow-2xl z-40 transform transition-transform duration-300 ease-out ${

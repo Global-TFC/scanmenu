@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -30,25 +30,20 @@ interface FoodCardProps {
 }
 
 const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
-  const [showHeart, setShowHeart] = useState(false);
   const [lastTap, setLastTap] = useState(0);
 
   const handleDoubleTap = () => {
     const now = Date.now();
     if (now - lastTap < 300) {
       // Double tap detected
-      setShowHeart(true);
       onAddToCart(item);
-      setTimeout(() => setShowHeart(false), 1000);
     }
     setLastTap(now);
   };
 
   const handleCartClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setShowHeart(true);
     onAddToCart(item);
-    setTimeout(() => setShowHeart(false), 1000);
   };
 
   const displayPrice = item.offerPrice || item.price;
@@ -71,16 +66,7 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
           }}
         />
         
-        {/* Heart animation on double tap */}
-        <div 
-          className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${
-            showHeart ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <Heart 
-            className="w-20 h-20 text-red-500 fill-red-500 animate-bounce drop-shadow-lg" 
-          />
-        </div>
+
 
         {/* Cart button */}
         <button
