@@ -60,6 +60,10 @@ export default function CategoriesView({
   }, [slug, apiBasePath]);
 
   const handleCreate = async () => {
+    // Temporarily disabled
+    alert("Category creation is temporarily disabled for updates.");
+    return;
+    
     if (!newCategoryName.trim()) return;
     
     setSaving(true);
@@ -189,10 +193,11 @@ export default function CategoriesView({
             </h2>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+              disabled={true}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed transition-colors shadow-sm opacity-50"
             >
               <Plus size={18} />
-              Add Category
+              Add Category (Disabled)
             </button>
           </div>
         </div>

@@ -89,7 +89,7 @@ function transformToProductResult(items: any[]): ProductResult[] {
     id: item.id,
     name: item.name,
     category: item.categoryItem?.name || item.category || "General",
-    description: item.categoryItem?.name || item.category || "General",
+    description: item.description || item.name || "No description available",
     price: item.price || 0,
     offerPrice: item.offerPrice || undefined,
     image: item.image || "/default-product.png",
@@ -370,16 +370,7 @@ export async function getProducts({
     const hasMore = items.length === PAGE_SIZE;
 
     // Transform to Product interface expected by frontend
-    const products: ProductResult[] = items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      category: item.categoryItem?.name || item.category || "General",
-      description: item.categoryItem?.name || item.category || "General", // Existing frontend logic often uses category as description fallback
-      price: item.price || 0,
-      offerPrice: item.offerPrice || undefined,
-      image: item.image || "/default-product.png",
-      isFeatured: item.isFeatured,
-    }));
+    const products: ProductResult[] = transformToProductResult(items);
 
     return { products, hasMore };
   } catch (error) {

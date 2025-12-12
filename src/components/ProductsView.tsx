@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { getCategories } from "@/actions/get-categories";
 import {
   Plus,
   Search,
@@ -146,13 +147,32 @@ export default function ProductsView({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const availableCategories = Array.from(new Set(products.map((p) => p.category))).filter(Boolean);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [newCategoryMode, setNewCategoryMode] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
+  // Function to fetch categories from database
+  const fetchCategories = async () => {
+    try {
+      const dbCategories = await getCategories(slug);
+      const categoryNames = dbCategories.map(cat => cat.name);
+      setAvailableCategories(categoryNames);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+      // Fallback to categories from products
+      const fallbackCategories = Array.from(new Set(products.map((p) => p.category))).filter(Boolean);
+      setAvailableCategories(fallbackCategories);
+    }
+  };
+
+  // Fetch categories from database on component mount and when dependencies change
+  useEffect(() => {
+    fetchCategories();
+  }, [slug]); // Only re-fetch when slug changes, not when products change
+
   const categories = [
     "All",
-    ...Array.from(new Set(products.map((p) => p.category))),
+    ...availableCategories,
   ];
 
   const filteredProducts = products.filter((product) => {
@@ -182,9 +202,15 @@ export default function ProductsView({
     setCategory("");
     setPrice("");
     setProductImage("");
+    const wasNewCategory = newCategoryMode && newCategoryName;
     setNewCategoryMode(false);
     setNewCategoryName("");
     setShowAddProduct(false);
+    
+    // Refresh categories if a new category was created
+    if (wasNewCategory) {
+      fetchCategories();
+    }
   };
 
   const handleEdit = (product: Product) => {
@@ -220,8 +246,14 @@ export default function ProductsView({
     onEditProduct(updated);
     setShowEditModal(false);
     setEditingProduct(null);
+    const wasNewCategory = editNewCategoryMode && editNewCategoryName;
     setEditNewCategoryMode(false);
     setEditNewCategoryName("");
+    
+    // Refresh categories if a new category was created
+    if (wasNewCategory) {
+      fetchCategories();
+    }
   };
 
   const cancelEdit = () => {

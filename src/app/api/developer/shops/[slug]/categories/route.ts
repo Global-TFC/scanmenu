@@ -165,6 +165,18 @@ export async function PUT(
       data,
     });
 
+    // If the category name was updated, also update all related menu items
+    if (name !== undefined) {
+      await prisma.menuItem.updateMany({
+        where: { categoryId: id },
+        data: { category: name.trim() },
+      });
+    }
+
+    // Invalidate product cache since category data has changed
+    const { productCache } = await import("@/lib/product-cache");
+    productCache.invalidateAll();
+
     return NextResponse.json(updated, { status: 200 });
   } catch (error: any) {
     if (error.code === "P2002") {
