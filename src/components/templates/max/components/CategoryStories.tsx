@@ -41,16 +41,16 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
 
   // Create category bubbles with shop name first, then "Specials", then categories
   const categoryBubbles: CategoryBubble[] = [
-    {
-      id: 'Home',
-      label: shopName,
-      image: shopLogo,
-      isActive: selected === 'Home',
-    },
+    // {
+    //   id: 'Home',
+    //   label: shopName,
+    //   image: shopLogo,
+    //   isActive: selected === 'Home',
+    // },
     ...(featuredProductsCount > 0 ? [{
       id: 'Specials',
       label: 'Specials',
-      image: undefined,
+      image: '/animated-gift-emoji.gif',
       isActive: selected === 'Specials',
       isSpecial: true,
     }] : []),
@@ -63,8 +63,8 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
   ];
 
   return (
-    <div className="w-full overflow-x-auto scrollbar-hide py-3 bg-white">
-      <div className="flex gap-4 px-4 min-w-max">
+    <div className="w-full  z-40 overflow-x-auto scrollbar-hide py-3 rounded-b-2xl backdrop-blur-sm ">
+      <div className="flex gap-4 px-4 min-w-max rounded-b-4xl ">
         {categoryBubbles.map((category) => {
           return (
             <button
@@ -74,21 +74,20 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
             >
               {/* Story ring */}
               <div
-                className={`w-16 h-16 rounded-full p-[3px] transition-all duration-200 ${
-                  category.isSpecial
-                    ? 'bg-green-500 border-2 border-green-600'
-                    : category.isActive
+                className={`w-16 h-16 rounded-full p-[3px] transition-all duration-200 shadow-lg shadow-blue-100 border border-gray-200 ${category.isSpecial
+                  ? 'bg-blue-500 border-2 border-blue-500'
+                  : category.isActive
                     ? 'bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500'
                     : 'bg-gray-200 group-hover:bg-gray-300'
-                }`}
+                  }`}
               >
                 {/* Inner circle with image or placeholder */}
-                <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center ">
                   {category.image ? (
                     <img
                       src={category.image}
                       alt={category.label}
-                      className="w-full h-full object-cover"
+                      className="w-full p-2 h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -118,12 +117,11 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
                   )}
                 </div>
               </div>
-              
+
               {/* Label */}
               <span
-                className={`text-xs font-medium transition-colors duration-200 text-center max-w-[60px] truncate ${
-                  category.isActive ? 'text-gray-900' : 'text-gray-600'
-                }`}
+                className={`text-xs font-medium transition-colors duration-200 text-center max-w-[60px] truncate ${category.isActive ? 'text-gray-900' : 'text-gray-600'
+                  }`}
               >
                 {category.label}
               </span>

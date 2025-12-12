@@ -14,16 +14,6 @@ interface Product {
   isFeatured?: boolean;
 }
 
-interface FoodGridProps {
-  items: Product[];
-  onAddToCart: (item: Product) => void;
-  hasMore?: boolean;
-  loading?: boolean;
-  loadMoreRef?: (node?: Element | null) => void;
-  error?: string | null;
-  onRetry?: () => void;
-}
-
 interface FoodCardProps {
   item: Product;
   onAddToCart: (item: Product) => void;
@@ -35,7 +25,6 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
   const handleDoubleTap = () => {
     const now = Date.now();
     if (now - lastTap < 300) {
-      // Double tap detected
       onAddToCart(item);
     }
     setLastTap(now);
@@ -50,62 +39,67 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
   const hasOffer = item.offerPrice && item.offerPrice < item.price;
 
   return (
-    <div 
-      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+    <div
+      className="group relative bg-gradient-to-br from-blue-50 via-white to-white 
+                 rounded-3xl overflow-hidden border border-gray-200 
+                 shadow-blue-100 shadow-xl 
+                 transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-blue-100/60
+                 cursor-pointer select-none"
       onClick={handleDoubleTap}
     >
-      {/* Image container */}
-      <div className="relative aspect-square">
+      {/* Hover Shine Effect */}
+      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">
+        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+      </div>
+
+      {/* Image Section */}
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
         <img
           src={item.image}
           alt={item.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover p-4 rounded-3xl transition-transform duration-700 group-hover:scale-110"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = '/default-product.png';
           }}
         />
-        
 
+        {/* Featured Badge */}
+        {item.isFeatured && (
+          <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-xl flex items-center gap-1">
+            Featured
+          </div>
+        )}
 
-        {/* Cart button */}
-        <button
-          onClick={handleCartClick}
-          className="absolute bottom-2 right-2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-colors"
-          aria-label={`Add ${item.name} to cart`}
-        >
-          <ShoppingCart className="w-5 h-5 text-blue-600" />
-        </button>
-
-        {/* Price tag */}
-        <div className="absolute top-2 left-2 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full">
-          <div className="flex items-center gap-1">
-            <span className="text-sm font-bold text-gray-900">
-              ₹{displayPrice}
-            </span>
+        {/* Price Tag */}
+        <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-lg border border-gray-200 px-3 py-2 rounded-3xl shadow-2xl">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-black text-gray-900">₹{displayPrice}</span>
             {hasOffer && (
-              <span className="text-xs text-gray-500 line-through">
-                ₹{item.price}
-              </span>
+              <span className="text-sm text-gray-500 line-through font-medium">₹{item.price}</span>
             )}
           </div>
         </div>
 
-        {/* Featured badge */}
-        {item.isFeatured && (
-          <div className="absolute top-2 right-2 px-2 py-1 bg-yellow-500 text-white text-xs font-bold rounded-full">
-            ⭐
-          </div>
-        )}
+        {/* Floating Add to Cart Button */}
+        <button
+          onClick={handleCartClick}
+          className="absolute -bottom-5 z-30 right-2 p-3 pb-5 bg-white rounded-3xl shadow-2xl border border-gray-200 
+                     hover:bg-blue-50 hover:border-blue-300 hover:shadow-blue-200 
+                     transition-all duration-300 hover:scale-110 active:scale-95"
+          aria-label={`Add ${item.name} to cart`}
+        >
+          <ShoppingCart className="w-6 h-6 text-blue-600" />
+        </button>
       </div>
 
-      {/* Content */}
-      <div className="p-3">
-        <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 mb-1">
+      {/* Card Content */}
+      <div className="p-4">
+        <h3 className="font-bold text-gray-900 text-lg line-clamp-1">
           {item.name}
         </h3>
         {item.description && (
-          <p className="text-xs text-gray-600 line-clamp-2">
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed leading-relaxed">
             {item.description}
           </p>
         )}
@@ -114,26 +108,50 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
   );
 };
 
-const FoodGrid: React.FC<FoodGridProps> = ({ 
-  items, 
-  onAddToCart, 
-  hasMore = false, 
-  loading = false, 
+interface FoodGridProps {
+  items: Product[];
+  onAddToCart: (item: Product) => void;
+  hasMore?: boolean;
+  loading?: boolean;
+  loadMoreRef?: (node?: Element | null) => void;
+  error?: string | null;
+  onRetry?: () => void;
+}
+
+const FoodGrid: React.FC<FoodGridProps> = ({
+  items,
+  onAddToCart,
+  hasMore = false,
+  loading = false,
   loadMoreRef,
   error = null,
-  onRetry 
+  onRetry,
 }) => {
+  // Empty state
+  if (items.length === 0 && !loading && !error) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-10">
+        <div className="text-center">
+          <div className="text-6xl mb-4">No Plate</div>
+          <p className="text-gray-500">No items found</p>
+          <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state (first load)
   if (error && items.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center p-6">
+      <div className="flex-1 flex items-center justify-center p-10">
         <div className="text-center">
-          <div className="text-red-500 mb-4">⚠️</div>
+          <div className="text-6xl mb-4">Warning</div>
           <p className="text-gray-600 mb-2">Failed to load products</p>
-          <p className="text-gray-500 text-sm mb-4">{error}</p>
+          <p className="text-gray-500 text-sm mb-6">{error}</p>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors font-medium"
             >
               Try Again
             </button>
@@ -143,46 +161,31 @@ const FoodGrid: React.FC<FoodGridProps> = ({
     );
   }
 
-  if (items.length === 0 && !loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="text-center">
-          <div className="text-gray-400 mb-2">🍽️</div>
-          <p className="text-gray-500 text-center">No items found</p>
-          <p className="text-gray-400 text-sm">Try adjusting your search or category</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-gray-50">
-      <div className="grid grid-cols-2 gap-3 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
+      <div className="grid grid-cols-2 gap-5 px-5 py-8 max-w-5xl mx-auto">
         {items.map((item) => (
           <FoodCard key={item.id} item={item} onAddToCart={onAddToCart} />
         ))}
       </div>
 
-      {/* Infinite Scroll Trigger */}
+      {/* Infinite Scroll Loader */}
       {(hasMore || loading) && !error && (
-        <div 
-          ref={loadMoreRef} 
-          className="flex justify-center py-8"
-        >
+        <div ref={loadMoreRef} className="flex justify-center py-10">
           {loading && (
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
           )}
         </div>
       )}
 
-      {/* Error state for loading more */}
+      {/* Load More Error */}
       {error && items.length > 0 && (
-        <div className="text-center py-4">
-          <p className="text-red-600 text-sm mb-2">Failed to load more products</p>
+        <div className="text-center py-6">
+          <p className="text-red-600 text-sm mb-3">Failed to load more items</p>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+              className="px-5 py-2 bg-red-600 text-white text-sm rounded-xl hover:bg-red-700 transition"
             >
               Retry
             </button>

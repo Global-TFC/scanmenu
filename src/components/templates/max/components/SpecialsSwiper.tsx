@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, RefreshCw } from 'lucide-react';
+import { X, RefreshCw, Plus } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -36,7 +36,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
   const currentProduct = featuredProducts[currentIndex];
   const nextProduct = featuredProducts[currentIndex + 1];
   const isFinished = currentIndex >= featuredProducts.length;
-  
+
   const rotation = position.x * 0.1;
   const swipeThreshold = 100;
 
@@ -49,7 +49,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
         } else {
           setHistory((prev) => [...prev, { index: currentIndex, addedToCart: false }]);
         }
-        
+
         const nextIndex = currentIndex + 1;
         if (nextIndex >= featuredProducts.length) {
           // All cards swiped, close automatically after a short delay
@@ -59,7 +59,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
         } else {
           setCurrentIndex(nextIndex);
         }
-        
+
         setSwipeDirection(null);
         setPosition({ x: 0, y: 0 });
       }, 400);
@@ -149,9 +149,12 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
   const hasOffer = currentProduct?.offerPrice && currentProduct.offerPrice < currentProduct.price;
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex flex-col animate-fade-in">
+    <div className="fixed inset-0 bg-blue-900/10 backdrop-blur-2xl z-50 flex flex-col animate-fade-in overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-900/60 to-transparent pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-blue-900/60 to-transparent pointer-events-none z-0" />
+
       {/* Header with progress and close */}
-      <div className="p-4 pb-2">
+      <div className="relative z-10 p-4 pb-2">
         {/* Progress bars */}
         <div className="flex gap-1 mb-4">
           {featuredProducts.map((_, idx) => (
@@ -184,7 +187,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pb-6">
         {/* Card stack */}
         <div className="relative w-full max-w-sm h-[500px] mx-auto">
           {!isFinished && (
@@ -212,9 +215,8 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
               {/* Current card */}
               <div
                 ref={cardRef}
-                className={`absolute w-full h-full cursor-grab active:cursor-grabbing select-none z-10 animate-card-enter ${
-                  swipeDirection === "right" ? "animate-swipe-right" : ""
-                } ${swipeDirection === "left" ? "animate-swipe-left" : ""}`}
+                className={`absolute w-full h-full cursor-grab active:cursor-grabbing select-none z-10 animate-card-enter ${swipeDirection === "right" ? "animate-swipe-right" : ""
+                  } ${swipeDirection === "left" ? "animate-swipe-left" : ""}`}
                 style={{
                   transform: swipeDirection
                     ? undefined
@@ -234,7 +236,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
                   <img
                     src={currentProduct.image}
                     alt={currentProduct.name}
-                    className="w-full h-3/5 object-cover pointer-events-none"
+                    className="w-full h-4/5 object-cover p-4 rounded-4xl pointer-events-none"
                     draggable={false}
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -244,7 +246,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
 
                   {/* YUM stamp */}
                   <div
-                    className="absolute top-8 left-8 px-4 py-2 border-4 border-green-500 rounded-lg rotate-[-20deg] pointer-events-none"
+                    className="absolute top-6 left-6 px-4 py-2 border-4 border-green-500 rounded-lg rotate-[-20deg] pointer-events-none"
                     style={{ opacity: likeOpacity }}
                   >
                     <span className="text-2xl font-bold text-green-500 tracking-wider">YUM!</span>
@@ -252,14 +254,14 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
 
                   {/* NOPE stamp */}
                   <div
-                    className="absolute top-8 right-8 px-4 py-2 border-4 border-red-500 rounded-lg rotate-[20deg] pointer-events-none"
+                    className="absolute top-6 right-6 px-4 py-2 border-4 border-red-500 rounded-lg rotate-[20deg] pointer-events-none"
                     style={{ opacity: nopeOpacity }}
                   >
                     <span className="text-2xl font-bold text-red-500 tracking-wider">NOPE</span>
                   </div>
 
                   {/* Price tag */}
-                  <div className="absolute top-4 left-4 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full">
+                  <div className="absolute top-5 left-5 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full">
                     <div className="flex items-center gap-2">
                       <span className="text-lg font-bold text-gray-900">
                         ₹{displayPrice}
@@ -273,8 +275,8 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
                   </div>
 
                   {/* Content */}
-                  <div className="absolute bottom-0 w-full h-2/5 p-5 bg-white">
-                    <div className="flex justify-between items-start mb-2">
+                  <div className="absolute bottom-0 w-full h-1/5 px-5 bg-white">
+                    <div className="flex justify-between items-start ">
                       <h2 className="text-xl font-bold text-gray-900">{currentProduct.name}</h2>
                     </div>
                     {currentProduct.description && (
@@ -297,23 +299,25 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
           <div className="flex justify-center gap-6 mt-6">
             <button
               onClick={handleSwipeLeft}
-              className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+              className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
             >
               <X className="w-6 h-6 text-white" />
             </button>
             {history.length > 0 && (
               <button
                 onClick={handleUndo}
-                className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
               >
                 <RefreshCw className="w-5 h-5 text-white" />
               </button>
             )}
             <button
               onClick={handleSwipeRight}
-              className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
+              className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
             >
-              <span className="text-white text-2xl">❤️</span>
+              <span className="text-white text-2xl">
+                <Plus className="w-6 h-6" />
+              </span>
             </button>
           </div>
         )}

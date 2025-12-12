@@ -61,16 +61,16 @@ const OrderCart: React.FC<OrderCartProps> = ({
     <>
       {/* Cart panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 bg-white shadow-2xl z-40 transform transition-transform duration-300 ease-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 bg-blue-50/80 backdrop-blur-2xl shadow-2xl z-40 transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="p-6 h-full flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">Your Order</h2>
+            <div className=""></div>
             <button
               onClick={onToggle}
-              className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+              className="hover:text-gray-700 bg-white transition-colors flex items-center justify-center rounded-full shadow-lg p-3 shadow-blue-100 border border-gray-200"
               aria-label="Close cart"
             >
               <X className="w-5 h-5" />
@@ -89,11 +89,11 @@ const OrderCart: React.FC<OrderCartProps> = ({
                 {items.map((item) => {
                   const itemPrice = item.offerPrice || item.price;
                   const hasOffer = item.offerPrice && item.offerPrice < item.price;
-                  
+
                   return (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                      className="flex items-center gap-3 p-3 bg-white rounded-3xl shadow-lg p-3 shadow-blue-100 border border-gray-200"
                     >
                       <img
                         src={item.image}
@@ -113,7 +113,7 @@ const OrderCart: React.FC<OrderCartProps> = ({
                           )}
                         </div>
                       </div>
-                      
+
                       {/* Quantity controls */}
                       <div className="flex items-center gap-2">
                         <button
@@ -134,7 +134,7 @@ const OrderCart: React.FC<OrderCartProps> = ({
                           <Plus className="w-4 h-4" />
                         </button>
                       </div>
-                      
+
                       <button
                         onClick={() => onRemoveItem(item.id)}
                         className="p-2 text-gray-400 hover:text-red-500 transition-colors"
@@ -152,16 +152,16 @@ const OrderCart: React.FC<OrderCartProps> = ({
                   <span className="text-gray-600">Total</span>
                   <span className="text-2xl font-bold text-blue-600">₹{total.toFixed(0)}</span>
                 </div>
-                
+
                 {canWhatsApp && onWhatsAppOrder ? (
-                  <button 
+                  <button
                     onClick={onWhatsAppOrder}
-                    className="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                   >
                     <span>Order via WhatsApp</span>
                   </button>
                 ) : (
-                  <button 
+                  <button
                     className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors"
                     disabled
                   >
