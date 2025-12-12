@@ -6,6 +6,7 @@ import FoodGrid from './components/FoodGrid';
 import SpecialsSwiper from './components/SpecialsSwiper';
 import useMaxTemplate from './hooks/useMaxTemplate';
 import useCategories from './hooks/useCategories';
+import './styles/max.css';
 
 interface MaxProps {
   shopName: string;
