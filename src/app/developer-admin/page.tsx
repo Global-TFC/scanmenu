@@ -334,6 +334,7 @@ export default function DeveloperAdmin() {
                     <option value="NORMAL">Normal</option>
                     <option value="E_COM">E-Commerce</option>
                     <option value="CAFE">Cafe</option>
+                    <option value="MAX">Max</option>
                   </select>
                 </div>
 

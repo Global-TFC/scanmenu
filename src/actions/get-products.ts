@@ -46,6 +46,20 @@ export interface RegularProductsResult {
   hasMore: boolean;
 }
 
+export interface CategoryResult {
+  id: string;
+  name: string;
+  image?: string;
+}
+
+export interface GetCategoriesParams {
+  slug: string;
+}
+
+export interface CategoriesResult {
+  categories: CategoryResult[];
+}
+
 // Helper function to build common where clause
 function buildBaseWhereClause(slug: string, search?: string, category?: string) {
   const where: any = {
@@ -238,6 +252,60 @@ export async function getRegularProducts({
     shouldRetry: (error) => {
       // Don't retry on validation errors
       if (error?.message?.includes('validation') || error?.message?.includes('required')) return false;
+      return true;
+    }
+  });
+}
+
+// Fetch categories with images
+export async function getCategories({
+  slug,
+}: GetCategoriesParams): Promise<CategoriesResult> {
+  return withRetry(async () => {
+    try {
+      if (!slug) {
+        throw new Error("Slug is required");
+      }
+
+      const categories = await withTimeout(
+        prisma.category.findMany({
+          where: {
+            menu: {
+              slug: slug,
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+          orderBy: {
+            name: "asc",
+          },
+        }),
+        10000 // 10 second timeout
+      );
+
+      const categoryResults: CategoryResult[] = categories.map((category) => ({
+        id: category.id,
+        name: category.name,
+        image: category.image || undefined,
+      }));
+
+      return { categories: categoryResults };
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      
+      const enhancedError = new Error(
+        `Failed to fetch categories for slug: ${slug}. ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+      enhancedError.cause = error;
+      throw enhancedError;
+    }
+  }, {
+    maxAttempts: 3,
+    shouldRetry: (error) => {
+      if (!slug || error?.message?.includes('validation')) return false;
       return true;
     }
   });

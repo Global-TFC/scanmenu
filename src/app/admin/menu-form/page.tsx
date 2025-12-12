@@ -59,6 +59,14 @@ const TEMPLATES = [
     color: 'bg-blue-100 text-blue-600',
     previewUrl: '/myshop',
   },
+  {
+    id: 'MAX',
+    name: 'Max Menu',
+    description: 'Modern swipe-based interface with story-style navigation.',
+    icon: LayoutTemplate,
+    color: 'bg-green-100 text-green-600',
+    previewUrl: '/asayn',
+  },
 ] as const;
 
 export default function CreateMenuForm() {

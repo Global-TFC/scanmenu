@@ -32,6 +32,8 @@ export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, o
         return `${origin}/showrt`;
       case MenuTemplateType.E_COM:
         return `${origin}/showrt`;
+      case MenuTemplateType.MAX:
+        return `${origin}/asayn`; // Use existing demo for now
       default:
         return menuUrl;
     }
@@ -195,6 +197,7 @@ export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, o
                             <option value={MenuTemplateType.PRO}>Pro</option>
                             <option value={MenuTemplateType.E_COM}>E‑Com</option>
                             <option value={MenuTemplateType.CAFE}>Cafe</option>
+                            <option value={MenuTemplateType.MAX}>Max</option>
                         </select>
 
                         <a

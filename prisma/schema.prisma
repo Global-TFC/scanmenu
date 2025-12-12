@@ -53,6 +53,7 @@ enum MenuTemplateType {
   PRO
   E_COM
   CAFE
+  MAX
 }
 
 model Menu {

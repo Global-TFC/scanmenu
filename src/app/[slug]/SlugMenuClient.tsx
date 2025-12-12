@@ -7,6 +7,7 @@ import Normal from "@/components/templates/normal/Normal";
 import Pro from "@/components/templates/pro/Pro";
 import Ecommerce from "@/components/templates/ecommerce/Ecommerce";
 import Cafe from "@/components/templates/cafe/Cafe";
+import Max from "@/components/templates/max/Max";
 import { MenuTemplateType } from "@/generated/prisma/enums";
 
 interface Product {
@@ -172,6 +173,17 @@ export default function SlugMenuClient({
           shopContact={shopContact}
           shopLogo={shopLogo}
           products={products}
+          slug={slug}
+        />
+      )}
+      {template === MenuTemplateType.MAX && (
+        <Max
+          shopName={shopName}
+          shopPlace={shopPlace}
+          shopContact={shopContact}
+          shopLogo={shopLogo}
+          products={products}
+          isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
           slug={slug}
         />
       )}
