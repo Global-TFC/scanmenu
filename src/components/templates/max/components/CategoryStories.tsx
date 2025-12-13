@@ -39,14 +39,14 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
     return categoryWithImage?.image;
   };
 
-  // Create category bubbles with shop name first, then "Specials", then categories
+  // Create category bubbles with "All" first, then "Specials", then categories
   const categoryBubbles: CategoryBubble[] = [
-    // {
-    //   id: 'Home',
-    //   label: shopName,
-    //   image: shopLogo,
-    //   isActive: selected === 'Home',
-    // },
+    {
+      id: 'All',
+      label: 'All',
+      image: shopLogo, // Show shop logo for All category
+      isActive: selected === 'All',
+    },
     ...(featuredProductsCount > 0 ? [{
       id: 'Specials',
       label: 'Specials',

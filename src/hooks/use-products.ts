@@ -250,9 +250,10 @@ export function useProducts({ initialProducts, slug }: UseProductsProps): UsePro
 
   // Reset and fetch both product types when filters change
   useEffect(() => {
-    const shouldFetch = debouncedSearchTerm !== "" || selectedCategory !== "All" || 
-                       (debouncedSearchTerm === "" && selectedCategory === "All" && 
-                        (featuredProducts.length === 0 && regularProducts.length === 0));
+    // Always fetch when search term exists or category changes (including switching to/from "All")
+    const shouldFetch = debouncedSearchTerm !== "" || 
+                       selectedCategory !== "All" || 
+                       (debouncedSearchTerm === "" && selectedCategory === "All");
 
     if (shouldFetch) {
       // Fetch featured products first (priority)

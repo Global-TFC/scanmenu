@@ -98,11 +98,6 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
         <h3 className="font-bold text-gray-900 text-sm line-clamp-1">
           {item.name}
         </h3>
-        {item.description && (
-          <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed leading-relaxed">
-            {item.description}
-          </p>
-        )}
       </div>
     </div>
   );

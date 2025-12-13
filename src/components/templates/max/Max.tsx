@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useProducts, Product } from '@/hooks/use-products';
 import Header from './components/Header';
@@ -89,12 +89,12 @@ const Max: React.FC<MaxProps> = ({
   // Filter out "All" from categories since shop name acts as "All"
   const filteredCategories = hookCategories.filter(cat => cat !== 'All');
 
-  // Handle category selection with special logic for Specials and Home
+  // Handle category selection with special logic for Specials and All
   const handleCategorySelect = (category: string) => {
     if (category === 'Specials') {
       setShowSpecialsSwiperState(true);
-    } else if (category === 'Home') {
-      // Home acts as "All" category
+    } else if (category === 'All') {
+      // All category shows all products
       setHookSelectedCategory('All');
     } else {
       setHookSelectedCategory(category);
@@ -105,8 +105,18 @@ const Max: React.FC<MaxProps> = ({
     setShowSpecialsSwiperState(false);
   };
 
-  // Combine regular products for display (filtered products are now regular products)
-  const filteredProducts = regularProducts;
+  // Combine products for display based on selected category
+  // For "All": show only regular products (non-featured)
+  // For specific categories: show both featured and regular products from that category
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'All') {
+      // Show only regular (non-featured) products
+      return regularProducts;
+    } else {
+      // Show both featured and regular products from the selected category
+      return products;
+    }
+  }, [selectedCategory, regularProducts, products]);
 
   const loading = (featuredLoading && regularLoading) || categoriesLoading;
   const error = categoriesError;
@@ -148,7 +158,7 @@ const Max: React.FC<MaxProps> = ({
       <CategoryStories
         categories={filteredCategories}
         categoriesWithImages={categoriesWithImages}
-        selected={selectedCategory === 'All' ? 'Home' : selectedCategory}
+        selected={selectedCategory}
         onSelect={handleCategorySelect}
         shopLogo={shopLogo}
         shopName={shopName}
@@ -192,7 +202,6 @@ const Max: React.FC<MaxProps> = ({
             <span>
               {cartItemCount} item{cartItemCount !== 1 ? 's' : ''}
             </span>
-            <span className="text-xs">•</span>
             <span className="font-bold">
               ₹{Math.round(cartItems.reduce((sum, item) => sum + (item.offerPrice || item.price) * item.quantity, 0))}
             </span>
