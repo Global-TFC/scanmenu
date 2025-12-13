@@ -167,68 +167,70 @@ const Max: React.FC<MaxProps> = ({
   return (
     <MaxErrorBoundary>
       <div className="min-h-screen bg-gray-50">
-      {/* Header with search only */}
-      <Header
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        shopLogo={shopLogo}
-        shopName={shopName}
-      />
+        {/* Header with search only - Responsive */}
+        <div className="sticky top-0 z-40 bg-gray-50/95 backdrop-blur-sm">
+          <Header
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            shopLogo={shopLogo}
+            shopName={shopName}
+          />
+        </div>
 
-      {/* Category Stories - Shop name first, then Specials, then categories */}
-      <CategoryStories
-        categories={filteredCategories}
-        categoriesWithImages={categoriesWithImages}
-        selected={selectedCategory}
-        onSelect={handleCategorySelect}
-        shopLogo={shopLogo}
-        shopName={shopName}
-        featuredProductsCount={featuredProducts.length}
-      />
+        {/* Category Stories - Responsive horizontal scroll */}
+        <div className="sticky top-[120px] sm:top-[130px] md:top-[140px] z-30 bg-gray-50/95 backdrop-blur-sm">
+          <CategoryStories
+            categories={filteredCategories}
+            categoriesWithImages={categoriesWithImages}
+            selected={selectedCategory}
+            onSelect={handleCategorySelect}
+            shopLogo={shopLogo}
+            shopName={shopName}
+            featuredProductsCount={featuredProducts.length}
+          />
+        </div>
 
-      {/* Food Grid */}
-      <div className="flex-1 pb-10">
-        <FoodGrid
-          items={filteredProducts}
-          onAddToCart={addToCart}
-          hasMore={hasMore}
-          loading={regularLoading}
-          loadMoreRef={loadMoreRef}
-          error={regularError}
-          onRetry={retryRegularProducts}
-          searchTerm={debouncedSearchTerm}
+        {/* Food Grid - Responsive grid layout */}
+        <div className="flex-1 pb-20 sm:pb-24 md:pb-28 lg:pb-32">
+          <FoodGrid
+            items={filteredProducts}
+            onAddToCart={addToCart}
+            hasMore={hasMore}
+            loading={regularLoading}
+            loadMoreRef={loadMoreRef}
+            error={regularError}
+            onRetry={retryRegularProducts}
+            searchTerm={debouncedSearchTerm}
+          />
+        </div>
+
+        {/* Optimized Bottom Cart Button - Responsive positioning */}
+        <OptimizedCartButton
+          cartItems={cartItems}
+          cartItemCount={cartItemCount}
+          isCartOpen={isCartOpen}
+          onToggleCart={toggleCart}
         />
-      </div>
 
-      {/* Optimized Bottom Cart Button */}
-      <OptimizedCartButton
-        cartItems={cartItems}
-        cartItemCount={cartItemCount}
-        isCartOpen={isCartOpen}
-        onToggleCart={toggleCart}
-      />
-
-
-
-      {/* Order Cart Modal */}
-      <OrderCart
-        items={cartItems}
-        onRemoveItem={removeFromCart}
-        onUpdateQuantity={updateQuantity}
-        isOpen={isCartOpen}
-        onToggle={toggleCart}
-        onWhatsAppOrder={canWhatsAppOrder ? handleWhatsAppOrder : undefined}
-        canWhatsApp={canWhatsAppOrder}
-      />
-
-      {/* Specials Swiper - Full screen Tinder-like interface */}
-      {showSpecialsSwiperState && featuredProducts.length > 0 && (
-        <SpecialsSwiper
-          featuredProducts={featuredProducts}
-          onClose={handleCloseSpecialsSwiper}
-          onAddToCart={addToCart}
+        {/* Order Cart Modal - Responsive sizing */}
+        <OrderCart
+          items={cartItems}
+          onRemoveItem={removeFromCart}
+          onUpdateQuantity={updateQuantity}
+          isOpen={isCartOpen}
+          onToggle={toggleCart}
+          onWhatsAppOrder={canWhatsAppOrder ? handleWhatsAppOrder : undefined}
+          canWhatsApp={canWhatsAppOrder}
         />
-      )}
+
+        {/* Specials Swiper - Full screen Tinder-like interface */}
+        {showSpecialsSwiperState && featuredProducts.length > 0 && (
+          <SpecialsSwiper
+            featuredProducts={featuredProducts}
+            onClose={handleCloseSpecialsSwiper}
+            onAddToCart={addToCart}
+          />
+        )}
       </div>
     </MaxErrorBoundary>
   );

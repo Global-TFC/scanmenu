@@ -188,34 +188,39 @@ const FoodGrid: React.FC<FoodGridProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
-      <div className="grid grid-cols-2 gap-5 px-5 py-8 max-w-5xl mx-auto">
+      {/* Responsive Grid Layout */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 
+                      gap-3 sm:gap-4 md:gap-5 lg:gap-6 
+                      px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 
+                      py-4 sm:py-6 md:py-8 
+                      max-w-7xl mx-auto">
         {items.map((item) => (
           <FoodCard key={item.id} item={item} onAddToCart={onAddToCart} />
         ))}
         
-        {/* Show skeleton loaders while loading more */}
-        {loading && Array.from({ length: 4 }).map((_, index) => (
+        {/* Show skeleton loaders while loading more - Responsive count */}
+        {loading && Array.from({ length: 6 }).map((_, index) => (
           <ProductSkeleton key={`skeleton-${index}`} />
         ))}
       </div>
 
-      {/* Infinite Scroll Loader */}
+      {/* Infinite Scroll Loader - Responsive spacing */}
       {(hasMore || loading) && !error && (
-        <div ref={loadMoreRef} className="flex justify-center py-10">
+        <div ref={loadMoreRef} className="flex justify-center py-6 sm:py-8 md:py-10">
           {loading && (
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-4 border-blue-600 border-t-transparent"></div>
           )}
         </div>
       )}
 
-      {/* Load More Error */}
+      {/* Load More Error - Responsive styling */}
       {error && items.length > 0 && (
-        <div className="text-center py-6">
-          <p className="text-red-600 text-sm mb-3">Failed to load more items</p>
+        <div className="text-center py-4 sm:py-6 px-4">
+          <p className="text-red-600 text-sm sm:text-base mb-3">Failed to load more items</p>
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-5 py-2 bg-red-600 text-white text-sm rounded-xl hover:bg-red-700 transition"
+              className="px-4 sm:px-5 py-2 bg-red-600 text-white text-sm sm:text-base rounded-xl hover:bg-red-700 transition-colors"
             >
               Retry
             </button>

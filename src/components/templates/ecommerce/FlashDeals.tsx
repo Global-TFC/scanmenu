@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Zap, Clock, Plus } from "lucide-react";
+import { Zap, Plus } from "lucide-react";
 
 interface Product {
   id: string;
@@ -22,25 +21,6 @@ export default function FlashDeals({
   products: Product[];
   onAdd: (p: Product) => void;
 }) {
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 2,
-    minutes: 45,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0)
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        if (prev.hours > 0)
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const featured = products.filter((p) => !!p.isFeatured);
   if (featured.length === 0) return null;
@@ -112,21 +92,13 @@ export default function FlashDeals({
   return (
     <div className="py-6 bg-[#fff7d6] border-y-[4px] border-black my-4">
       {/* Header */}
-      <div className="px-4 flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-purple-500 border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0_#000] rotate-[5deg]">
-            <Zap className="w-6 h-6 text-white fill-current rotate-[-5deg]" />
-          </div>
-          <h2 className="text-2xl font-black uppercase tracking-tight transform rotate-[-1deg]">
-            Flash Deals
-          </h2>
+      <div className="px-4 flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-purple-500 border-[3px] border-black flex items-center justify-center shadow-[3px_3px_0_#000] rotate-[5deg]">
+          <Zap className="w-6 h-6 text-white fill-current rotate-[-5deg]" />
         </div>
-        <div className="flex items-center gap-2 bg-pink-500 text-white px-3 py-2 border-[3px] border-black font-black uppercase text-sm shadow-[3px_3px_0_#000] rotate-[2deg]">
-          <Clock className="w-4 h-4" />
-          <span>
-            {timeLeft.hours}h {timeLeft.minutes}m
-          </span>
-        </div>
+        <h2 className="text-2xl font-black uppercase tracking-tight transform rotate-[-1deg]">
+          Flash Deals
+        </h2>
       </div>
 
       {/* Desktop: All products in one row */}
