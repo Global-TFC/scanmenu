@@ -44,6 +44,9 @@ const Header: React.FC<HeaderProps> = ({
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="w-full pl-3 pr-4 py-3 bg-gray-50 rounded-xl text-gray-900 placeholder:text-gray-500 focus:outline-none active:outline-none onfocus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-colors"
+          aria-label="Search products"
+          role="searchbox"
+          autoComplete="off"
         />
         <div className="flex items-center bg-blue-500 rounded-full p-2 px-4 ">
           <span className="text-white text-m font-semibold">Search</span>

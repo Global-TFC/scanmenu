@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useProducts, Product } from '@/hooks/use-products';
 import Header from './components/Header';
@@ -6,6 +6,8 @@ import CategoryStories from './components/CategoryStories';
 import FoodGrid from './components/FoodGrid';
 import OrderCart from './components/OrderCart';
 import SpecialsSwiper from './components/SpecialsSwiper';
+import OptimizedCartButton from './components/OptimizedCartButton';
+import MaxErrorBoundary from './components/MaxErrorBoundary';
 import useMaxTemplate from './hooks/useMaxTemplate';
 import useCategories from './hooks/useCategories';
 import './styles/max.css';
@@ -90,7 +92,7 @@ const Max: React.FC<MaxProps> = ({
   const filteredCategories = hookCategories.filter(cat => cat !== 'All');
 
   // Handle category selection with special logic for Specials and All
-  const handleCategorySelect = (category: string) => {
+  const handleCategorySelect = useCallback((category: string) => {
     if (category === 'Specials') {
       setShowSpecialsSwiperState(true);
     } else if (category === 'All') {
@@ -99,11 +101,11 @@ const Max: React.FC<MaxProps> = ({
     } else {
       setHookSelectedCategory(category);
     }
-  };
+  }, [setHookSelectedCategory]);
 
-  const handleCloseSpecialsSwiper = () => {
+  const handleCloseSpecialsSwiper = useCallback(() => {
     setShowSpecialsSwiperState(false);
-  };
+  }, []);
 
   // Combine products for display based on selected category and search
   // For "All" without search: show only regular products (non-featured)
@@ -151,7 +153,8 @@ const Max: React.FC<MaxProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <MaxErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
       {/* Header with search only */}
       <Header
         searchQuery={searchQuery}
@@ -185,36 +188,13 @@ const Max: React.FC<MaxProps> = ({
         />
       </div>
 
-      {/* Bottom Cart Button - Only show if items in cart */}
-      {cartItemCount > 0 && !isCartOpen && (
-        <button
-          onClick={toggleCart}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 
-             px-5 py-3.5 rounded-full bg-blue-600 text-white shadow-2xl 
-             flex items-center gap-3 hover:scale-105 active:scale-95 
-             transition-all duration-200 animate-bounce-in
-             whitespace-nowrap min-w-max" // ← Key fixes
-        >
-          <div className="relative">
-            <ShoppingBag className="w-5 h-5" />
-            {/* Optional: little badge for count */}
-            {/* {cartItemCount > 0 && (
-      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-        {cartItemCount}
-      </span>
-    )} */}
-          </div>
-
-          <span className="font-semibold text-sm md:text-base flex items-center gap-2">
-            <span>
-              {cartItemCount} item{cartItemCount !== 1 ? 's' : ''}
-            </span>
-            <span className="font-bold">
-              ₹{Math.round(cartItems.reduce((sum, item) => sum + (item.offerPrice || item.price) * item.quantity, 0))}
-            </span>
-          </span>
-        </button>
-      )}
+      {/* Optimized Bottom Cart Button */}
+      <OptimizedCartButton
+        cartItems={cartItems}
+        cartItemCount={cartItemCount}
+        isCartOpen={isCartOpen}
+        onToggleCart={toggleCart}
+      />
 
 
 
@@ -237,7 +217,8 @@ const Max: React.FC<MaxProps> = ({
           onAddToCart={addToCart}
         />
       )}
-    </div>
+      </div>
+    </MaxErrorBoundary>
   );
 };
 

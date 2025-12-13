@@ -100,6 +100,22 @@ const useMaxTemplate = ({
     });
   }, []);
 
+  const removeFromCart = useCallback((productId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+  }, []);
+
+  const updateQuantity = useCallback((productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === productId ? { ...item, quantity } : item
+        )
+      );
+    }
+  }, [removeFromCart]);
+
 
 
   // WhatsApp ordering
@@ -117,22 +133,6 @@ const useMaxTemplate = ({
       console.error('Failed to create WhatsApp order URL:', error);
     }
   }, [canWhatsAppOrder, cartItems, shopName, shopContact]);
-
-  const removeFromCart = useCallback((productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-  }, []);
-
-  const updateQuantity = useCallback((productId: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-    } else {
-      setCartItems(prevItems =>
-        prevItems.map(item =>
-          item.id === productId ? { ...item, quantity } : item
-        )
-      );
-    }
-  }, [removeFromCart]);
 
   // Cart UI functions
   const toggleCart = useCallback(() => {

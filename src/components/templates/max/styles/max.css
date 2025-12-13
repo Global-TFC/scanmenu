@@ -1,5 +1,20 @@
 /* Max Template Styles */
 
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+}
+
+/* GPU acceleration for animations */
+.animate-bounce-in,
+.animate-fade-in,
+.animate-card-enter,
+.animate-swipe-right,
+.animate-swipe-left {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
 /* Scrollbar hiding for horizontal scroll */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -143,15 +158,24 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-bounce-in,
   .animate-fade-in,
-  .animate-card-enter {
-    animation: none;
+  .animate-card-enter,
+  .animate-swipe-right,
+  .animate-swipe-left {
+    animation: none !important;
   }
   
   .transition-transform,
   .transition-colors,
   .transition-opacity,
   .transition-shadow {
-    transition: none;
+    transition: none !important;
+  }
+  
+  /* Disable hover effects for reduced motion */
+  .group-hover\:scale-110,
+  .hover\:scale-105,
+  .hover\:scale-110 {
+    transform: none !important;
   }
 }
 

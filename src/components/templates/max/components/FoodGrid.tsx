@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
+import ProductSkeleton from './ProductSkeleton';
 
 interface Product {
   id: string;
@@ -19,21 +21,26 @@ interface FoodCardProps {
   onAddToCart: (item: Product) => void;
 }
 
-const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
+const FoodCard: React.FC<FoodCardProps> = memo(({ item, onAddToCart }) => {
   const [lastTap, setLastTap] = useState(0);
+  const [imageError, setImageError] = useState(false);
 
-  const handleDoubleTap = () => {
+  const handleDoubleTap = useCallback(() => {
     const now = Date.now();
     if (now - lastTap < 300) {
       onAddToCart(item);
     }
     setLastTap(now);
-  };
+  }, [lastTap, onAddToCart, item]);
 
-  const handleCartClick = (e: React.MouseEvent) => {
+  const handleCartClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     onAddToCart(item);
-  };
+  }, [onAddToCart, item]);
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
 
   const displayPrice = item.offerPrice || item.price;
   const hasOffer = item.offerPrice && item.offerPrice < item.price;
@@ -54,15 +61,23 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
 
       {/* Image Section */}
       <div className="relative aspect-square overflow-hidden bg-gray-50">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-full h-full object-contain p-2 rounded-3xl transition-transform duration-700 group-hover:scale-110"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = '/default-product.png';
-          }}
-        />
+        {!imageError ? (
+          <Image
+            src={item.image || '/default-product.png'}
+            alt={item.name}
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-contain p-2 rounded-3xl transition-transform duration-700 group-hover:scale-110"
+            onError={handleImageError}
+            loading="lazy"
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <span className="text-gray-400 text-sm">No Image</span>
+          </div>
+        )}
 
         {/* Featured Badge */}
         {item.isFeatured && (
@@ -101,7 +116,9 @@ const FoodCard: React.FC<FoodCardProps> = ({ item, onAddToCart }) => {
       </div>
     </div>
   );
-};
+});
+
+FoodCard.displayName = 'FoodCard';
 
 interface FoodGridProps {
   items: Product[];
@@ -174,6 +191,11 @@ const FoodGrid: React.FC<FoodGridProps> = ({
       <div className="grid grid-cols-2 gap-5 px-5 py-8 max-w-5xl mx-auto">
         {items.map((item) => (
           <FoodCard key={item.id} item={item} onAddToCart={onAddToCart} />
+        ))}
+        
+        {/* Show skeleton loaders while loading more */}
+        {loading && Array.from({ length: 4 }).map((_, index) => (
+          <ProductSkeleton key={`skeleton-${index}`} />
         ))}
       </div>
 
