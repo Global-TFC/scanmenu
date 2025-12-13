@@ -167,8 +167,8 @@ const Max: React.FC<MaxProps> = ({
   return (
     <MaxErrorBoundary>
       <div className="min-h-screen bg-gray-50">
-        {/* Header with search only - Responsive */}
-        <div className="sticky top-0 z-40 bg-gray-50/95 backdrop-blur-sm">
+        {/* Header with search only - Sticky */}
+        <div className="sticky top-0 z-40 bg-gray-50/95 backdrop-blur-sm border-b border-gray-200/50">
           <Header
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -177,8 +177,8 @@ const Max: React.FC<MaxProps> = ({
           />
         </div>
 
-        {/* Category Stories - Responsive horizontal scroll */}
-        <div className="sticky top-[120px] sm:top-[130px] md:top-[140px] z-30 bg-gray-50/95 backdrop-blur-sm">
+        {/* Category Stories - Normal scroll (not sticky) */}
+        <div className="bg-gray-50">
           <CategoryStories
             categories={filteredCategories}
             categoriesWithImages={categoriesWithImages}
