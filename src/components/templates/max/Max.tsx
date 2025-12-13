@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useProducts, Product } from '@/hooks/use-products';
 import Header from './components/Header';
@@ -53,6 +53,18 @@ const Max: React.FC<MaxProps> = ({
     initialProducts,
     slug,
   });
+
+  // Track debounced search term to match the hook's internal logic
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  
+  // Debounce search term to match useProducts hook behavior
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Fetch categories with images
   const { categories: categoriesWithImages, loading: categoriesLoading, error: categoriesError } = useCategories({
@@ -113,7 +125,7 @@ const Max: React.FC<MaxProps> = ({
   // For specific categories: show both featured and regular products from that category
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') {
-      if (searchTerm && searchTerm.trim() !== '') {
+      if (debouncedSearchTerm && debouncedSearchTerm.trim() !== '') {
         // When searching from "All", show both featured and regular products
         return products;
       } else {
@@ -124,7 +136,7 @@ const Max: React.FC<MaxProps> = ({
       // Show both featured and regular products from the selected category
       return products;
     }
-  }, [selectedCategory, searchTerm, regularProducts, products]);
+  }, [selectedCategory, debouncedSearchTerm, regularProducts, products]);
 
   const loading = (featuredLoading && regularLoading) || categoriesLoading;
   const error = categoriesError;
@@ -184,7 +196,7 @@ const Max: React.FC<MaxProps> = ({
           loadMoreRef={loadMoreRef}
           error={regularError}
           onRetry={retryRegularProducts}
-          searchTerm={searchTerm}
+          searchTerm={debouncedSearchTerm}
         />
       </div>
 
