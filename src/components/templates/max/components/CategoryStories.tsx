@@ -63,18 +63,18 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
   ];
 
   return (
-    <div className="w-full z-30 overflow-x-auto scrollbar-hide py-2 sm:py-3 rounded-b-2xl backdrop-blur-sm">
-      <div className="flex gap-3 sm:gap-4 md:gap-5 px-3 sm:px-4 md:px-6 lg:px-8 min-w-max">
+    <div className="w-full z-30 overflow-x-auto scrollbar-hide py-3 sm:py-3 rounded-b-2xl backdrop-blur-sm">
+      <div className="flex gap-4 sm:gap-4 md:gap-5 px-4 sm:px-4 md:px-6 lg:px-8 min-w-max">
         {categoryBubbles.map((category) => {
           return (
             <button
               key={category.id}
               onClick={() => onSelect(category.id)}
-              className="flex flex-col items-center gap-1.5 sm:gap-2 group min-w-[50px] sm:min-w-[60px] md:min-w-[70px] hover:scale-105 active:scale-95 transition-transform duration-200"
+              className="flex flex-col items-center gap-2 sm:gap-2 group min-w-[60px] sm:min-w-[70px] md:min-w-[80px] hover:scale-105 active:scale-95 transition-transform duration-200"
             >
-              {/* Story ring - Responsive sizes */}
+              {/* Story ring - Increased mobile sizes */}
               <div
-                className={`w-12 h-12 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-full p-[2px] sm:p-[3px] transition-all duration-200 shadow-lg shadow-blue-100 border border-gray-200 ${category.isSpecial
+                className={`w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 lg:w-22 lg:h-22 rounded-full p-[3px] sm:p-[3px] transition-all duration-200 shadow-lg shadow-blue-100 border border-gray-200 ${category.isSpecial
                   ? 'bg-blue-500 border-2 border-blue-500'
                   : category.isActive
                     ? 'bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500'
@@ -87,7 +87,7 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
                     <img
                       src={category.image}
                       alt={category.label}
-                      className="w-full p-1 sm:p-2 h-full object-cover"
+                      className="w-full p-2 sm:p-2 h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
@@ -96,7 +96,7 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
                         if (parent) {
                           parent.innerHTML = `
                             <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                              <span class="text-gray-600 font-semibold text-sm sm:text-lg">
+                              <span class="text-gray-600 font-semibold text-base sm:text-lg">
                                 ${category.label.charAt(0).toUpperCase()}
                               </span>
                             </div>
@@ -106,11 +106,11 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
                     />
                   ) : category.isSpecial ? (
                     <div className="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm sm:text-lg">⚡</span>
+                      <span className="text-white font-bold text-base sm:text-lg">⚡</span>
                     </div>
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                      <span className="text-gray-600 font-semibold text-sm sm:text-lg">
+                      <span className="text-gray-600 font-semibold text-base sm:text-lg">
                         {category.label.charAt(0).toUpperCase()}
                       </span>
                     </div>
@@ -120,7 +120,7 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
 
               {/* Label - Responsive text */}
               <span
-                className={`text-xs sm:text-sm font-medium transition-colors duration-200 text-center max-w-[50px] sm:max-w-[60px] md:max-w-[70px] truncate ${category.isActive ? 'text-gray-900 font-semibold' : 'text-gray-600'
+                className={`text-sm sm:text-sm font-medium transition-colors duration-200 text-center max-w-[60px] sm:max-w-[70px] md:max-w-[80px] truncate ${category.isActive ? 'text-gray-900 font-semibold' : 'text-gray-600'
                   }`}
               >
                 {category.label}
