@@ -111,6 +111,7 @@ interface FoodGridProps {
   loadMoreRef?: (node?: Element | null) => void;
   error?: string | null;
   onRetry?: () => void;
+  searchTerm?: string;
 }
 
 const FoodGrid: React.FC<FoodGridProps> = ({
@@ -121,15 +122,27 @@ const FoodGrid: React.FC<FoodGridProps> = ({
   loadMoreRef,
   error = null,
   onRetry,
+  searchTerm = "",
 }) => {
   // Empty state
   if (items.length === 0 && !loading && !error) {
+    const isSearching = searchTerm && searchTerm.trim() !== '';
+    
     return (
       <div className="flex-1 flex items-center justify-center p-10">
         <div className="text-center">
-          <div className="text-6xl mb-4">No Plate</div>
-          <p className="text-gray-500">No items found</p>
-          <p className="text-gray-400 text-sm mt-1">Try adjusting your search or filters</p>
+          <div className="text-6xl mb-4">
+            {isSearching ? '🔍' : 'No Plate'}
+          </div>
+          <p className="text-gray-500">
+            {isSearching ? 'Product not found' : 'No items found'}
+          </p>
+          <p className="text-gray-400 text-sm mt-1">
+            {isSearching 
+              ? `No products match "${searchTerm}"`
+              : 'Try adjusting your search or filters'
+            }
+          </p>
         </div>
       </div>
     );

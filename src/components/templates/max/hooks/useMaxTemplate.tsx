@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Product } from '@/hooks/use-products';
 import {
   CartItem,
@@ -40,12 +40,44 @@ const useMaxTemplate = ({
   shopContact,
   isWhatsappOrderingEnabled = false,
 }: UseMaxTemplateProps): UseMaxTemplateReturn => {
+  // Create a unique storage key for this shop
+  const storageKey = `max-cart-${shopName.replace(/\s+/g, '-').toLowerCase()}`;
+  
+  // Helper function to load cart from session storage
+  const loadCartFromStorage = useCallback((): CartItem[] => {
+    if (typeof window === 'undefined') return [];
+    
+    try {
+      const stored = sessionStorage.getItem(storageKey);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Failed to load cart from session storage:', error);
+      return [];
+    }
+  }, [storageKey]);
+
+  // Helper function to save cart to session storage
+  const saveCartToStorage = useCallback((items: CartItem[]) => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(items));
+    } catch (error) {
+      console.error('Failed to save cart to session storage:', error);
+    }
+  }, [storageKey]);
+
   // Specials swiper state
   const [showSpecialsSwiper, setShowSpecialsSwiper] = useState(false);
   
-  // Cart state
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  // Cart state - initialize from session storage
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => loadCartFromStorage());
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Save cart to session storage whenever cart items change
+  useEffect(() => {
+    saveCartToStorage(cartItems);
+  }, [cartItems, saveCartToStorage]);
 
   // Memoized cart calculations
   const cartItemCount = useMemo(() => {

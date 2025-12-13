@@ -105,18 +105,24 @@ const Max: React.FC<MaxProps> = ({
     setShowSpecialsSwiperState(false);
   };
 
-  // Combine products for display based on selected category
-  // For "All": show only regular products (non-featured)
+  // Combine products for display based on selected category and search
+  // For "All" without search: show only regular products (non-featured)
+  // For "All" with search: show both featured and regular products
   // For specific categories: show both featured and regular products from that category
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') {
-      // Show only regular (non-featured) products
-      return regularProducts;
+      if (searchTerm && searchTerm.trim() !== '') {
+        // When searching from "All", show both featured and regular products
+        return products;
+      } else {
+        // When browsing "All" without search, show only regular (non-featured) products
+        return regularProducts;
+      }
     } else {
       // Show both featured and regular products from the selected category
       return products;
     }
-  }, [selectedCategory, regularProducts, products]);
+  }, [selectedCategory, searchTerm, regularProducts, products]);
 
   const loading = (featuredLoading && regularLoading) || categoriesLoading;
   const error = categoriesError;
@@ -175,6 +181,7 @@ const Max: React.FC<MaxProps> = ({
           loadMoreRef={loadMoreRef}
           error={regularError}
           onRetry={retryRegularProducts}
+          searchTerm={searchTerm}
         />
       </div>
 
