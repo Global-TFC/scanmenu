@@ -82,12 +82,12 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
                   }`}
               >
                 {/* Inner circle with image or placeholder */}
-                <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
+                <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center p-[2px]">
                   {category.image ? (
                     <img
                       src={category.image}
                       alt={category.label}
-                      className="w-full p-2 sm:p-2 h-full object-cover"
+                      className="w-full h-full object-cover rounded-full"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';

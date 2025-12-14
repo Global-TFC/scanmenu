@@ -67,7 +67,7 @@ const FoodCard: React.FC<FoodCardProps> = memo(({ item, onAddToCart }) => {
             alt={item.name}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-contain p-2 rounded-3xl transition-transform duration-700 group-hover:scale-110"
+            className="object-cover p-2 rounded-3xl transition-transform duration-700 group-hover:scale-110"
             onError={handleImageError}
             loading="lazy"
             placeholder="blur"
