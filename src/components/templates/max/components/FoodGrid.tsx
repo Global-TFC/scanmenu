@@ -42,15 +42,16 @@ const FoodCard: React.FC<FoodCardProps> = memo(({ item, onAddToCart }) => {
     setImageError(true);
   }, []);
 
-  const displayPrice = item.offerPrice || item.price;
-  const hasOffer = item.offerPrice && item.offerPrice < item.price;
+  const displayPrice = item.offerPrice && item.offerPrice > 0 ? item.offerPrice : item.price;
+  const hasOffer = item.offerPrice && item.offerPrice > 0 && item.price && item.price > 0 && item.offerPrice < item.price;
+  const hasValidPrice = (item.offerPrice && item.offerPrice > 0) || (item.price && item.price > 0);
 
   return (
     <div
-      className="group relative bg-gradient-to-br from-blue-50 via-white to-white 
+      className="group relative bg-background 
                  rounded-3xl overflow-hidden border border-gray-200 
-                 shadow-blue-100 shadow-xl 
-                 transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-blue-100/60
+                 shadow-gray-200 shadow-xl 
+                 transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-gray-300
                  cursor-pointer select-none"
       onClick={handleDoubleTap}
     >
@@ -87,30 +88,32 @@ const FoodCard: React.FC<FoodCardProps> = memo(({ item, onAddToCart }) => {
         )}
 
         {/* Price Tag */}
-        <div className="absolute bottom-1 left-2 bg-white/95 backdrop-blur-lg border border-gray-200 px-3 py-2 rounded-3xl shadow-2xl">
+        {hasValidPrice && (
+        <div className="absolute bottom-1 left-2 bg-background/95 backdrop-blur-lg border border-gray-200 px-3 py-2 rounded-3xl shadow-2xl">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black text-gray-900">₹{displayPrice}</span>
+            <span className="text-xs font-black text-text">₹{displayPrice}</span>
             {hasOffer && (
               <span className="text-xs text-gray-500 line-through font-medium">₹{item.price}</span>
             )}
           </div>
         </div>
+        )}
 
         {/* Floating Add to Cart Button */}
         <button
           onClick={handleCartClick}
-          className="absolute -bottom-5 z-30 right-2 p-3 pb-5 bg-white rounded-3xl shadow-2xl border border-gray-200 
-                     hover:bg-blue-50 hover:border-blue-300 hover:shadow-blue-200 
+          className="absolute -bottom-5 z-30 right-2 p-3 pb-5 bg-background rounded-3xl shadow-2xl border border-gray-200 
+                     hover:bg-gray-50 hover:border-primary hover:shadow-gray-200 
                      transition-all duration-300 hover:scale-110 active:scale-95"
           aria-label={`Add ${item.name} to cart`}
         >
-          <ShoppingCart className="w-6 h-6 text-blue-600" />
+          <ShoppingCart className="w-6 h-6 text-primary" />
         </button>
       </div>
 
       {/* Card Content */}
       <div className="px-4 py-2">
-        <h3 className="font-bold text-gray-900 text-sm line-clamp-1">
+        <h3 className="font-bold text-text text-sm line-clamp-1">
           {item.name}
         </h3>
       </div>
@@ -151,7 +154,7 @@ const FoodGrid: React.FC<FoodGridProps> = ({
           <div className="text-6xl mb-4">
             {isSearching ? '🔍' : 'No Plate'}
           </div>
-          <p className="text-gray-500">
+          <p className="text-text opacity-70">
             {isSearching ? 'Product not found' : 'No items found'}
           </p>
           <p className="text-gray-400 text-sm mt-1">
@@ -176,7 +179,7 @@ const FoodGrid: React.FC<FoodGridProps> = ({
           {onRetry && (
             <button
               onClick={onRetry}
-              className="px-6 py-3 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-colors font-medium"
+              className="px-6 py-3 bg-primary text-white rounded-2xl hover:opacity-90 transition-colors font-medium"
             >
               Try Again
             </button>
@@ -187,7 +190,7 @@ const FoodGrid: React.FC<FoodGridProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 to-white">
+    <div className="min-h-screen bg-transparent">
       {/* Responsive Grid Layout */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 
                       gap-3 sm:gap-4 md:gap-5 lg:gap-6 
@@ -208,7 +211,7 @@ const FoodGrid: React.FC<FoodGridProps> = ({
       {(hasMore || loading) && !error && (
         <div ref={loadMoreRef} className="flex justify-center py-6 sm:py-8 md:py-10">
           {loading && (
-            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-4 border-blue-600 border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border-4 border-primary border-t-transparent"></div>
           )}
         </div>
       )}

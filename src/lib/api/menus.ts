@@ -165,9 +165,11 @@ export async function updateMenu(data: {
   shopLogo?: string;
   place?: string;
   contactNumber?: string;
+  locationUrl?: string;
   template?: MenuTemplateType;
   slug?: string;
   isWhatsappOrderingEnabled?: boolean;
+  themeConfig?: any;
 }) {
   if (!data.id) throw new Error("Menu id is required");
 

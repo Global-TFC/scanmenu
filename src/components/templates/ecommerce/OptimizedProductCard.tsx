@@ -33,7 +33,8 @@ const OptimizedProductCard: React.FC<OptimizedProductCardProps> = memo(({
       : 0;
   }, [product.price, product.offerPrice]);
 
-  const displayPrice = product.offerPrice ?? product.price;
+  const displayPrice = product.offerPrice && product.offerPrice > 0 ? product.offerPrice : product.price;
+  const hasValidPrice = (product.offerPrice && product.offerPrice > 0) || (product.price && product.price > 0);
 
   return (
     <motion.div
@@ -84,16 +85,18 @@ const OptimizedProductCard: React.FC<OptimizedProductCardProps> = memo(({
           {/* Price and Add Button */}
           <div className="flex items-center justify-between gap-2">
             <div>
+              {hasValidPrice && (
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="font-black text-lg">
                   ₹{displayPrice.toFixed(0)}
                 </span>
-                {typeof product.offerPrice === "number" && (
+                {typeof product.offerPrice === "number" && product.offerPrice > 0 && product.price && product.price > 0 && product.offerPrice < product.price && (
                   <span className="text-xs font-bold text-gray-500 line-through">
                     ₹{product.price.toFixed(0)}
                   </span>
                 )}
               </div>
+              )}
             </div>
             <button
               onClick={handleAddToCart}

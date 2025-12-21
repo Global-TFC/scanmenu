@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { MenuTemplateType } from "@/generated/prisma/enums";
 
 export async function POST(request: NextRequest) {
@@ -80,15 +81,17 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, shopName, shopLogo, place, contactNumber, template, slug, isWhatsappOrderingEnabled } = body as {
+    const { id, shopName, shopLogo, place, contactNumber, locationUrl, template, slug, isWhatsappOrderingEnabled, themeConfig } = body as {
       id: string;
       shopName?: string;
       shopLogo?: string | null;
       place?: string | null;
       contactNumber?: string | null;
+      locationUrl?: string | null;
       template?: MenuTemplateType;
       slug?: string;
       isWhatsappOrderingEnabled?: boolean;
+      themeConfig?: any;
     };
 
     if (!id) {
@@ -124,15 +127,22 @@ export async function PUT(request: NextRequest) {
         ...(shopLogo !== undefined && { shopLogo }),
         ...(place !== undefined && { place }),
         ...(contactNumber !== undefined && { contactNumber }),
+        ...(locationUrl !== undefined && { locationUrl }),
         ...(template !== undefined && { template }),
         ...(slug !== undefined && { slug }),
         ...(isWhatsappOrderingEnabled !== undefined && { isWhatsappOrderingEnabled }),
+        ...(themeConfig !== undefined && { themeConfig }),
       },
       include: {
         user: { select: { id: true, name: true, email: true } },
         items: true,
       },
     });
+
+    // Revalidate the shop page cache
+    if (updatedMenu.slug) {
+      revalidatePath(`/${updatedMenu.slug}`);
+    }
 
     return NextResponse.json(updatedMenu, { status: 200 });
   } catch (error) {

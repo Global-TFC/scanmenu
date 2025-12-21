@@ -243,15 +243,30 @@ export default function CreateMenuForm() {
                   Contact us on WhatsApp to set up your digital menu
                 </p>
                 
+                {/* UAE Number */}
                 <a
-                  href="https://wa.me/919562695758"
+                  href="https://wa.me/971508019605"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full"
                 >
                   <button className="w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all transform hover:-translate-y-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:shadow-green-200 flex items-center justify-center gap-3">
                     <Phone className="h-6 w-6" />
-                    Contact on WhatsApp
+                    UAE WhatsApp
+                    <span className="text-sm font-normal">+971 50 801 9605</span>
+                  </button>
+                </a>
+
+                {/* Indian Number */}
+                <a
+                  href="https://wa.me/919562695758"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full"
+                >
+                  <button className="w-full py-4 px-6 rounded-xl font-bold text-white text-lg shadow-lg transition-all transform hover:-translate-y-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-200 flex items-center justify-center gap-3">
+                    <Phone className="h-6 w-6" />
+                    India WhatsApp
                     <span className="text-sm font-normal">+91 95626 95758</span>
                   </button>
                 </a>

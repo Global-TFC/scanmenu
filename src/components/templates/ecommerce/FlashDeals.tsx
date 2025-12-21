@@ -65,16 +65,18 @@ export default function FlashDeals({
             {/* Price and Add Button */}
             <div className="flex items-center justify-between gap-2">
               <div>
+                {((product.offerPrice && product.offerPrice > 0) || (product.price && product.price > 0)) && (
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="font-black text-lg">
-                    ₹{(product.offerPrice ?? product.price).toFixed(0)}
+                    ₹{(product.offerPrice && product.offerPrice > 0 ? product.offerPrice : product.price).toFixed(0)}
                   </span>
-                  {typeof product.offerPrice === "number" && (
+                  {typeof product.offerPrice === "number" && product.offerPrice > 0 && product.price && product.price > 0 && product.offerPrice < product.price && (
                     <span className="text-xs font-bold text-gray-500 line-through">
                       ₹{product.price.toFixed(0)}
                     </span>
                   )}
                 </div>
+                )}
               </div>
               <button
                 onClick={() => onAdd(product)}

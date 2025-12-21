@@ -116,10 +116,12 @@ export default async function SlugMenuPage({ params }: PageProps) {
       shopPlace={menu.place || ""}
       shopContact={menu.contactNumber || ""}
       shopLogo={menu.shopLogo || ""}
+      locationUrl={menu.locationUrl || ""}
       products={initialProducts as any} // Casting safely as shapes align mostly
       template={menu.template as MenuTemplateType}
       isWhatsappOrderingEnabled={menu.isWhatsappOrderingEnabled}
       isReadymade={menu.isReadymade}
+      themeConfig={menu.themeConfig}
     />
   );
 }

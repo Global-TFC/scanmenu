@@ -14,7 +14,8 @@ export const MenuTemplateType = {
   PRO: 'PRO',
   E_COM: 'E_COM',
   CAFE: 'CAFE',
-  MAX: 'MAX'
+  MAX: 'MAX',
+  ECOMAPP: 'ECOMAPP'
 } as const
 
 export type MenuTemplateType = (typeof MenuTemplateType)[keyof typeof MenuTemplateType]

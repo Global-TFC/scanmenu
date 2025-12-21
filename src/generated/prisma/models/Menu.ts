@@ -32,6 +32,7 @@ export type MenuMinAggregateOutputType = {
   shopLogo: string | null
   place: string | null
   contactNumber: string | null
+  locationUrl: string | null
   template: $Enums.MenuTemplateType | null
   isWhatsappOrderingEnabled: boolean | null
   isReadymade: boolean | null
@@ -48,6 +49,7 @@ export type MenuMaxAggregateOutputType = {
   shopLogo: string | null
   place: string | null
   contactNumber: string | null
+  locationUrl: string | null
   template: $Enums.MenuTemplateType | null
   isWhatsappOrderingEnabled: boolean | null
   isReadymade: boolean | null
@@ -64,10 +66,12 @@ export type MenuCountAggregateOutputType = {
   shopLogo: number
   place: number
   contactNumber: number
+  locationUrl: number
   template: number
   isWhatsappOrderingEnabled: number
   isReadymade: number
   claimCode: number
+  themeConfig: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -82,6 +86,7 @@ export type MenuMinAggregateInputType = {
   shopLogo?: true
   place?: true
   contactNumber?: true
+  locationUrl?: true
   template?: true
   isWhatsappOrderingEnabled?: true
   isReadymade?: true
@@ -98,6 +103,7 @@ export type MenuMaxAggregateInputType = {
   shopLogo?: true
   place?: true
   contactNumber?: true
+  locationUrl?: true
   template?: true
   isWhatsappOrderingEnabled?: true
   isReadymade?: true
@@ -114,10 +120,12 @@ export type MenuCountAggregateInputType = {
   shopLogo?: true
   place?: true
   contactNumber?: true
+  locationUrl?: true
   template?: true
   isWhatsappOrderingEnabled?: true
   isReadymade?: true
   claimCode?: true
+  themeConfig?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -203,10 +211,12 @@ export type MenuGroupByOutputType = {
   shopLogo: string | null
   place: string | null
   contactNumber: string | null
+  locationUrl: string | null
   template: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled: boolean
   isReadymade: boolean
   claimCode: string | null
+  themeConfig: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: MenuCountAggregateOutputType | null
@@ -240,10 +250,12 @@ export type MenuWhereInput = {
   shopLogo?: Prisma.StringNullableFilter<"Menu"> | string | null
   place?: Prisma.StringNullableFilter<"Menu"> | string | null
   contactNumber?: Prisma.StringNullableFilter<"Menu"> | string | null
+  locationUrl?: Prisma.StringNullableFilter<"Menu"> | string | null
   template?: Prisma.EnumMenuTemplateTypeFilter<"Menu"> | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFilter<"Menu"> | boolean
   isReadymade?: Prisma.BoolFilter<"Menu"> | boolean
   claimCode?: Prisma.StringNullableFilter<"Menu"> | string | null
+  themeConfig?: Prisma.JsonNullableFilter<"Menu">
   createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -259,10 +271,12 @@ export type MenuOrderByWithRelationInput = {
   shopLogo?: Prisma.SortOrderInput | Prisma.SortOrder
   place?: Prisma.SortOrderInput | Prisma.SortOrder
   contactNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  locationUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   template?: Prisma.SortOrder
   isWhatsappOrderingEnabled?: Prisma.SortOrder
   isReadymade?: Prisma.SortOrder
   claimCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  themeConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -281,10 +295,12 @@ export type MenuWhereUniqueInput = Prisma.AtLeast<{
   shopLogo?: Prisma.StringNullableFilter<"Menu"> | string | null
   place?: Prisma.StringNullableFilter<"Menu"> | string | null
   contactNumber?: Prisma.StringNullableFilter<"Menu"> | string | null
+  locationUrl?: Prisma.StringNullableFilter<"Menu"> | string | null
   template?: Prisma.EnumMenuTemplateTypeFilter<"Menu"> | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFilter<"Menu"> | boolean
   isReadymade?: Prisma.BoolFilter<"Menu"> | boolean
   claimCode?: Prisma.StringNullableFilter<"Menu"> | string | null
+  themeConfig?: Prisma.JsonNullableFilter<"Menu">
   createdAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Menu"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -300,10 +316,12 @@ export type MenuOrderByWithAggregationInput = {
   shopLogo?: Prisma.SortOrderInput | Prisma.SortOrder
   place?: Prisma.SortOrderInput | Prisma.SortOrder
   contactNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  locationUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   template?: Prisma.SortOrder
   isWhatsappOrderingEnabled?: Prisma.SortOrder
   isReadymade?: Prisma.SortOrder
   claimCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  themeConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MenuCountOrderByAggregateInput
@@ -322,10 +340,12 @@ export type MenuScalarWhereWithAggregatesInput = {
   shopLogo?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
   place?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
   contactNumber?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
+  locationUrl?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
   template?: Prisma.EnumMenuTemplateTypeWithAggregatesFilter<"Menu"> | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolWithAggregatesFilter<"Menu"> | boolean
   isReadymade?: Prisma.BoolWithAggregatesFilter<"Menu"> | boolean
   claimCode?: Prisma.StringNullableWithAggregatesFilter<"Menu"> | string | null
+  themeConfig?: Prisma.JsonNullableWithAggregatesFilter<"Menu">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Menu"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Menu"> | Date | string
 }
@@ -337,10 +357,12 @@ export type MenuCreateInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutMenuInput
@@ -356,10 +378,12 @@ export type MenuUncheckedCreateInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.MenuItemUncheckedCreateNestedManyWithoutMenuInput
@@ -373,10 +397,12 @@ export type MenuUpdateInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutMenuNestedInput
@@ -392,10 +418,12 @@ export type MenuUncheckedUpdateInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.MenuItemUncheckedUpdateManyWithoutMenuNestedInput
@@ -410,10 +438,12 @@ export type MenuCreateManyInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -425,10 +455,12 @@ export type MenuUpdateManyMutationInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -441,10 +473,12 @@ export type MenuUncheckedUpdateManyInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -462,10 +496,12 @@ export type MenuCountOrderByAggregateInput = {
   shopLogo?: Prisma.SortOrder
   place?: Prisma.SortOrder
   contactNumber?: Prisma.SortOrder
+  locationUrl?: Prisma.SortOrder
   template?: Prisma.SortOrder
   isWhatsappOrderingEnabled?: Prisma.SortOrder
   isReadymade?: Prisma.SortOrder
   claimCode?: Prisma.SortOrder
+  themeConfig?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -478,6 +514,7 @@ export type MenuMaxOrderByAggregateInput = {
   shopLogo?: Prisma.SortOrder
   place?: Prisma.SortOrder
   contactNumber?: Prisma.SortOrder
+  locationUrl?: Prisma.SortOrder
   template?: Prisma.SortOrder
   isWhatsappOrderingEnabled?: Prisma.SortOrder
   isReadymade?: Prisma.SortOrder
@@ -494,6 +531,7 @@ export type MenuMinOrderByAggregateInput = {
   shopLogo?: Prisma.SortOrder
   place?: Prisma.SortOrder
   contactNumber?: Prisma.SortOrder
+  locationUrl?: Prisma.SortOrder
   template?: Prisma.SortOrder
   isWhatsappOrderingEnabled?: Prisma.SortOrder
   isReadymade?: Prisma.SortOrder
@@ -578,10 +616,12 @@ export type MenuCreateWithoutUserInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.MenuItemCreateNestedManyWithoutMenuInput
@@ -595,10 +635,12 @@ export type MenuUncheckedCreateWithoutUserInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.MenuItemUncheckedCreateNestedManyWithoutMenuInput
@@ -628,10 +670,12 @@ export type MenuUpdateWithoutUserInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.MenuItemUpdateManyWithoutMenuNestedInput
@@ -645,10 +689,12 @@ export type MenuUncheckedUpdateWithoutUserInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.MenuItemUncheckedUpdateManyWithoutMenuNestedInput
@@ -662,10 +708,12 @@ export type MenuCreateWithoutItemsInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutMenuInput
@@ -680,10 +728,12 @@ export type MenuUncheckedCreateWithoutItemsInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   categories?: Prisma.CategoryUncheckedCreateNestedManyWithoutMenuInput
@@ -712,10 +762,12 @@ export type MenuUpdateWithoutItemsInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutMenuNestedInput
@@ -730,10 +782,12 @@ export type MenuUncheckedUpdateWithoutItemsInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   categories?: Prisma.CategoryUncheckedUpdateManyWithoutMenuNestedInput
@@ -746,10 +800,12 @@ export type MenuCreateWithoutCategoriesInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutMenuInput
@@ -764,10 +820,12 @@ export type MenuUncheckedCreateWithoutCategoriesInput = {
   shopLogo?: string | null
   place?: string | null
   contactNumber?: string | null
+  locationUrl?: string | null
   template?: $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.MenuItemUncheckedCreateNestedManyWithoutMenuInput
@@ -796,10 +854,12 @@ export type MenuUpdateWithoutCategoriesInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutMenuNestedInput
@@ -814,10 +874,12 @@ export type MenuUncheckedUpdateWithoutCategoriesInput = {
   shopLogo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   place?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  locationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.EnumMenuTemplateTypeFieldUpdateOperationsInput | $Enums.MenuTemplateType
   isWhatsappOrderingEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isReadymade?: Prisma.BoolFieldUpdateOperationsInput | boolean
   claimCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  themeConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.MenuItemUncheckedUpdateManyWithoutMenuNestedInput
@@ -871,10 +933,12 @@ export type MenuSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   shopLogo?: boolean
   place?: boolean
   contactNumber?: boolean
+  locationUrl?: boolean
   template?: boolean
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: boolean
+  themeConfig?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -891,10 +955,12 @@ export type MenuSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   shopLogo?: boolean
   place?: boolean
   contactNumber?: boolean
+  locationUrl?: boolean
   template?: boolean
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: boolean
+  themeConfig?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -908,10 +974,12 @@ export type MenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   shopLogo?: boolean
   place?: boolean
   contactNumber?: boolean
+  locationUrl?: boolean
   template?: boolean
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: boolean
+  themeConfig?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -925,15 +993,17 @@ export type MenuSelectScalar = {
   shopLogo?: boolean
   place?: boolean
   contactNumber?: boolean
+  locationUrl?: boolean
   template?: boolean
   isWhatsappOrderingEnabled?: boolean
   isReadymade?: boolean
   claimCode?: boolean
+  themeConfig?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "slug" | "shopName" | "shopLogo" | "place" | "contactNumber" | "template" | "isWhatsappOrderingEnabled" | "isReadymade" | "claimCode" | "createdAt" | "updatedAt", ExtArgs["result"]["menu"]>
+export type MenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "slug" | "shopName" | "shopLogo" | "place" | "contactNumber" | "locationUrl" | "template" | "isWhatsappOrderingEnabled" | "isReadymade" | "claimCode" | "themeConfig" | "createdAt" | "updatedAt", ExtArgs["result"]["menu"]>
 export type MenuInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Menu$itemsArgs<ExtArgs>
@@ -962,10 +1032,12 @@ export type $MenuPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     shopLogo: string | null
     place: string | null
     contactNumber: string | null
+    locationUrl: string | null
     template: $Enums.MenuTemplateType
     isWhatsappOrderingEnabled: boolean
     isReadymade: boolean
     claimCode: string | null
+    themeConfig: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["menu"]>
@@ -1401,10 +1473,12 @@ export interface MenuFieldRefs {
   readonly shopLogo: Prisma.FieldRef<"Menu", 'String'>
   readonly place: Prisma.FieldRef<"Menu", 'String'>
   readonly contactNumber: Prisma.FieldRef<"Menu", 'String'>
+  readonly locationUrl: Prisma.FieldRef<"Menu", 'String'>
   readonly template: Prisma.FieldRef<"Menu", 'MenuTemplateType'>
   readonly isWhatsappOrderingEnabled: Prisma.FieldRef<"Menu", 'Boolean'>
   readonly isReadymade: Prisma.FieldRef<"Menu", 'Boolean'>
   readonly claimCode: Prisma.FieldRef<"Menu", 'String'>
+  readonly themeConfig: Prisma.FieldRef<"Menu", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Menu", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Menu", 'DateTime'>
 }

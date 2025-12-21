@@ -149,9 +149,9 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
   const hasOffer = currentProduct?.offerPrice && currentProduct.offerPrice < currentProduct.price;
 
   return (
-    <div className="fixed inset-0 bg-blue-900/10 backdrop-blur-2xl z-50 flex flex-col animate-fade-in overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-900/60 to-transparent pointer-events-none z-0" />
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-blue-900/60 to-transparent pointer-events-none z-0" />
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-2xl z-50 flex flex-col animate-fade-in overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/60 to-transparent pointer-events-none z-0" />
 
       {/* Header with progress and close */}
       <div className="relative z-10 p-4 pb-2">
@@ -195,7 +195,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
               {/* Next card (underneath) */}
               {nextProduct && (
                 <div className="absolute w-full h-full transform scale-95 opacity-50">
-                  <div className="w-full h-full rounded-2xl overflow-hidden shadow-lg bg-white">
+                  <div className="w-full h-full rounded-2xl overflow-hidden shadow-lg bg-background">
                     <img
                       src={nextProduct.image}
                       alt={nextProduct.name}
@@ -206,7 +206,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
                       }}
                     />
                     <div className="p-5">
-                      <h2 className="text-xl font-bold text-gray-900">{nextProduct.name}</h2>
+                      <h2 className="text-xl font-bold text-text">{nextProduct.name}</h2>
                     </div>
                   </div>
                 </div>
@@ -231,7 +231,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl bg-white">
+                <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl bg-background">
                   {/* Product Image */}
                   <img
                     src={currentProduct.image}
@@ -261,9 +261,9 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
                   </div>
 
                   {/* Price tag */}
-                  <div className="absolute top-5 left-5 px-3 py-2 bg-white/90 backdrop-blur-sm rounded-full">
+                  <div className="absolute top-5 left-5 px-3 py-2 bg-background/90 backdrop-blur-sm rounded-full">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900">
+                      <span className="text-lg font-bold text-text">
                         ₹{displayPrice}
                       </span>
                       {hasOffer && (
@@ -275,15 +275,15 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
                   </div>
 
                   {/* Content */}
-                  <div className="absolute bottom-0 w-full h-1/5 px-5 bg-white">
+                  <div className="absolute bottom-0 w-full h-1/5 px-5 bg-background">
                     <div className="flex justify-between items-start ">
-                      <h2 className="text-xl font-bold text-gray-900">{currentProduct.name}</h2>
+                      <h2 className="text-xl font-bold text-text">{currentProduct.name}</h2>
                     </div>
                     {currentProduct.description && (
                       <p className="text-gray-600 text-sm mb-3 line-clamp-2">{currentProduct.description}</p>
                     )}
                     {currentProduct.category && (
-                      <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                      <span className="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full">
                         {currentProduct.category}
                       </span>
                     )}
@@ -313,7 +313,7 @@ const SpecialsSwiper: React.FC<SpecialsSwiperProps> = ({
             )}
             <button
               onClick={handleSwipeRight}
-              className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
+              className="w-14 h-14 bg-primary rounded-full flex items-center justify-center hover:opacity-90 transition-colors"
             >
               <span className="text-white text-2xl">
                 <Plus className="w-6 h-6" />

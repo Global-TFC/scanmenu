@@ -54,6 +54,7 @@ enum MenuTemplateType {
   E_COM
   CAFE
   MAX
+  ECOMAPP
 }
 
 model Menu {
@@ -65,10 +66,12 @@ model Menu {
   shopLogo      String?
   place      String?
   contactNumber   String?
+  locationUrl     String?
   template  MenuTemplateType @default(PRO)
   isWhatsappOrderingEnabled Boolean @default(true)
   isReadymade Boolean @default(false)
   claimCode String?
+  themeConfig Json?
   items     MenuItem[]
   categories Category[]
   createdAt DateTime         @default(now())

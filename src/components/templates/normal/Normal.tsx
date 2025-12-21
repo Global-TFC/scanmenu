@@ -15,6 +15,7 @@ export default function Normal({
   shopLogo,
   products: initialProducts,
   slug,
+  themeConfig,
 }: {
   shopName: string;
   shopPlace: string;
@@ -22,10 +23,16 @@ export default function Normal({
   shopLogo?: string;
   products: Product[];
   slug: string;
+  themeConfig?: any;
 }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const primaryColor = themeConfig?.primaryColor || "#000000";
+  const backgroundColor = themeConfig?.backgroundColor || "#ffffff";
+  const textColor = themeConfig?.textColor || "#000000";
+  const fontFamily = themeConfig?.font === "Serif" ? "font-serif" : themeConfig?.font === "Monospace" ? "font-mono" : "font-sans";
 
   const {
     products,
@@ -107,18 +114,39 @@ export default function Normal({
   };
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+    <div 
+      className={`min-h-screen ${fontFamily} selection:bg-[var(--primary)] selection:text-white`}
+      style={{ "--primary": primaryColor, "--background": backgroundColor, "--text": textColor } as React.CSSProperties}
+    >
+      <style>
+        {`
+          :root {
+            --primary: ${primaryColor};
+            --background: ${backgroundColor};
+            --text: ${textColor};
+          }
+          body {
+            background-color: var(--background);
+            color: var(--text);
+          }
+          .bg-primary { background-color: var(--primary); }
+          .text-primary { color: var(--primary); }
+          .border-primary { border-color: var(--primary); }
+          .bg-background { background-color: var(--background); }
+          .text-text { color: var(--text); }
+        `}
+      </style>
       {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md border-b border-gray-100 py-3" : "bg-white py-5"}`}>
+      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? "bg-background/90 backdrop-blur-md border-b border-gray-100 py-3" : "bg-background py-5"}`}>
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {shopLogo && <img src={shopLogo} alt={shopName} className="w-8 h-8 object-cover rounded-full" />}
-            <h1 className="text-xl font-bold tracking-tight uppercase">{shopName}</h1>
+            <h1 className="text-xl font-bold tracking-tight uppercase text-text">{shopName}</h1>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={() => setCartOpen(true)} className="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <button onClick={() => setCartOpen(true)} className="relative p-2 hover:bg-gray-100 rounded-full transition-colors text-text">
               <ShoppingBag size={22} strokeWidth={1.5} />
-              {cartCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-black text-white text-[10px] font-bold flex items-center justify-center rounded-full">{cartCount}</span>}
+              {cartCount > 0 && <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[10px] font-bold flex items-center justify-center rounded-full">{cartCount}</span>}
             </button>
           </div>
         </div>
@@ -133,7 +161,7 @@ export default function Normal({
             placeholder="Search for dresses, shoes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-gray-50 border-none rounded-full py-3 pl-12 pr-4 text-sm focus:ring-1 focus:ring-black transition-all placeholder:text-gray-400"
+            className="w-full bg-gray-50 border-none rounded-full py-3 pl-12 pr-4 text-sm focus:ring-1 focus:ring-primary transition-all placeholder:text-gray-400"
           />
         </div>
 
@@ -144,7 +172,7 @@ export default function Normal({
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`px-5 py-2 rounded-full text-sm whitespace-nowrap transition-all border ${
-                selectedCategory === cat ? "bg-black text-white border-black" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                selectedCategory === cat ? "bg-primary text-white border-primary" : "bg-background text-text border-gray-200 hover:border-gray-400"
               }`}
             >
               {cat}
@@ -175,27 +203,29 @@ export default function Normal({
               >
                 <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden rounded-lg mb-3">
                   <img src={product.image || "/default-product.png"} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  {product.offerPrice && product.offerPrice < product.price && (
-                    <span className="absolute top-3 left-3 bg-black text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                  {product.offerPrice && product.offerPrice > 0 && product.price && product.price > 0 && product.offerPrice < product.price && (
+                    <span className="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
                       Sale
                     </span>
                   )}
                   <button
                     onClick={(e) => { e.stopPropagation(); addToCart(product); }}
-                    className="absolute bottom-3 right-3 bg-white text-black p-2.5 rounded-full shadow-lg translate-y-0 opacity-100 md:translate-y-12 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-black hover:text-white"
+                    className="absolute bottom-3 right-3 bg-background text-text p-2.5 rounded-full shadow-lg translate-y-0 opacity-100 md:translate-y-12 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white"
                   >
                     <Plus size={18} />
                   </button>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{product.category}</p>
-                  <h3 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1 group-hover:underline decoration-1 underline-offset-4">{product.name}</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold">₹{product.offerPrice ?? product.price}</span>
-                    {product.offerPrice && product.offerPrice < product.price && (
-                      <span className="text-xs text-gray-400 line-through">₹{product.price}</span>
-                    )}
-                  </div>
+                  <p className="text-xs opacity-70 uppercase tracking-wide mb-1 text-text">{product.category}</p>
+                  <h3 className="text-sm font-medium text-text line-clamp-1 mb-1 group-hover:underline decoration-1 underline-offset-4">{product.name}</h3>
+                  {((product.offerPrice && product.offerPrice > 0) || (product.price && product.price > 0)) ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-text">₹{product.offerPrice && product.offerPrice > 0 ? product.offerPrice : product.price}</span>
+                      {product.offerPrice && product.offerPrice > 0 && product.price && product.price > 0 && product.offerPrice < product.price && (
+                        <span className="text-xs text-gray-400 line-through">₹{product.price}</span>
+                      )}
+                    </div>
+                  ) : null}
                 </div>
               </motion.div>
             ))}
@@ -210,7 +240,7 @@ export default function Normal({
              className="flex justify-center py-8"
           >
              {loading && (
-               <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+               <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
              )}
           </div>
         )}
@@ -272,7 +302,7 @@ export default function Normal({
               <button 
                 onClick={checkout}
                 disabled={cartItems.length === 0}
-                className="w-full bg-black text-white py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                className="w-full bg-primary text-white py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
               >
                 Checkout on WhatsApp <ArrowRight size={16} />
               </button>

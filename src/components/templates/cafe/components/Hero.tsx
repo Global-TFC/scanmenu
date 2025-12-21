@@ -48,11 +48,15 @@ export default function Hero({ products = [] }: { products?: Product[] }) {
     const featuredProducts = products.filter(p => p.isFeatured);
     const displaySource = featuredProducts.length > 0 ? featuredProducts : (products.length > 0 ? products : []);
     
-    const items = displaySource.length > 0 ? displaySource.map(p => ({
-        name: p.name,
-        price: `₹${p.offerPrice || p.price}`,
-        image: p.image || "/placeholder.png"
-    })) : defaultItems;
+    const items = displaySource.length > 0 ? displaySource.map(p => {
+        const hasValidPrice = (p.offerPrice && p.offerPrice > 0) || (p.price && p.price > 0);
+        const displayPrice = p.offerPrice && p.offerPrice > 0 ? p.offerPrice : p.price;
+        return {
+            name: p.name,
+            price: hasValidPrice ? `₹${displayPrice}` : '',
+            image: p.image || "/placeholder.png"
+        };
+    }) : defaultItems;
 
     // Auto-scroll functionality
     useEffect(() => {

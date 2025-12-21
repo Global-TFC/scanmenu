@@ -65,13 +65,17 @@ export default function ProductsView({
       Papa.parse(file, {
         header: true,
         complete: (results) => {
-          const items = results.data.map((row: any) => ({
-            name: row.name || row.Name || row.NAME,
-            price: parseFloat(row.price || row.Price || row.PRICE || "0"),
-            category: row.category || row.Category || row.CATEGORY,
-            image: row.image || row.Image || row.IMAGE,
-            offerPrice: row.offerPrice ? parseFloat(row.offerPrice) : undefined,
-          })).filter((item: any) => item.name && item.price);
+          const items = results.data.map((row: any) => {
+            const priceStr = row.price || row.Price || row.PRICE;
+            const price = priceStr ? parseFloat(priceStr) : undefined;
+            return {
+              name: row.name || row.Name || row.NAME,
+              price: price && !isNaN(price) ? price : undefined,
+              category: row.category || row.Category || row.CATEGORY,
+              image: row.image || row.Image || row.IMAGE,
+              offerPrice: row.offerPrice ? parseFloat(row.offerPrice) : undefined,
+            };
+          }).filter((item: any) => item.name); // Only require name
           onBulkUpload(items);
         },
       });
@@ -83,13 +87,17 @@ export default function ProductsView({
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json(ws);
-        const items = data.map((row: any) => ({
-            name: row.name || row.Name || row.NAME,
-            price: parseFloat(row.price || row.Price || row.PRICE || "0"),
-            category: row.category || row.Category || row.CATEGORY,
-            image: row.image || row.Image || row.IMAGE,
-            offerPrice: row.offerPrice ? parseFloat(row.offerPrice) : undefined,
-        })).filter((item: any) => item.name && item.price);
+        const items = data.map((row: any) => {
+            const priceStr = row.price || row.Price || row.PRICE;
+            const price = priceStr ? parseFloat(priceStr) : undefined;
+            return {
+              name: row.name || row.Name || row.NAME,
+              price: price && !isNaN(price) ? price : undefined,
+              category: row.category || row.Category || row.CATEGORY,
+              image: row.image || row.Image || row.IMAGE,
+              offerPrice: row.offerPrice ? parseFloat(row.offerPrice) : undefined,
+            };
+        }).filter((item: any) => item.name); // Only require name
         onBulkUpload(items);
       };
       reader.readAsBinaryString(file);
@@ -185,15 +193,15 @@ export default function ProductsView({
   });
 
   const handleAddProduct = () => {
-    if (!productName || !price) {
-      alert("Please fill in all required fields");
+    if (!productName) {
+      alert("Please enter a product name");
       return;
     }
     const finalCategory = newCategoryMode ? newCategoryName || "Uncategorized" : category || "Uncategorized";
     onAddProduct({
       name: productName,
       category: finalCategory,
-      price: parseFloat(price),
+      price: price ? parseFloat(price) : 0,
       image:
         productImage || "/default-product.png",
       offerPrice: offerPrice ? parseFloat(offerPrice) : undefined,

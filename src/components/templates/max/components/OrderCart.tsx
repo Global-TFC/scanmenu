@@ -61,16 +61,16 @@ const OrderCart: React.FC<OrderCartProps> = ({
     <>
       {/* Cart panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-80 bg-blue-50/80 backdrop-blur-2xl shadow-2xl z-40 transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed top-0 right-0 h-full w-full sm:w-80 bg-background/95 backdrop-blur-2xl shadow-2xl z-40 transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
       >
         <div className="p-6 h-full flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Your Order</h2>
+            <h2 className="text-xl font-bold text-text">Your Order</h2>
             <div className=""></div>
             <button
               onClick={onToggle}
-              className="hover:text-gray-700 bg-white transition-colors flex items-center justify-center rounded-full shadow-lg p-3 shadow-blue-100 border border-gray-200"
+              className="hover:text-gray-700 bg-background transition-colors flex items-center justify-center rounded-full shadow-lg p-3 shadow-gray-200 border border-gray-200"
               aria-label="Close cart"
             >
               <X className="w-5 h-5" />
@@ -93,7 +93,7 @@ const OrderCart: React.FC<OrderCartProps> = ({
                   return (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-3 bg-white rounded-3xl shadow-lg p-3 shadow-blue-100 border border-gray-200"
+                      className="flex items-center gap-3 p-3 bg-background rounded-3xl shadow-lg p-3 shadow-gray-100 border border-gray-200"
                     >
                       <img
                         src={item.image}
@@ -105,9 +105,9 @@ const OrderCart: React.FC<OrderCartProps> = ({
                         }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 text-sm truncate">{item.name}</p>
+                        <p className="font-medium text-text text-sm truncate">{item.name}</p>
                         <div className="flex items-center gap-1">
-                          <span className="text-blue-600 font-bold text-sm">₹{itemPrice}</span>
+                          <span className="text-primary font-bold text-sm">₹{itemPrice}</span>
                           {hasOffer && (
                             <span className="text-gray-400 text-xs line-through">₹{item.price}</span>
                           )}
@@ -123,7 +123,7 @@ const OrderCart: React.FC<OrderCartProps> = ({
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="w-8 text-center font-medium text-gray-900">
+                        <span className="w-8 text-center font-medium text-text">
                           {item.quantity}
                         </span>
                         <button
@@ -150,19 +150,19 @@ const OrderCart: React.FC<OrderCartProps> = ({
               <div className="pt-4 border-t border-gray-200 mt-4">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-gray-600">Total</span>
-                  <span className="text-2xl font-bold text-blue-600">₹{total.toFixed(0)}</span>
+                  <span className="text-2xl font-bold text-primary">₹{total.toFixed(0)}</span>
                 </div>
 
                 {canWhatsApp && onWhatsAppOrder ? (
                   <button
                     onClick={onWhatsAppOrder}
-                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-colors flex items-center justify-center gap-2"
                   >
                     <span>Order via WhatsApp</span>
                   </button>
                 ) : (
                   <button
-                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors"
+                    className="w-full py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition-colors"
                     disabled
                   >
                     Place Order

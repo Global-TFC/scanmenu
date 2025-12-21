@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Store, MapPin, Phone, Layout, Image as ImageIcon, MessageCircle } from "lucide-react";
+import { User, Store, MapPin, Phone, Layout, Image as ImageIcon, MessageCircle, Map } from "lucide-react";
 import { MenuTemplateType } from "@/generated/prisma/enums";
 import ImageUpload from "./ImageUpload";
 
@@ -10,12 +10,14 @@ interface ShopDetailsViewProps {
   shopLogo?: string;
   place: string;
   contactNumber: string;
+  locationUrl: string;
   isWhatsappOrderingEnabled: boolean;
   onSlugChange: (value: string) => void;
   onShopNameChange: (value: string) => void;
   onShopLogoChange: (value: string) => void;
   onPlaceChange: (value: string) => void;
   onContactNumberChange: (value: string) => void;
+  onLocationUrlChange: (value: string) => void;
   onWhatsappOrderingEnabledChange: (value: boolean) => void;
   onSave: () => void;
 }
@@ -26,12 +28,14 @@ export default function ShopDetailsView({
   shopLogo,
   place,
   contactNumber,
+  locationUrl,
   isWhatsappOrderingEnabled,
   onSlugChange,
   onShopNameChange,
   onShopLogoChange,
   onPlaceChange,
   onContactNumberChange,
+  onLocationUrlChange,
   onWhatsappOrderingEnabledChange,
   onSave,
 }: ShopDetailsViewProps) {
@@ -121,6 +125,21 @@ export default function ShopDetailsView({
               placeholder="+91 9876543210"
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
             />
+          </div>
+
+          <div className="col-span-1 md:col-span-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+              <Map size={16} />
+              Google Maps Location URL
+            </label>
+            <input
+              type="url"
+              value={locationUrl}
+              onChange={(e) => onLocationUrlChange(e.target.value)}
+              placeholder="https://maps.google.com/..."
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+            />
+            <p className="text-xs text-gray-500 mt-1">Paste your Google Maps share link here</p>
           </div>
 
 

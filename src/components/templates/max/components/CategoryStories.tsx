@@ -64,7 +64,7 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
 
   return (
     <div className="w-full z-30 overflow-x-auto scrollbar-hide py-3 sm:py-3 rounded-b-2xl backdrop-blur-sm">
-      <div className="flex gap-4 sm:gap-4 md:gap-5 px-4 sm:px-4 md:px-6 lg:px-8 min-w-max">
+      <div className="flex gap-2 sm:gap-2 md:gap-3 px-4 sm:px-4 md:px-6 lg:px-8 min-w-max">
         {categoryBubbles.map((category) => {
           return (
             <button
@@ -74,15 +74,15 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
             >
               {/* Story ring - Increased mobile sizes */}
               <div
-                className={`w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 lg:w-22 lg:h-22 rounded-full p-[3px] sm:p-[3px] transition-all duration-200 shadow-lg shadow-blue-100 border border-gray-200 ${category.isSpecial
-                  ? 'bg-blue-500 border-2 border-blue-500'
+                className={`w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 lg:w-22 lg:h-22 rounded-full p-[3px] sm:p-[3px] transition-all duration-200 shadow-lg shadow-gray-200 border border-gray-200 ${category.isSpecial
+                  ? 'bg-primary border-2 border-primary'
                   : category.isActive
-                    ? 'bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500'
+                    ? 'bg-primary'
                     : 'bg-gray-200 group-hover:bg-gray-300'
                   }`}
               >
                 {/* Inner circle with image or placeholder */}
-                <div className="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center p-[2px]">
+                <div className="w-full h-full rounded-full overflow-hidden bg-background flex items-center justify-center p-[2px]">
                   {category.image ? (
                     <img
                       src={category.image}
@@ -120,7 +120,7 @@ const CategoryStories: React.FC<CategoryStoriesProps> = ({
 
               {/* Label - Responsive text */}
               <span
-                className={`text-sm sm:text-sm font-medium transition-colors duration-200 text-center max-w-[60px] sm:max-w-[70px] md:max-w-[80px] truncate ${category.isActive ? 'text-gray-900 font-semibold' : 'text-gray-600'
+                className={`text-sm sm:text-sm font-medium transition-colors duration-200 text-center max-w-[60px] sm:max-w-[70px] md:max-w-[80px] truncate ${category.isActive ? 'text-text font-bold' : 'text-text opacity-70'
                   }`}
               >
                 {category.label}

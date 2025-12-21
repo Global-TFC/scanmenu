@@ -48,8 +48,10 @@ export default function AdminDashboard() {
   const [shopLogo, setShopLogo] = useState("");
   const [place, setPlace] = useState("");
   const [contactNumber, setContactNumber] = useState("");
+  const [locationUrl, setLocationUrl] = useState("");
   const [template, setTemplate] = useState("PRO");
   const [isWhatsappOrderingEnabled, setIsWhatsappOrderingEnabled] = useState(true);
+  const [themeConfig, setThemeConfig] = useState<any>(null);
 
   // Products state
   const [products, setProducts] = useState<Product[]>([]);
@@ -121,8 +123,10 @@ export default function AdminDashboard() {
         setShopLogo(menu.shopLogo || "");
         setPlace(menu.place || "");
         setContactNumber(menu.contactNumber || "+91 ");
+        setLocationUrl(menu.locationUrl || "");
         setTemplate(menu.template || "PRO");
         setIsWhatsappOrderingEnabled(menu.isWhatsappOrderingEnabled ?? true);
+        setThemeConfig(menu.themeConfig || { primaryColor: '#4f46e5', font: 'Sans Serif' });
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Failed to fetch menu";
@@ -206,9 +210,11 @@ export default function AdminDashboard() {
         shopLogo,
         place,
         contactNumber,
+        locationUrl,
         template: template as MenuTemplateType,
         slug: menuSlug !== slug ? menuSlug : undefined,
         isWhatsappOrderingEnabled,
+        themeConfig,
       });
       
       setMenuData(updated);
@@ -447,12 +453,14 @@ export default function AdminDashboard() {
               shopLogo={shopLogo}
               place={place}
               contactNumber={contactNumber}
+              locationUrl={locationUrl}
               isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
               onSlugChange={setMenuSlug} // New handler for slug change
               onShopNameChange={setShopName}
               onShopLogoChange={setShopLogo}
               onPlaceChange={setPlace}
               onContactNumberChange={setContactNumber}
+              onLocationUrlChange={setLocationUrl}
               onWhatsappOrderingEnabledChange={setIsWhatsappOrderingEnabled}
               onSave={handleSaveShopDetails}
             />
@@ -472,6 +480,9 @@ export default function AdminDashboard() {
               template={template}
               onTemplateChange={setTemplate}
               onSave={handleSaveShopDetails}
+              themeConfig={themeConfig}
+              onThemeConfigChange={setThemeConfig}
+              slug={slug as string}
             />
           )}
         </main>

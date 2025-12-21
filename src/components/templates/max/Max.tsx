@@ -20,6 +20,7 @@ interface MaxProps {
   products: Product[];
   isWhatsappOrderingEnabled?: boolean;
   slug: string;
+  themeConfig?: any;
 }
 
 const Max: React.FC<MaxProps> = ({
@@ -30,7 +31,12 @@ const Max: React.FC<MaxProps> = ({
   products: initialProducts,
   isWhatsappOrderingEnabled = false,
   slug,
+  themeConfig,
 }) => {
+  const primaryColor = themeConfig?.primaryColor || '#000000';
+  const backgroundColor = themeConfig?.backgroundColor || '#f9fafb';
+  const textColor = themeConfig?.textColor || '#000000';
+  const fontFamily = themeConfig?.font === 'Serif' ? 'font-serif' : themeConfig?.font === 'Monospace' ? 'font-mono' : 'font-sans';
   // Use the existing useProducts hook for data management with infinite scroll
   const {
     featuredProducts: hookFeaturedProducts,
@@ -166,9 +172,21 @@ const Max: React.FC<MaxProps> = ({
 
   return (
     <MaxErrorBoundary>
-      <div className="min-h-screen bg-gray-50">
+      <div 
+        className={`min-h-screen ${fontFamily} bg-[var(--background)] text-[var(--text)]`}
+        style={{ '--primary': primaryColor, '--background': backgroundColor, '--text': textColor } as React.CSSProperties}
+      >
+        <style>{`
+          :root { --primary: ${primaryColor}; --background: ${backgroundColor}; --text: ${textColor}; }
+          body { background-color: var(--background); color: var(--text); }
+          .text-primary { color: var(--primary) !important; }
+          .bg-primary { background-color: var(--primary) !important; }
+          .border-primary { border-color: var(--primary) !important; }
+          .text-text { color: var(--text) !important; }
+          .bg-background { background-color: var(--background) !important; }
+        `}</style>
         {/* Header with search only - Sticky */}
-        <div className="sticky top-0 z-40 bg-gray-50/95 backdrop-blur-sm border-b border-gray-200/50">
+        <div className="sticky top-0 z-40 bg-[var(--background)]/95 backdrop-blur-sm border-b border-gray-200/50">
           <Header
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -178,7 +196,7 @@ const Max: React.FC<MaxProps> = ({
         </div>
 
         {/* Category Stories - Normal scroll (not sticky) */}
-        <div className="bg-gray-50">
+        <div className="bg-[var(--background)]">
           <CategoryStories
             categories={filteredCategories}
             categoriesWithImages={categoriesWithImages}

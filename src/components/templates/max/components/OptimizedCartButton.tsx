@@ -40,9 +40,9 @@ const OptimizedCartButton: React.FC<OptimizedCartButtonProps> = memo(({
       onClick={onToggleCart}
       className="fixed bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-50 
          px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 md:py-3.5 
-         rounded-full bg-blue-600 text-white shadow-2xl 
+         rounded-full bg-primary text-white shadow-2xl 
          flex items-center gap-2 sm:gap-3 
-         hover:scale-105 active:scale-95 hover:bg-blue-700
+         hover:scale-105 active:scale-95 hover:opacity-90
          transition-all duration-200 animate-bounce-in
          whitespace-nowrap min-w-max
          border-2 border-white/20"

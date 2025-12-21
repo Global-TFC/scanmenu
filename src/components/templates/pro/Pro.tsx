@@ -25,6 +25,7 @@ export default function Pro({
   products: initialProducts,
   isWhatsappOrderingEnabled = true,
   slug,
+  themeConfig,
 }: {
   shopName: string;
   shopPlace: string;
@@ -33,7 +34,14 @@ export default function Pro({
   products: Product[];
   isWhatsappOrderingEnabled?: boolean;
   slug: string;
+  themeConfig?: any;
 }) {
+  const primaryColor = themeConfig?.primaryColor || '#0f172a';
+  const backgroundColor = themeConfig?.backgroundColor || '#e0e0e0';
+  const textColor = themeConfig?.textColor || '#000000';
+  const accentColor = themeConfig?.primaryColor || '#8b7355'; // Using primary for accent in Pro theme
+  const fontFamily = themeConfig?.font === 'Serif' ? 'font-serif' : themeConfig?.font === 'Monospace' ? 'font-mono' : 'font-sans';
+
   const [showWhatsAppFloat, setShowWhatsAppFloat] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [items, setItems] = useState<(Product & { quantity: number })[]>([]);
@@ -147,18 +155,29 @@ export default function Pro({
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-500 ${
-        isGlass
-          ? "bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]"
-          : "bg-[#e0e0e0]"
-      }`}
+      className={`min-h-screen transition-colors duration-500 ${fontFamily} bg-[var(--background)]`}
+      style={{ '--accent': accentColor, '--background': backgroundColor, '--text': textColor } as React.CSSProperties}
     >
+      <style>{`
+        :root {
+          --accent: ${accentColor};
+          --background: ${backgroundColor};
+          --text: ${textColor};
+        }
+        body {
+          background-color: var(--background);
+          color: var(--text);
+        }
+        .text-accent { color: var(--accent) !important; }
+        .bg-accent { background-color: var(--accent) !important; }
+        .text-text { color: var(--text) !important; }
+      `}</style>
       <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-2">
         <div
           className={`max-w-7xl mx-auto rounded-full flex items-center justify-between gap-4 px-4 sm:px-6 py-2 transition-all duration-300 ${
             isGlass
               ? "bg-white/30 backdrop-blur-md border border-white/20 shadow-lg"
-              : "bg-[#e0e0e0]"
+              : "bg-[var(--background)]"
           }`}
           style={
             isGlass
@@ -247,7 +266,7 @@ export default function Pro({
                 <span>Cart</span>
                 {getTotalItems() > 0 && (
                   <span
-                    className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center rounded-full text-xs bg-[#8b7355] text-white"
+                    className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center rounded-full text-xs bg-[var(--accent)] text-white"
                     style={{
                       boxShadow: "2px 2px 4px #bebebe, -2px -2px 4px #ffffff",
                     }}
@@ -309,7 +328,7 @@ export default function Pro({
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full pl-12 pr-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-[#8b7355] focus:border-transparent shadow-sm transition-all duration-300 ${
+                  className={`w-full pl-12 pr-4 py-3.5 rounded-2xl focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent shadow-sm transition-all duration-300 ${
                     isGlass
                       ? "bg-white/20 backdrop-blur-md border border-white/20 text-white placeholder-white/60"
                       : "bg-[#eaeaea] border border-[#dcdcdc] text-[#3a3a3a]"
@@ -401,23 +420,27 @@ export default function Pro({
                     <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-baseline gap-2">
-                            <span
-                              className={`text-3xl font-bold ${
-                                isGlass ? "text-white" : "text-[#3a3a3a]"
-                              }`}
-                            >
-                              ₹{product.offerPrice ?? product.price}
-                            </span>
-                            {typeof product.offerPrice === "number" && product.offerPrice < product.price && (
+                            {((product.offerPrice && product.offerPrice > 0) || (product.price && product.price > 0)) ? (
                               <>
-                                <span className="text-lg text-[#8a8a8a] line-through">
-                                  ₹{product.price}
+                                <span
+                                  className={`text-3xl font-bold ${
+                                    isGlass ? "text-white" : "text-[#3a3a3a]"
+                                  }`}
+                                >
+                                  ₹{product.offerPrice && product.offerPrice > 0 ? product.offerPrice : product.price}
                                 </span>
-                                <span className="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                                  {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
-                                </span>
+                                {typeof product.offerPrice === "number" && product.offerPrice > 0 && product.price && product.price > 0 && product.offerPrice < product.price && (
+                                  <>
+                                    <span className="text-lg text-[#8a8a8a] line-through">
+                                      ₹{product.price}
+                                    </span>
+                                    <span className="text-sm font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                      {Math.round(((product.price - product.offerPrice) / product.price) * 100)}% OFF
+                                    </span>
+                                  </>
+                                )}
                               </>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       <div className="flex items-center gap-2">
@@ -437,7 +460,7 @@ export default function Pro({
                                 }
                           }
                         >
-                          <ShoppingCart className="w-6 h-6 text-[#8b7355]" />
+                          <ShoppingCart className="w-6 h-6 text-[var(--accent)]" />
                         </button>
                       </div>
                     </div>
@@ -454,7 +477,7 @@ export default function Pro({
              className="flex justify-center py-8"
           >
              {loading && (
-               <div className={`w-8 h-8 rounded-full border-4 animate-spin ${isGlass ? "border-white border-t-transparent" : "border-[#8b7355] border-t-transparent"}`}></div>
+               <div className={`w-8 h-8 rounded-full border-4 animate-spin ${isGlass ? "border-white border-t-transparent" : "border-[var(--accent)] border-t-transparent"}`}></div>
              )}
           </div>
         )}
@@ -529,7 +552,7 @@ export default function Pro({
                           }
                     }
                   >
-                    <ShoppingCart className="w-5 h-5 text-[#8b7355]" />
+                    <ShoppingCart className="w-5 h-5 text-[var(--accent)]" />
                   </div>
                   <div>
                     <div
@@ -586,7 +609,7 @@ export default function Pro({
                             }
                       }
                     >
-                      <ShoppingCart className="w-8 h-8 text-[#8b7355]" />
+                      <ShoppingCart className="w-8 h-8 text-[var(--accent)]" />
                     </div>
                     <div
                       className={`text-lg font-semibold mb-2 ${
@@ -724,7 +747,7 @@ export default function Pro({
                     >
                       Total:
                     </span>
-                    <span className="text-xl font-bold text-[#8b7355]">
+                    <span className="text-xl font-bold text-[var(--accent)]">
                       ₹{getTotalPrice()}
                     </span>
                   </div>

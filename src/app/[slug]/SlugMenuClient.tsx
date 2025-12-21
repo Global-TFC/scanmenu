@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import Normal from "@/components/templates/normal/Normal";
@@ -8,7 +8,9 @@ import Pro from "@/components/templates/pro/Pro";
 import Ecommerce from "@/components/templates/ecommerce/Ecommerce";
 import Cafe from "@/components/templates/cafe/Cafe";
 import Max from "@/components/templates/max/Max";
+import Ecomapp from "@/components/templates/ecomapp/Ecomapp";
 import { MenuTemplateType } from "@/generated/prisma/enums";
+import { subscribeToThemeUpdates, ThemeConfig } from "@/lib/theme-sync";
 
 interface Product {
   id: string;
@@ -28,11 +30,13 @@ interface SlugMenuClientProps {
   shopPlace: string;
   shopContact: string;
   shopLogo: string;
+  locationUrl?: string;
   products: Product[];
   template: MenuTemplateType | null;
   isWhatsappOrderingEnabled: boolean;
   isReadymade?: boolean;
   slug: string;
+  themeConfig?: any;
 }
 
 export default function SlugMenuClient({
@@ -40,17 +44,35 @@ export default function SlugMenuClient({
   shopPlace,
   shopContact,
   shopLogo,
+  locationUrl,
   products,
   template,
   isWhatsappOrderingEnabled,
   isReadymade,
   slug,
+  themeConfig: initialThemeConfig,
 }: SlugMenuClientProps) {
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimCode, setClaimCode] = useState("");
   const [error, setError] = useState("");
   const [verifying, setVerifying] = useState(false);
   const router = useRouter();
+
+  // Live theme config state - updates in real-time from admin panel
+  const [liveThemeConfig, setLiveThemeConfig] = useState<ThemeConfig | undefined>(
+    initialThemeConfig
+  );
+
+  // Subscribe to theme updates from admin panel
+  useEffect(() => {
+    const unsubscribe = subscribeToThemeUpdates(slug, (newThemeConfig) => {
+      setLiveThemeConfig(newThemeConfig);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [slug]);
 
   const handleClaim = async () => {
     if (!claimCode.trim()) {
@@ -142,6 +164,7 @@ export default function SlugMenuClient({
           products={products}
           isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
           slug={slug}
+          themeConfig={liveThemeConfig}
         />
       )}
       {template === MenuTemplateType.E_COM && (
@@ -174,6 +197,7 @@ export default function SlugMenuClient({
           shopLogo={shopLogo}
           products={products}
           slug={slug}
+          themeConfig={liveThemeConfig}
         />
       )}
       {template === MenuTemplateType.MAX && (
@@ -185,6 +209,20 @@ export default function SlugMenuClient({
           products={products}
           isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
           slug={slug}
+          themeConfig={liveThemeConfig}
+        />
+      )}
+      {template === MenuTemplateType.ECOMAPP && (
+        <Ecomapp
+          shopName={shopName}
+          shopPlace={shopPlace}
+          shopContact={shopContact}
+          shopLogo={shopLogo}
+          locationUrl={locationUrl}
+          products={products}
+          isWhatsappOrderingEnabled={isWhatsappOrderingEnabled}
+          slug={slug}
+          themeConfig={liveThemeConfig}
         />
       )}
     </>

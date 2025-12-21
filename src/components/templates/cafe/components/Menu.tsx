@@ -197,7 +197,10 @@ export default function Menu({ onColorChange, products }: MenuProps) {
                   {category.title}
                 </h3>
                 <div className="space-y-4">
-                  {category.items.map((item, idx) => (
+                  {category.items.map((item, idx) => {
+                    const hasValidPrice = (item.offerPrice && item.offerPrice > 0) || (item.price && item.price > 0);
+                    const displayPrice = item.offerPrice && item.offerPrice > 0 ? item.offerPrice : item.price;
+                    return (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -207,13 +210,18 @@ export default function Menu({ onColorChange, products }: MenuProps) {
                       className="flex items-end justify-between text-neutral-800"
                     >
                       <span className="font-medium text-lg whitespace-nowrap">{item.name}</span>
+                      {hasValidPrice && (
+                      <>
                       <div className="flex-1 mx-2 border-b-2 border-dotted border-neutral-300 mb-1.5"></div>
                       <div className="flex items-center font-semibold text-lg whitespace-nowrap">
                         <IndianRupee size={14} className="mr-0.5" />
-                        {item.offerPrice || item.price}
+                        {displayPrice}
                       </div>
+                      </>
+                      )}
                     </motion.div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}

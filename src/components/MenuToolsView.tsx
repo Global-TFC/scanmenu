@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { QrCode, Eye, Palette, ImageDown, FileDown, X, Copy, Check, Layout, Save } from "lucide-react";
 import { MenuTemplateType } from "@/generated/prisma/enums";
 import { QRCode } from "react-qrcode-logo";
+import ThemePreview, { ThemeConfig } from "./ThemePreview";
+import { broadcastThemeUpdate } from "@/lib/theme-sync";
 
 interface MenuToolsViewProps {
   shopName: string;
@@ -12,13 +14,71 @@ interface MenuToolsViewProps {
   template: string;
   onTemplateChange: (value: string) => void;
   onSave: () => void;
+  themeConfig?: any;
+  onThemeConfigChange?: (value: any) => void;
+  slug?: string;
 }
 
-export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, onTemplateChange, onSave }: MenuToolsViewProps) {
+const DEFAULT_THEME: ThemeConfig = {
+  primaryColor: '#4f46e5',
+  backgroundColor: '#ffffff',
+  textColor: '#000000',
+  font: 'Sans Serif',
+};
+
+export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, onTemplateChange, onSave, themeConfig, onThemeConfigChange, slug }: MenuToolsViewProps) {
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const qrRef = useRef<any>(null);
+  
+  // Temporary theme config state for live preview
+  const [originalThemeConfig, setOriginalThemeConfig] = useState<ThemeConfig | null>(null);
+  const [tempThemeConfig, setTempThemeConfig] = useState<ThemeConfig>(
+    themeConfig || DEFAULT_THEME
+  );
+
+  // Open theme modal and store original config
+  const openThemeModal = () => {
+    const currentConfig = themeConfig || DEFAULT_THEME;
+    setOriginalThemeConfig({ ...currentConfig });
+    setTempThemeConfig({ ...currentConfig });
+    setIsThemeModalOpen(true);
+  };
+
+  // Cancel: revert to original config and broadcast original
+  const handleThemeCancel = () => {
+    if (originalThemeConfig) {
+      setTempThemeConfig({ ...originalThemeConfig });
+      // Broadcast original config to revert any live preview on public page
+      if (slug) {
+        broadcastThemeUpdate(slug, originalThemeConfig);
+      }
+    }
+    setIsThemeModalOpen(false);
+  };
+
+  // Apply: commit temp config to parent state and save to database
+  const handleThemeApply = () => {
+    onThemeConfigChange?.(tempThemeConfig);
+    setIsThemeModalOpen(false);
+    // Auto-save to database so changes persist after refresh
+    setTimeout(() => {
+      onSave();
+    }, 100);
+  };
+
+  // Update temp config (for live preview) and broadcast to public page
+  const updateTempThemeConfig = (updates: Partial<ThemeConfig>) => {
+    setTempThemeConfig(prev => {
+      const newConfig = { ...prev, ...updates };
+      // Broadcast theme update to any open public menu tabs
+      if (slug) {
+        broadcastThemeUpdate(slug, newConfig);
+      }
+      return newConfig;
+    });
+  };
 
   const getPreviewUrl = () => {
     if (typeof window === 'undefined') return menuUrl;
@@ -198,6 +258,7 @@ export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, o
                             <option value={MenuTemplateType.E_COM}>E‑Com</option>
                             <option value={MenuTemplateType.CAFE}>Cafe</option>
                             <option value={MenuTemplateType.MAX}>Max</option>
+                            <option value={MenuTemplateType.ECOMAPP}>Ecom App</option>
                         </select>
 
                         <a
@@ -243,7 +304,7 @@ export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, o
         </a>
 
         <button
-          onClick={() => setIsThemeModalOpen(true)}
+          onClick={openThemeModal}
           className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
         >
           <div className="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center">
@@ -354,69 +415,149 @@ export default function MenuToolsView({ shopName, shopLogo, menuUrl, template, o
       {/* Theme Customization Modal */}
       {isThemeModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
+          <div className="bg-white rounded-xl max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-gray-900">Customize Menu Theme</h3>
               <button 
-                onClick={() => setIsThemeModalOpen(false)}
+                onClick={handleThemeCancel}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <X size={20} />
               </button>
             </div>
             
-            <div className="mb-6">
-              <p className="text-gray-600 mb-4">Choose a color scheme for your menu</p>
-              
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                {[
-                  { name: "Default", colors: "bg-gradient-to-r from-indigo-500 to-purple-600" },
-                  { name: "Ocean", colors: "bg-gradient-to-r from-teal-500 to-blue-600" },
-                  { name: "Sunset", colors: "bg-gradient-to-r from-orange-500 to-pink-600" },
-                  { name: "Forest", colors: "bg-gradient-to-r from-green-500 to-emerald-600" },
-                  { name: "Berry", colors: "bg-gradient-to-r from-purple-500 to-fuchsia-600" },
-                  { name: "Candy", colors: "bg-gradient-to-r from-pink-500 to-rose-600" }
-                ].map((theme, index) => (
-                  <div key={index} className="cursor-pointer">
-                    <div className={`${theme.colors} h-16 rounded-lg mb-1`}></div>
-                    <p className="text-xs text-center text-gray-600">{theme.name}</p>
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Controls Section */}
+              <div className="flex-1">
+                <p className="text-gray-600 mb-4">Choose a color scheme for your menu</p>
+                
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Preset Themes</label>
+                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                    {[
+                      { name: "Indigo", color: "#4f46e5", class: "bg-indigo-600" },
+                      { name: "Forest", color: "#059669", class: "bg-emerald-600" },
+                      { name: "Ocean", color: "#0284c7", class: "bg-sky-600" },
+                      { name: "Sunset", color: "#ea580c", class: "bg-orange-600" },
+                      { name: "Berry", color: "#db2777", class: "bg-pink-600" },
+                      { name: "Violet", color: "#7c3aed", class: "bg-violet-600" },
+                      { name: "Midnight", color: "#0f172a", class: "bg-slate-900" },
+                      { name: "Black", color: "#000000", class: "bg-black" },
+                      { name: "Red", color: "#dc2626", class: "bg-red-600" },
+                      { name: "Cyan", color: "#0891b2", class: "bg-cyan-600" },
+                    ].map((theme) => (
+                      <button
+                        key={theme.name}
+                        onClick={() => updateTempThemeConfig({ primaryColor: theme.color })}
+                        className={`group relative w-full aspect-square rounded-xl flex items-center justify-center transition-all ${
+                          tempThemeConfig.primaryColor === theme.color 
+                            ? 'ring-2 ring-offset-2 ring-indigo-600 shadow-md scale-105' 
+                            : 'hover:scale-105 hover:shadow-sm'
+                        }`}
+                        title={theme.name}
+                      >
+                        <div className={`w-full h-full rounded-xl ${theme.class}`} style={{ backgroundColor: theme.color }}></div>
+                        {tempThemeConfig.primaryColor === theme.color && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Check className="text-white drop-shadow-md" size={18} strokeWidth={3} />
+                          </div>
+                        )}
+                      </button>
+                    ))}
                   </div>
-                ))}
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
-                  <input 
-                    type="color" 
-                    defaultValue="#4f46e5" 
-                    className="w-full h-10 rounded-lg border border-gray-300 cursor-pointer"
-                  />
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Font Style</label>
-                  <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                    <option>Sans Serif</option>
-                    <option>Serif</option>
-                    <option>Monospace</option>
-                  </select>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Custom Color</label>
+                    <div className="flex gap-3">
+                      <div className="relative flex-1 h-11 rounded-lg border border-gray-300 overflow-hidden cursor-pointer">
+                        <input 
+                          type="color" 
+                          value={tempThemeConfig.primaryColor}
+                          onChange={(e) => updateTempThemeConfig({ primaryColor: e.target.value })}
+                          className="absolute -top-2 -left-2 w-[calc(100%+16px)] h-[calc(100%+16px)] cursor-pointer"
+                        />
+                      </div>
+                      <div className="flex items-center px-4 bg-gray-50 border border-gray-300 rounded-lg font-mono text-sm text-gray-600">
+                        {tempThemeConfig.primaryColor}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
+                    <div className="flex gap-3">
+                      <div className="relative flex-1 h-11 rounded-lg border border-gray-300 overflow-hidden cursor-pointer">
+                        <input 
+                          type="color" 
+                          value={tempThemeConfig.backgroundColor}
+                          onChange={(e) => updateTempThemeConfig({ backgroundColor: e.target.value })}
+                          className="absolute -top-2 -left-2 w-[calc(100%+16px)] h-[calc(100%+16px)] cursor-pointer"
+                        />
+                      </div>
+                      <div className="flex items-center px-4 bg-gray-50 border border-gray-300 rounded-lg font-mono text-sm text-gray-600">
+                        {tempThemeConfig.backgroundColor}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Text Color</label>
+                    <div className="flex gap-3">
+                      <div className="relative flex-1 h-11 rounded-lg border border-gray-300 overflow-hidden cursor-pointer">
+                        <input 
+                          type="color" 
+                          value={tempThemeConfig.textColor}
+                          onChange={(e) => updateTempThemeConfig({ textColor: e.target.value })}
+                          className="absolute -top-2 -left-2 w-[calc(100%+16px)] h-[calc(100%+16px)] cursor-pointer"
+                        />
+                      </div>
+                      <div className="flex items-center px-4 bg-gray-50 border border-gray-300 rounded-lg font-mono text-sm text-gray-600">
+                        {tempThemeConfig.textColor}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Font Style</label>
+                    <select 
+                      value={tempThemeConfig.font}
+                      onChange={(e) => updateTempThemeConfig({ font: e.target.value as ThemeConfig['font'] })}
+                      className="w-full h-11 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white"
+                    >
+                      <option value="Sans Serif">Modern Sans</option>
+                      <option value="Serif">Elegant Serif</option>
+                      <option value="Monospace">Tech Monospace</option>
+                    </select>
+                  </div>
                 </div>
+              </div>
+
+              {/* Live Preview Section */}
+              <div className="lg:w-48 flex-shrink-0">
+                <label className="block text-sm font-medium text-gray-700 mb-3">Live Preview</label>
+                <ThemePreview
+                  themeConfig={tempThemeConfig}
+                  template={template}
+                  shopName={shopName}
+                  shopLogo={shopLogo}
+                />
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Changes update instantly
+                </p>
               </div>
             </div>
             
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
               <button
-                onClick={() => setIsThemeModalOpen(false)}
+                onClick={handleThemeCancel}
                 className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  setIsThemeModalOpen(false);
-                  alert("Theme customized successfully!");
-                }}
+                onClick={handleThemeApply}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
               >
                 Apply Theme
